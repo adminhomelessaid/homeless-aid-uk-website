@@ -240,38 +240,55 @@
 
     <script src="script.js"></script>
     <script>
-    function sendVolunteerEmail(event) {
+    async function sendVolunteerEmail(event) {
         event.preventDefault();
         
         const form = document.getElementById('volunteerForm');
-        const formData = new FormData(form);
+        const submitBtn = form.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Sending...';
         
-        // Build email body
-        let emailBody = "New Volunteer Application\n\n";
-        emailBody += "First Name: " + formData.get('First_Name') + "\n";
-        emailBody += "Last Name: " + formData.get('Last_Name') + "\n";
-        emailBody += "Email: " + formData.get('email') + "\n";
-        emailBody += "Phone: " + formData.get('Phone') + "\n";
-        emailBody += "Preferred Location: " + formData.get('Preferred_Location') + "\n";
+        const formData = new FormData(form);
         
         // Get availability checkboxes
         const availability = [];
         document.querySelectorAll('input[name="availability"]:checked').forEach(cb => {
             availability.push(cb.value);
         });
-        emailBody += "Availability: " + availability.join(', ') + "\n";
-        emailBody += "How they want to help: " + formData.get('How_to_Help') + "\n";
         
-        // Create mailto link
-        const subject = "New Volunteer Application - Homeless Aid UK";
-        const mailtoLink = `mailto:info@homelessaid.co.uk?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(emailBody)}`;
+        const data = {
+            formType: 'volunteer',
+            firstName: formData.get('First_Name'),
+            lastName: formData.get('Last_Name'),
+            email: formData.get('email'),
+            phone: formData.get('Phone'),
+            location: formData.get('Preferred_Location'),
+            availability: availability.join(', '),
+            help: formData.get('How_to_Help')
+        };
         
-        // Open email client
-        window.location.href = mailtoLink;
-        
-        // Show success message
-        document.getElementById('successMessage').style.display = 'block';
-        form.style.display = 'none';
+        try {
+            const response = await fetch('/api/send-email', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            });
+            
+            if (response.ok) {
+                document.getElementById('successMessage').style.display = 'block';
+                form.style.display = 'none';
+            } else {
+                alert('There was an error sending your application. Please try again or email us directly at info@homelessaid.co.uk');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit Application';
+            }
+        } catch (error) {
+            alert('There was an error sending your application. Please try again or email us directly at info@homelessaid.co.uk');
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Submit Application';
+        }
     }
     </script>
 </body>

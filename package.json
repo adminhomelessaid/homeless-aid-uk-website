@@ -1,0 +1,16 @@
+{
+  "name": "homeless-aid-uk",
+  "version": "1.0.0",
+  "description": "Homeless Aid UK Website",
+  "scripts": {
+    "dev": "vercel dev",
+    "build": "echo 'No build needed'",
+    "start": "vercel dev"
+  },
+  "dependencies": {
+    "nodemailer": "^6.9.7"
+  },
+  "engines": {
+    "node": "18.x"
+  }
+}
