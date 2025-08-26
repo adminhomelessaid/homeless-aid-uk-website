@@ -19,7 +19,14 @@
       "Bash(git remote add:*)",
       "Bash(git branch:*)",
       "Bash(git push:*)",
-      "Bash(git remote set-url:*)"
+      "Bash(git remote set-url:*)",
+      "Bash(if [ -z \"$RESEND_API_KEY\" ])",
+      "Bash(then echo \"Not set\")",
+      "Bash(fi)",
+      "Bash(if [ -z \"$EMAIL_USER\" ])",
+      "Bash(else echo \"Set: $EMAIL_USER\")",
+      "Bash(if [ -z \"$EMAIL_PASS\" ])",
+      "Bash(else echo \"Set (length: $#EMAIL_PASS)\")"
     ],
     "deny": [],
     "ask": []

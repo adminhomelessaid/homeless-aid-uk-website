@@ -268,8 +268,8 @@
         };
         
         try {
-            // Send email using main API
-            const response = await fetch('/api/send-email', {
+            // Send email using Resend API
+            const response = await fetch('/api/send-email-backup', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

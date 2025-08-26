@@ -60,7 +60,7 @@ export default async function handler(req, res) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'Website Forms <website@homelessaid.co.uk>',
+        from: 'Website Forms <info@homelessaid.co.uk>',
         to: ['info@homelessaid.co.uk'],
         subject: subject,
         html: htmlContent,
@@ -76,7 +76,7 @@ export default async function handler(req, res) {
       console.error('Resend API error status:', response.status);
       console.error('Resend API error response:', error);
       console.error('Request data was:', {
-        from: 'Website Forms <website@homelessaid.co.uk>',
+        from: 'Website Forms <info@homelessaid.co.uk>',
         to: ['info@homelessaid.co.uk'],
         subject: subject
       });
