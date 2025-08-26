@@ -60,7 +60,7 @@ export default async function handler(req, res) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'website@homelessaid.co.uk',
+        from: 'Website Forms <website@homelessaid.co.uk>',
         to: ['info@homelessaid.co.uk'],
         subject: subject,
         html: htmlContent,
@@ -73,8 +73,14 @@ export default async function handler(req, res) {
       res.status(200).json({ success: true, message: 'Email sent successfully' });
     } else {
       const error = await response.text();
-      console.error('Resend API error:', error);
-      res.status(500).json({ success: false, error: 'Failed to send email', details: error });
+      console.error('Resend API error status:', response.status);
+      console.error('Resend API error response:', error);
+      console.error('Request data was:', {
+        from: 'Website Forms <website@homelessaid.co.uk>',
+        to: ['info@homelessaid.co.uk'],
+        subject: subject
+      });
+      res.status(500).json({ success: false, error: 'Failed to send email', details: error, status: response.status });
     }
   } catch (error) {
     console.error('Email sending error:', error);
