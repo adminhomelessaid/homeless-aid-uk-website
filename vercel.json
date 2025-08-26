@@ -1,0 +1,10 @@
+{
+  "outputDirectory": ".",
+  "buildCommand": "npm install",
+  "framework": null,
+  "functions": {
+    "api/send-email.js": {
+      "maxDuration": 10
+    }
+  }
+}
