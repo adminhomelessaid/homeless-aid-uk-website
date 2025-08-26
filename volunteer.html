@@ -87,10 +87,7 @@
         <div class="container">
             <h2>Sign Up to Volunteer</h2>
             <div class="form-container">
-                <form id="volunteerForm" action="https://formsubmit.co/info@homelessaid.co.uk" method="POST">
-                    <input type="hidden" name="_subject" value="New Volunteer Application">
-                    <input type="hidden" name="_captcha" value="false">
-                    <input type="hidden" name="_template" value="table">
+                <form id="volunteerForm" onsubmit="sendVolunteerEmail(event)">
                     <div class="form-row">
                         <div class="form-group">
                             <label for="firstName">First Name *</label>
@@ -242,5 +239,40 @@
     </footer>
 
     <script src="script.js"></script>
+    <script>
+    function sendVolunteerEmail(event) {
+        event.preventDefault();
+        
+        const form = document.getElementById('volunteerForm');
+        const formData = new FormData(form);
+        
+        // Build email body
+        let emailBody = "New Volunteer Application\n\n";
+        emailBody += "First Name: " + formData.get('First_Name') + "\n";
+        emailBody += "Last Name: " + formData.get('Last_Name') + "\n";
+        emailBody += "Email: " + formData.get('email') + "\n";
+        emailBody += "Phone: " + formData.get('Phone') + "\n";
+        emailBody += "Preferred Location: " + formData.get('Preferred_Location') + "\n";
+        
+        // Get availability checkboxes
+        const availability = [];
+        document.querySelectorAll('input[name="availability"]:checked').forEach(cb => {
+            availability.push(cb.value);
+        });
+        emailBody += "Availability: " + availability.join(', ') + "\n";
+        emailBody += "How they want to help: " + formData.get('How_to_Help') + "\n";
+        
+        // Create mailto link
+        const subject = "New Volunteer Application - Homeless Aid UK";
+        const mailtoLink = `mailto:info@homelessaid.co.uk?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(emailBody)}`;
+        
+        // Open email client
+        window.location.href = mailtoLink;
+        
+        // Show success message
+        document.getElementById('successMessage').style.display = 'block';
+        form.style.display = 'none';
+    }
+    </script>
 </body>
 </html>

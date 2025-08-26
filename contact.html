@@ -85,10 +85,7 @@
 
                 <div class="contact-form-container">
                     <h2>Send Us a Message</h2>
-                    <form id="contactForm" action="https://formsubmit.co/info@homelessaid.co.uk" method="POST">
-                        <input type="hidden" name="_subject" value="New Contact Form Message">
-                        <input type="hidden" name="_captcha" value="false">
-                        <input type="hidden" name="_template" value="table">
+                    <form id="contactForm" onsubmit="sendContactEmail(event)">
                         <div class="form-group">
                             <label for="name">Your Name *</label>
                             <input type="text" id="name" name="Name" required>
@@ -255,5 +252,31 @@
     </footer>
 
     <script src="script.js"></script>
+    <script>
+    function sendContactEmail(event) {
+        event.preventDefault();
+        
+        const form = document.getElementById('contactForm');
+        const formData = new FormData(form);
+        
+        // Build email body
+        let emailBody = "New Contact Form Message\n\n";
+        emailBody += "Name: " + formData.get('Name') + "\n";
+        emailBody += "Email: " + formData.get('email') + "\n";
+        emailBody += "Subject Type: " + formData.get('Subject') + "\n\n";
+        emailBody += "Message:\n" + formData.get('Message');
+        
+        // Create mailto link
+        const subject = "Contact Form: " + formData.get('Subject');
+        const mailtoLink = `mailto:info@homelessaid.co.uk?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(emailBody)}`;
+        
+        // Open email client
+        window.location.href = mailtoLink;
+        
+        // Show success message
+        document.getElementById('contactSuccessMessage').style.display = 'block';
+        form.style.display = 'none';
+    }
+    </script>
 </body>
 </html>
