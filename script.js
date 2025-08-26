@@ -737,12 +737,14 @@ document.addEventListener('DOMContentLoaded', function() {
     // Add form submit handlers
     const volunteerForm = document.getElementById('volunteerForm');
     if (volunteerForm) {
-        volunteerForm.addEventListener('submit', handleVolunteerSubmit);
+        // Old form handler - disabled for new API-based approach
+        // volunteerForm.addEventListener('submit', handleVolunteerSubmit);
     }
     
     const contactForm = document.getElementById('contactForm');
     if (contactForm) {
-        contactForm.addEventListener('submit', handleContactSubmit);
+        // Old form handler - disabled for new API-based approach
+        // contactForm.addEventListener('submit', handleContactSubmit);
     }
     
     // Add hover effects to donation cards

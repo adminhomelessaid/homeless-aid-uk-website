@@ -85,7 +85,7 @@
 
                 <div class="contact-form-container">
                     <h2>Send Us a Message</h2>
-                    <form id="contactForm" onsubmit="sendContactEmail(event)">
+                    <form id="contactFormNew" onsubmit="sendContactEmail(event)">
                         <div class="form-group">
                             <label for="name">Your Name *</label>
                             <input type="text" id="name" name="Name" required>
@@ -256,7 +256,7 @@
     async function sendContactEmail(event) {
         event.preventDefault();
         
-        const form = document.getElementById('contactForm');
+        const form = document.getElementById('contactFormNew');
         const submitBtn = form.querySelector('button[type="submit"]');
         submitBtn.disabled = true;
         submitBtn.textContent = 'Sending...';

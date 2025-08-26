@@ -87,7 +87,7 @@
         <div class="container">
             <h2>Sign Up to Volunteer</h2>
             <div class="form-container">
-                <form id="volunteerForm" onsubmit="sendVolunteerEmail(event)">
+                <form id="volunteerFormNew" onsubmit="sendVolunteerEmail(event)">
                     <div class="form-row">
                         <div class="form-group">
                             <label for="firstName">First Name *</label>
@@ -243,7 +243,7 @@
     async function sendVolunteerEmail(event) {
         event.preventDefault();
         
-        const form = document.getElementById('volunteerForm');
+        const form = document.getElementById('volunteerFormNew');
         const submitBtn = form.querySelector('button[type="submit"]');
         submitBtn.disabled = true;
         submitBtn.textContent = 'Sending...';
