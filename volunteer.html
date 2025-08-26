@@ -87,15 +87,18 @@
         <div class="container">
             <h2>Sign Up to Volunteer</h2>
             <div class="form-container">
-                <form id="volunteerForm" onsubmit="handleVolunteerSubmit(event)">
+                <form id="volunteerForm" action="https://formsubmit.co/info@homelessaid.co.uk" method="POST">
+                    <input type="hidden" name="_subject" value="New Volunteer Application">
+                    <input type="hidden" name="_captcha" value="false">
+                    <input type="hidden" name="_template" value="table">
                     <div class="form-row">
                         <div class="form-group">
                             <label for="firstName">First Name *</label>
-                            <input type="text" id="firstName" name="firstName" required>
+                            <input type="text" id="firstName" name="First_Name" required>
                         </div>
                         <div class="form-group">
                             <label for="lastName">Last Name *</label>
-                            <input type="text" id="lastName" name="lastName" required>
+                            <input type="text" id="lastName" name="Last_Name" required>
                         </div>
                     </div>
                     
@@ -106,13 +109,13 @@
                         </div>
                         <div class="form-group">
                             <label for="phone">Phone</label>
-                            <input type="tel" id="phone" name="phone">
+                            <input type="tel" id="phone" name="Phone" required>
                         </div>
                     </div>
                     
                     <div class="form-group">
                         <label for="location">Preferred Location *</label>
-                        <select id="location" name="location" required>
+                        <select id="location" name="Preferred_Location" required>
                             <option value="">Select a location...</option>
                             <option value="Bolton">Bolton</option>
                             <option value="Bury">Bury</option>
@@ -149,7 +152,7 @@
                     
                     <div class="form-group">
                         <label for="help">How would you like to help? *</label>
-                        <textarea id="help" name="help" rows="4" required placeholder="Tell us about your skills, interests, or how you'd like to contribute..."></textarea>
+                        <textarea id="help" name="How_to_Help" rows="4" required placeholder="Tell us about your skills, interests, or how you'd like to contribute..."></textarea>
                     </div>
                     
                     <div class="form-group">
