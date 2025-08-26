@@ -64,7 +64,7 @@ export default async function handler(req, res) {
         to: ['info@homelessaid.co.uk'],
         subject: subject,
         html: htmlContent,
-        reply_to: formData.email || formData.contactEmail || 'info@homelessaid.co.uk'
+        reply_to: formData.email || 'info@homelessaid.co.uk'
       }),
     });
 
