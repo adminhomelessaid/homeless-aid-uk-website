@@ -1,6 +1,14 @@
 import nodemailer from 'nodemailer';
 
 export default async function handler(req, res) {
+  console.log('Email function called');
+  console.log('Method:', req.method);
+  console.log('Body:', req.body);
+  console.log('Environment check:', {
+    hasEmailUser: !!process.env.EMAIL_USER,
+    hasEmailPass: !!process.env.EMAIL_PASS
+  });
+
   // Enable CORS
   res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -14,6 +22,11 @@ export default async function handler(req, res) {
 
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+    console.error('Missing environment variables');
+    return res.status(500).json({ error: 'Server configuration error' });
   }
 
   const { formType, ...formData } = req.body;
@@ -66,10 +79,16 @@ export default async function handler(req, res) {
   };
 
   try {
-    await transporter.sendMail(mailOptions);
+    console.log('Attempting to send email with options:', mailOptions);
+    const result = await transporter.sendMail(mailOptions);
+    console.log('Email sent successfully:', result);
     res.status(200).json({ success: true, message: 'Email sent successfully' });
   } catch (error) {
-    console.error('Error sending email:', error);
-    res.status(500).json({ success: false, error: 'Failed to send email' });
+    console.error('Error sending email:', error.message, error.code);
+    res.status(500).json({ 
+      success: false, 
+      error: 'Failed to send email',
+      details: error.message 
+    });
   }
 }
