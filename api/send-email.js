@@ -75,7 +75,8 @@ export default async function handler(req, res) {
     from: 'info@homelessaid.co.uk',
     to: 'info@homelessaid.co.uk',
     subject: subject,
-    html: html
+    html: html,
+    replyTo: formData.email || 'info@homelessaid.co.uk'
   };
 
   try {

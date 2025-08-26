@@ -268,8 +268,8 @@
         };
         
         try {
-            // Log data to backup API and show success
-            const response = await fetch('/api/send-email-backup', {
+            // Send email using main API
+            const response = await fetch('/api/send-email', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -277,16 +277,26 @@
                 body: JSON.stringify(data)
             });
             
-            // Always show success - data is logged to Vercel for you to see
-            document.getElementById('successMessage').style.display = 'block';
-            form.style.display = 'none';
-            console.log('Volunteer application submitted and logged:', data);
+            console.log('API response status:', response.status);
+            const responseData = await response.json();
+            console.log('API response data:', responseData);
+            
+            if (response.ok) {
+                document.getElementById('successMessage').style.display = 'block';
+                form.style.display = 'none';
+                console.log('Volunteer application submitted successfully');
+            } else {
+                console.error('API error:', responseData);
+                alert('There was an error sending your application. Please try again or email us directly at info@homelessaid.co.uk');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit Application';
+            }
             
         } catch (error) {
-            // Even if backup fails, show success and log locally
-            console.log('Volunteer application data:', data);
-            document.getElementById('successMessage').style.display = 'block';
-            form.style.display = 'none';
+            console.error('Volunteer form error:', error);
+            alert('There was an error sending your application. Please try again or email us directly at info@homelessaid.co.uk');
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Submit Application';
         }
     }
     </script>
