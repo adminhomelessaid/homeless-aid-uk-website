@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Homeless Aid UK</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="Branding/HomelessAidUKLogo.png" type="image/png">
+    <style>
+        .admin-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        
+        .admin-header {
+            background: var(--secondary-color);
+            color: var(--background-color);
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        
+        .admin-login {
+            max-width: 400px;
+            margin: 4rem auto;
+            background: var(--background-color);
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: var(--shadow-card);
+        }
+        
+        .admin-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .admin-tab {
+            background: var(--light-gray);
+            border: none;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .admin-tab.active {
+            background: var(--primary-color);
+            color: var(--background-color);
+        }
+        
+        .admin-content {
+            background: var(--background-color);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow-card);
+        }
+        
+        .admin-section {
+            display: none;
+        }
+        
+        .admin-section.active {
+            display: block;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        
+        .data-table th,
+        .data-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .data-table th {
+            background: var(--light-gray);
+            font-weight: 600;
+        }
+        
+        .edit-btn,
+        .delete-btn,
+        .add-btn {
+            background: var(--primary-color);
+            color: var(--background-color);
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 0.25rem;
+            font-size: 0.9rem;
+        }
+        
+        .delete-btn {
+            background: #e74c3c;
+        }
+        
+        .edit-form {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .edit-form.active {
+            display: flex;
+        }
+        
+        .form-modal {
+            background: var(--background-color);
+            padding: 2rem;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .stat-card {
+            background: var(--light-gray);
+            padding: 2rem;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+        
+        .stat-card h3 {
+            margin-bottom: 1rem;
+            color: var(--secondary-color);
+        }
+        
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .enabled {
+            color: var(--success-color);
+            font-weight: 600;
+        }
+        
+        .disabled {
+            color: #e74c3c;
+            font-weight: 600;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        @media (max-width: 768px) {
+            .admin-container {
+                padding: 0 1rem;
+            }
+            
+            .admin-tabs {
+                flex-direction: column;
+            }
+            
+            .section-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .data-table {
+                font-size: 0.9rem;
+            }
+            
+            .data-table th,
+            .data-table td {
+                padding: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Admin Login -->
+    <div id="adminLogin" class="admin-login">
+        <h2>Admin Login</h2>
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Login</button>
+        </form>
+    </div>
+
+    <!-- Admin Panel -->
+    <div id="adminPanel" style="display: none;">
+        <div class="admin-container">
+            <div class="admin-header">
+                <h1><i class="fas fa-cog"></i> Admin Panel - Homeless Aid UK</h1>
+                <p>Manage feeding times, locations, and content</p>
+                <button id="logoutBtn" class="btn btn-secondary">Logout</button>
+            </div>
+
+            <div class="admin-tabs">
+                <button class="admin-tab active" data-tab="feeding">Feeding Times</button>
+                <button class="admin-tab" data-tab="content">Content Management</button>
+                <button class="admin-tab" data-tab="analytics">Analytics</button>
+            </div>
+
+            <div class="admin-content">
+                <!-- Feeding Times Management -->
+                <div id="feeding" class="admin-section active">
+                    <div class="section-header">
+                        <h2>Feeding Times Management</h2>
+                        <button class="add-btn" id="addFeedingBtn">
+                            <i class="fas fa-plus"></i> Add New Location
+                        </button>
+                    </div>
+                    <table class="data-table" id="feedingTable">
+                        <thead>
+                            <tr>
+                                <th>Day</th>
+                                <th>Time</th>
+                                <th>Address</th>
+                                <th>Postcode</th>
+                                <th>Town</th>
+                                <th>Type</th>
+                                <th>Calendar</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="feedingTableBody">
+                            <!-- Data will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Content Management -->
+                <div id="content" class="admin-section">
+                    <h2>Content Management</h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="heroTitle">Hero Title:</label>
+                            <input type="text" id="heroTitle" value="Helping The Homeless & Those In Need">
+                        </div>
+                        <div class="form-group">
+                            <label for="helplineNumber">Helpline Number:</label>
+                            <input type="text" id="helplineNumber" value="0800 124 4641">
+                        </div>
+                        <div class="form-group">
+                            <label for="aboutText">About Text:</label>
+                            <textarea id="aboutText" rows="4">Homeless Aid UK is an organisation established and operated by a group of friends from across the UK...</textarea>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" id="saveContentBtn">Save Changes</button>
+                </div>
+
+                <!-- Analytics -->
+                <div id="analytics" class="admin-section">
+                    <h2>Analytics Dashboard</h2>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <h3>Total Locations</h3>
+                            <div class="stat-number" id="totalLocations">0</div>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Active Calendar Events</h3>
+                            <div class="stat-number" id="activeCalendar">0</div>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Daily Feeds</h3>
+                            <div class="stat-number" id="dailyFeeds">0</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Form Modal -->
+    <div id="editForm" class="edit-form">
+        <div class="form-modal">
+            <h3 id="editFormTitle">Edit Feeding Location</h3>
+            <form id="feedingEditForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="editDay">Day:</label>
+                        <select id="editDay" name="day" required>
+                            <option value="Monday">Monday</option>
+                            <option value="Tuesday">Tuesday</option>
+                            <option value="Wednesday">Wednesday</option>
+                            <option value="Thursday">Thursday</option>
+                            <option value="Friday">Friday</option>
+                            <option value="Saturday">Saturday</option>
+                            <option value="Sunday">Sunday</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editTime">Time:</label>
+                        <input type="text" id="editTime" name="time" placeholder="7:00-8:00pm" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editAddress">Address:</label>
+                        <input type="text" id="editAddress" name="address" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editPostcode">Postcode:</label>
+                        <input type="text" id="editPostcode" name="postcode">
+                    </div>
+                    <div class="form-group">
+                        <label for="editTown">Town:</label>
+                        <input type="text" id="editTown" name="town" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editType">Type:</label>
+                        <select id="editType" name="type" required>
+                            <option value="Street Kitchen">Street Kitchen</option>
+                            <option value="Takeaway">Takeaway</option>
+                            <option value="Indoor Feed">Indoor Feed</option>
+                            <option value="Outreach">Outreach</option>
+                            <option value="Drink & Cake">Drink & Cake</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editNotes">Notes:</label>
+                        <input type="text" id="editNotes" name="notes">
+                    </div>
+                    <div class="form-group">
+                        <label for="editCalendar">Enable Calendar:</label>
+                        <select id="editCalendar" name="calendar">
+                            <option value="Yes">Yes</option>
+                            <option value="No">No</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                    <button type="button" class="btn btn-secondary" id="cancelEditBtn">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Useful Links and FAQs - Homeless Aid UK">
+    <title>Useful Links - Homeless Aid UK</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="Branding/HomelessAidUKLogo.png" type="image/png">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-content">
+                <a href="index.html" class="logo">
+                    <img src="Branding/HomelessAidUKLogo.png" alt="Homeless Aid UK" class="logo-img">
+                </a>
+                <button class="mobile-menu-btn" onclick="toggleMenu()">☰</button>
+                <ul class="nav-links">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="index.html#feeding-schedule">Food List</a></li>
+                    <li><a href="donate.html">Donate</a></li>
+                    <li><a href="volunteer.html">Volunteer</a></li>
+                    <li><a href="food-bank.html">Food Bank</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                    <li><a href="useful-links.html" class="active">Useful Links</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <div class="container">
+            <ol class="breadcrumb-list">
+                <li class="breadcrumb-item"><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Useful Links</li>
+            </ol>
+        </div>
+    </nav>
+
+    <section class="page-hero">
+        <div class="container">
+            <h1><i class="fas fa-link"></i> Useful Links & Resources</h1>
+            <p class="hero-subtitle">Find helpful information, frequently asked questions, and external resources</p>
+        </div>
+    </section>
+
+    <section class="faq-section">
+        <div class="container">
+            <h2>Frequently Asked Questions</h2>
+            <div class="faq-container">
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFAQ(this)">
+                        <span>How do I get help from Homeless Aid UK?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="faq-answer">
+                        <p>You can get help by:</p>
+                        <ul>
+                            <li>Calling our free helpline: <strong>0800 124 4641</strong></li>
+                            <li>Visiting one of our feeding locations (check our <a href="index.html#feeding-schedule">Free Food List</a>)</li>
+                            <li>Contacting us for emergency food parcels from our Food Bank</li>
+                            <li>Reaching out through our <a href="contact.html">contact form</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFAQ(this)">
+                        <span>What areas do you cover?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="faq-answer">
+                        <p>We currently operate in the following areas:</p>
+                        <ul>
+                            <li><strong>Greater Manchester:</strong> Bolton, Bury, Manchester, Oldham, Wigan, Leigh</li>
+                            <li><strong>Merseyside:</strong> Liverpool</li>
+                            <li><strong>Scotland:</strong> Glasgow</li>
+                        </ul>
+                        <p>We're always looking to expand our services to help more communities.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFAQ(this)">
+                        <span>Are you a registered charity?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="faq-answer">
+                        <p>No, Homeless Aid UK is not a registered charity. We are a 100% volunteer-run organisation established by a group of friends who wanted to make a difference in their communities.</p>
+                        <p>This means:</p>
+                        <ul>
+                            <li>All donations go directly to helping those in need</li>
+                            <li>No administrative costs or salaries</li>
+                            <li>Complete transparency in how funds are used</li>
+                            <li>Grassroots approach to helping the homeless</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFAQ(this)">
+                        <span>How can I volunteer with you?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="faq-answer">
+                        <p>We welcome volunteers! You can help by:</p>
+                        <ul>
+                            <li>Helping at our feeding locations</li>
+                            <li>Sorting donations at our storage facilities</li>
+                            <li>Joining our street outreach teams</li>
+                            <li>Assisting with administrative tasks</li>
+                        </ul>
+                        <p><a href="volunteer.html">Fill out our volunteer form</a> and we'll get in touch with opportunities in your area.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFAQ(this)">
+                        <span>What do I need to bring to get food?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Nothing! Just turn up at any of our feeding locations during the scheduled times. Our service is:</p>
+                        <ul>
+                            <li>Completely free</li>
+                            <li>No questions asked</li>
+                            <li>No ID or documentation required</li>
+                            <li>Open to anyone who needs help</li>
+                        </ul>
+                        <p>For food bank parcels, please call us first on <strong>0800 124 4641</strong> to arrange collection.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFAQ(this)">
+                        <span>Can you help with accommodation or housing?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="faq-answer">
+                        <p>While we primarily focus on providing food and essential items, we can provide information and signposting to local housing services. Call our helpline and we'll do our best to connect you with appropriate housing support services in your area.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFAQ(this)">
+                        <span>What donations do you accept?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="faq-answer">
+                        <p>We accept:</p>
+                        <ul>
+                            <li><strong>Money:</strong> Bank transfers, cash donations</li>
+                            <li><strong>Food:</strong> Non-perishable items, tinned goods</li>
+                            <li><strong>Clothing:</strong> Clean, wearable clothes for all seasons</li>
+                            <li><strong>Toiletries:</strong> Soap, shampoo, toothbrushes, etc.</li>
+                            <li><strong>Sleeping equipment:</strong> Sleeping bags, blankets</li>
+                        </ul>
+                        <p>Please contact us before bringing large donations to ensure we can accommodate them.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="useful-links-section">
+        <div class="container">
+            <h2>External Resources & Support Services</h2>
+            <div class="links-grid">
+                <div class="links-category">
+                    <h3><i class="fas fa-home"></i> Housing & Accommodation</h3>
+                    <ul class="external-links">
+                        <li><a href="https://www.shelter.org.uk" target="_blank" rel="noopener">Shelter UK <i class="fas fa-external-link-alt"></i></a></li>
+                        <li><a href="https://www.crisis.org.uk" target="_blank" rel="noopener">Crisis <i class="fas fa-external-link-alt"></i></a></li>
+                        <li><a href="https://www.centrepoint.org.uk" target="_blank" rel="noopener">Centrepoint <i class="fas fa-external-link-alt"></i></a></li>
+                    </ul>
+                </div>
+
+                <div class="links-category">
+                    <h3><i class="fas fa-heart"></i> Mental Health Support</h3>
+                    <ul class="external-links">
+                        <li><a href="https://www.samaritans.org" target="_blank" rel="noopener">Samaritans <i class="fas fa-external-link-alt"></i></a></li>
+                        <li><a href="https://www.mind.org.uk" target="_blank" rel="noopener">Mind <i class="fas fa-external-link-alt"></i></a></li>
+                        <li><a href="https://www.nhs.uk/mental-health/" target="_blank" rel="noopener">NHS Mental Health <i class="fas fa-external-link-alt"></i></a></li>
+                    </ul>
+                </div>
+
+                <div class="links-category">
+                    <h3><i class="fas fa-briefcase"></i> Employment & Benefits</h3>
+                    <ul class="external-links">
+                        <li><a href="https://www.gov.uk/jobseekers-allowance" target="_blank" rel="noopener">Jobseeker's Allowance <i class="fas fa-external-link-alt"></i></a></li>
+                        <li><a href="https://www.gov.uk/universal-credit" target="_blank" rel="noopener">Universal Credit <i class="fas fa-external-link-alt"></i></a></li>
+                        <li><a href="https://www.citizensadvice.org.uk" target="_blank" rel="noopener">Citizens Advice <i class="fas fa-external-link-alt"></i></a></li>
+                    </ul>
+                </div>
+
+                <div class="links-category">
+                    <h3><i class="fas fa-pills"></i> Addiction Support</h3>
+                    <ul class="external-links">
+                        <li><a href="https://www.alcoholics-anonymous.org.uk" target="_blank" rel="noopener">Alcoholics Anonymous <i class="fas fa-external-link-alt"></i></a></li>
+                        <li><a href="https://www.turning-point.co.uk" target="_blank" rel="noopener">Turning Point <i class="fas fa-external-link-alt"></i></a></li>
+                        <li><a href="https://www.addaction.org.uk" target="_blank" rel="noopener">Addaction <i class="fas fa-external-link-alt"></i></a></li>
+                    </ul>
+                </div>
+
+                <div class="links-category">
+                    <h3><i class="fas fa-utensils"></i> Food Banks & Support</h3>
+                    <ul class="external-links">
+                        <li><a href="https://www.trusselltrust.org" target="_blank" rel="noopener">Trussell Trust <i class="fas fa-external-link-alt"></i></a></li>
+                        <li><a href="https://www.salvationarmy.org.uk" target="_blank" rel="noopener">Salvation Army <i class="fas fa-external-link-alt"></i></a></li>
+                        <li><a href="https://www.fareshare.org.uk" target="_blank" rel="noopener">FareShare <i class="fas fa-external-link-alt"></i></a></li>
+                    </ul>
+                </div>
+
+                <div class="links-category">
+                    <h3><i class="fas fa-phone"></i> Emergency Contacts</h3>
+                    <ul class="external-links">
+                        <li><strong>Emergency Services:</strong> 999</li>
+                        <li><strong>NHS 111:</strong> 111</li>
+                        <li><strong>Samaritans:</strong> 116 123</li>
+                        <li><strong>Homeless Aid UK:</strong> 0800 124 4641</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Floating Call Button -->
+    <div class="floating-call-btn">
+        <a href="tel:08001244641" class="call-btn" title="Call us now - Free phone">
+            <i class="fas fa-phone"></i>
+            <span class="call-text">Call Us</span>
+        </a>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-logo">
+                        <img src="Branding/HomelessAidUKLogo.png" alt="Homeless Aid UK" class="footer-logo-img">
+                        <h4>Homeless Aid UK</h4>
+                    </div>
+                    <p>100% volunteer-run organisation helping the homeless and those in need across the UK</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="index.html#feeding-schedule">Food List</a></li>
+                        <li><a href="donate.html">Donate</a></li>
+                        <li><a href="volunteer.html">Volunteer</a></li>
+                        <li><a href="food-bank.html">Food Bank</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                        <li><a href="useful-links.html">Useful Links</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <p>📞 0800 124 4641</p>
+                    <p>✉️ info@homelessaid.co.uk</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Follow Us</h4>
+                    <div class="social-links">
+                        <a href="https://www.facebook.com/HomelessAidUK" class="social-link">Facebook</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Homeless Aid UK. All rights reserved. | Not a registered charity - 100% volunteer run</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

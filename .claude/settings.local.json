@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir)",
+      "Bash(python:*)",
+      "Bash(timeout 5 curl -s http://localhost:8000)",
+      "Bash(timeout 5 curl -s http://localhost:8000/feed-times.csv)",
+      "Bash(curl:*)",
+      "Bash(timeout:*)",
+      "Bash(winget install:*)",
+      "Bash(del \"C:\\Users\\Ben-Work\\Desktop\\Claude\\Website\\Homeless Aid UK\\test_calendar.html\")",
+      "WebFetch(domain:homelessaid.co.uk)",
+      "Bash(nslookup:*)",
+      "WebSearch",
+      "Bash(git init:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

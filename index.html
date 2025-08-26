@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Homeless Aid UK - Helping the homeless and those in need across the UK with free food, support, and volunteer opportunities">
+    <meta name="keywords" content="homeless aid, UK charity, volunteer, donate, food bank, Manchester, Bolton, Liverpool, Glasgow">
+    <title>Homeless Aid UK - Helping The Homeless & Those In Need</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="Branding/HomelessAidUKLogo.png" type="image/png">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#F39C12">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Homeless Aid UK">
+    <link rel="apple-touch-icon" href="Branding/HomelessAidUKLogo.png">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-content">
+                <a href="index.html" class="logo">
+                    <img src="Branding/HomelessAidUKLogo.png" alt="Homeless Aid UK" class="logo-img">
+                </a>
+                <button class="mobile-menu-btn" onclick="toggleMenu()">☰</button>
+                <ul class="nav-links">
+                    <li><a href="index.html" class="active">Home</a></li>
+                    <li><a href="#feeding-schedule">Food List</a></li>
+                    <li><a href="donate.html">Donate</a></li>
+                    <li><a href="volunteer.html">Volunteer</a></li>
+                    <li><a href="food-bank.html">Food Bank</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                    <li><a href="useful-links.html">Useful Links</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="container">
+            <div class="hero-brand">Homeless Aid UK</div>
+            <h1><i class="fas fa-hands-helping"></i> Helping The Homeless & Those In Need</h1>
+            <div class="emergency-hotline">
+                <p class="help-text">Need help? Call us:</p>
+                <a href="tel:08001244641" class="hotline-link">
+                    <span class="phone-icon"><i class="fas fa-phone"></i></span>
+                    <span class="hotline-number">0800 124 4641</span>
+                </a>
+            </div>
+            <div class="cta-buttons">
+                <a href="#feeding-schedule" class="btn btn-primary"><i class="fas fa-utensils"></i> Free Food List</a>
+                <a href="donate.html" class="btn btn-secondary"><i class="fas fa-heart"></i> Donate Now</a>
+                <a href="volunteer.html" class="btn btn-secondary"><i class="fas fa-hand-paper"></i> Volunteer</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="about">
+        <div class="container">
+            <h2>About Homeless Aid UK</h2>
+            <p>Homeless Aid UK is an organisation established and operated by a group of friends from across the UK. Please note we are not a charity. Our team of volunteers are dedicated to ending homelessness, by delivering life-changing services and campaigning for change.</p>
+            <p>We work at grass root levels with the homeless in the following areas: Bolton, Bury, Manchester, Oldham, Liverpool, Wigan, Leigh, Glasgow, across the UK, and globally. Additionally we supply food hampers at our Food Bank and clothing to the growing number of people living in poverty.</p>
+            <p><strong>We rely solely on donations and the support of the local community.</strong></p>
+        </div>
+    </section>
+
+
+    <section id="feeding-schedule" class="feeding-schedule">
+        <div class="container">
+            <h2><i class="fas fa-map-marker-alt"></i> Free Food List</h2>
+            <div class="search-container">
+                <div class="search-box">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" id="locationSearch" placeholder="Search by location, town, or postcode..." class="search-input">
+                    <button type="button" class="clear-search" id="clearSearch" style="display: none;">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <button type="button" class="near-me-btn" id="nearMeBtn">
+                    <i class="fas fa-location-arrow"></i>
+                    <span>Near Me</span>
+                </button>
+            </div>
+            <div class="filter-buttons">
+                <button class="filter-btn active" data-filter="all">All Days</button>
+                <button class="filter-btn" data-filter="Monday">Monday</button>
+                <button class="filter-btn" data-filter="Tuesday">Tuesday</button>
+                <button class="filter-btn" data-filter="Wednesday">Wednesday</button>
+                <button class="filter-btn" data-filter="Thursday">Thursday</button>
+                <button class="filter-btn" data-filter="Friday">Friday</button>
+                <button class="filter-btn" data-filter="Saturday">Saturday</button>
+                <button class="filter-btn" data-filter="Sunday">Sunday</button>
+            </div>
+            <div id="feeding-times" class="feeding-grid">
+                <div class="loading">Loading feeding times...</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="help-section">
+        <div class="container">
+            <h2>How You Can Help</h2>
+            <div class="help-grid">
+                <div class="help-card">
+                    <h3><i class="fas fa-heart"></i> Make a Donation</h3>
+                    <p>Your donations help us provide food, clothing, and essential items to those in need</p>
+                    <a href="donate.html" class="btn btn-outline">Donate Now</a>
+                </div>
+                <div class="help-card">
+                    <h3><i class="fas fa-hand-paper"></i> Become a Volunteer</h3>
+                    <p>Join our team of dedicated volunteers making a difference in communities across the UK</p>
+                    <a href="volunteer.html" class="btn btn-outline">Sign Up</a>
+                </div>
+                <div class="help-card">
+                    <h3><i class="fas fa-bullhorn"></i> Spread the Word</h3>
+                    <p>Share our mission with friends and family to help us reach more people in need</p>
+                    <div class="social-links">
+                        <a href="https://www.facebook.com/HomelessAidUK" class="social-link">Facebook</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="impact">
+        <div class="container">
+            <div class="impact-grid">
+                <div class="impact-card">
+                    <div class="impact-icon"><i class="fas fa-users"></i></div>
+                    <h3>100% Volunteer Run</h3>
+                    <p>Every member of our team is a volunteer</p>
+                </div>
+                <div class="impact-card">
+                    <div class="impact-icon"><i class="fas fa-map-marked-alt"></i></div>
+                    <h3>Many Locations Covered</h3>
+                    <p>Operating across major UK cities</p>
+                </div>
+                <div class="impact-card">
+                    <div class="impact-icon"><i class="fas fa-coins"></i></div>
+                    <h3>Every Penny Goes Direct</h3>
+                    <p>All donations go to those in need</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Calendar Modal -->
+    <div id="calendar-modal-backdrop" class="calendar-modal-backdrop">
+        <div id="calendar-modal" class="calendar-modal">
+            <div class="calendar-modal-header">
+                <h3 id="calendar-modal-title">Add to Calendar</h3>
+                <button id="calendar-modal-close" class="calendar-modal-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="calendar-modal-content">
+                <p id="calendar-modal-event-details" class="calendar-modal-event-details"></p>
+                <div class="calendar-modal-options">
+                    <a href="#" id="calendar-option-google" class="calendar-modal-option">
+                        <i class="fab fa-google"></i>
+                        <div class="calendar-option-text">
+                            <strong>Google Calendar</strong>
+                            <span>Add to your Google Calendar</span>
+                        </div>
+                    </a>
+                    <a href="#" id="calendar-option-ics" class="calendar-modal-option">
+                        <i class="fas fa-download"></i>
+                        <div class="calendar-option-text">
+                            <strong>Download .ics file</strong>
+                            <span>For Outlook, Apple Calendar & other apps</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Call Button -->
+    <div class="floating-call-btn">
+        <a href="tel:08001244641" class="call-btn" title="Call us now - Free phone">
+            <i class="fas fa-phone"></i>
+            <span class="call-text">Call Us</span>
+        </a>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-logo">
+                        <img src="Branding/HomelessAidUKLogo.png" alt="Homeless Aid UK" class="footer-logo-img">
+                        <h4>Homeless Aid UK</h4>
+                    </div>
+                    <p>100% volunteer-run organisation helping the homeless and those in need across the UK</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="#feeding-schedule">Food List</a></li>
+                        <li><a href="donate.html">Donate</a></li>
+                        <li><a href="volunteer.html">Volunteer</a></li>
+                        <li><a href="food-bank.html">Food Bank</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <p>📞 0800 124 4641</p>
+                    <p>✉️ info@homelessaid.co.uk</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Follow Us</h4>
+                    <div class="social-links">
+                        <a href="https://www.facebook.com/HomelessAidUK" class="social-link">Facebook</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Homeless Aid UK. All rights reserved. | Not a registered charity - 100% volunteer run</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

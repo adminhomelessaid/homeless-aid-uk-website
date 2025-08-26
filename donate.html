@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Donate to Homeless Aid UK - Support our volunteer work helping the homeless across the UK">
+    <title>Donate - Homeless Aid UK</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="Branding/HomelessAidUKLogo.png" type="image/png">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-content">
+                <a href="index.html" class="logo">
+                    <img src="Branding/HomelessAidUKLogo.png" alt="Homeless Aid UK" class="logo-img">
+                </a>
+                <button class="mobile-menu-btn" onclick="toggleMenu()">☰</button>
+                <ul class="nav-links">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="index.html#feeding-schedule">Food List</a></li>
+                    <li><a href="donate.html" class="active">Donate</a></li>
+                    <li><a href="volunteer.html">Volunteer</a></li>
+                    <li><a href="food-bank.html">Food Bank</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                    <li><a href="useful-links.html">Useful Links</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <div class="container">
+            <ol class="breadcrumb-list">
+                <li class="breadcrumb-item"><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Donate</li>
+            </ol>
+        </div>
+    </nav>
+
+    <section class="page-hero">
+        <div class="container">
+            <h1><i class="fas fa-heart"></i> Help Us Make A Difference</h1>
+            <p class="hero-subtitle">We're 100% voluntary and receive no funding. Please consider setting up a recurring donation to help us continue our work.</p>
+        </div>
+    </section>
+
+    <section class="donation-options">
+        <div class="container">
+            <div class="donation-grid">
+                <div class="donation-card bank-transfer">
+                    <div class="card-icon">🏦</div>
+                    <h3>Bank Transfer</h3>
+                    <div class="bank-details">
+                        <p><strong>TSB Bank</strong></p>
+                        <div class="detail-row">
+                            <span class="label">Account:</span>
+                            <span class="value">Homeless Aid UK</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="label">Sort Code:</span>
+                            <span class="value">77-72-65</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="label">Account Number:</span>
+                            <span class="value">03252068</span>
+                        </div>
+                        <div class="reference-note">
+                            <p><strong>Reference:</strong></p>
+                            <p>FOOD DONATION <em>or</em> HAUK ADMIN</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="donation-card paypal">
+                    <div class="card-icon">💳</div>
+                    <h3>PayPal Donation</h3>
+                    <p>Quick and secure online donation through PayPal</p>
+                    <a href="https://www.paypal.com/paypalme/HomelessAidUK" target="_blank" class="btn btn-primary">Donate via PayPal</a>
+                </div>
+
+                <div class="donation-card wishlist">
+                    <div class="card-icon">📦</div>
+                    <h3>Amazon Wishlist</h3>
+                    <p>Purchase essential items directly from our wishlist</p>
+                    <a href="https://www.amazon.co.uk/gp/registry/wishlist/YSPQHTLJGEJ6/" target="_blank" class="btn btn-primary">View Wishlist</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="donation-info">
+        <div class="container">
+            <h2>Where Your Donation Goes</h2>
+            <div class="info-grid">
+                <div class="info-card">
+                    <div class="info-icon">🍲</div>
+                    <h3>Food & Meals</h3>
+                    <p>Providing hot meals and food packages to those in need</p>
+                </div>
+                <div class="info-card">
+                    <div class="info-icon">👕</div>
+                    <h3>Clothing</h3>
+                    <p>Essential clothing and blankets for warmth and dignity</p>
+                </div>
+                <div class="info-card">
+                    <div class="info-icon">🏥</div>
+                    <h3>Essential Items</h3>
+                    <p>Toiletries, first aid supplies, and hygiene products</p>
+                </div>
+                <div class="info-card">
+                    <div class="info-icon">🚐</div>
+                    <h3>Outreach</h3>
+                    <p>Transportation and equipment for our street teams</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="regular-giving">
+        <div class="container">
+            <div class="regular-giving-content">
+                <h2>🔄 Regular Giving Makes a Difference</h2>
+                <p>Setting up a regular donation helps us plan ahead and ensure consistent support for those who need it most.</p>
+                <div class="giving-examples">
+                    <div class="example">
+                        <strong>£5 per month</strong>
+                        <span>Provides 10 hot drinks</span>
+                    </div>
+                    <div class="example">
+                        <strong>£10 per month</strong>
+                        <span>Feeds 5 people</span>
+                    </div>
+                    <div class="example">
+                        <strong>£25 per month</strong>
+                        <span>Supplies a week of meals</span>
+                    </div>
+                    <div class="example">
+                        <strong>£50 per month</strong>
+                        <span>Provides emergency supplies</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="other-ways">
+        <div class="container">
+            <h2>Other Ways to Help</h2>
+            <div class="ways-grid">
+                <div class="way-card">
+                    <h3>🎭 Fundraising Events</h3>
+                    <p>Organize or participate in fundraising events in your community</p>
+                </div>
+                <div class="way-card">
+                    <h3>🏢 Corporate Partnerships</h3>
+                    <p>Partner with us through your business or workplace giving scheme</p>
+                </div>
+                <div class="way-card">
+                    <h3>🎁 Gift in Memory</h3>
+                    <p>Make a donation in memory of a loved one</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Floating Call Button -->
+    <div class="floating-call-btn">
+        <a href="tel:08001244641" class="call-btn" title="Call us now - Free phone">
+            <i class="fas fa-phone"></i>
+            <span class="call-text">Call Us</span>
+        </a>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-logo">
+                        <img src="Branding/HomelessAidUKLogo.png" alt="Homeless Aid UK" class="footer-logo-img">
+                        <h4>Homeless Aid UK</h4>
+                    </div>
+                    <p>100% volunteer-run organisation helping the homeless and those in need across the UK</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="index.html#feeding-schedule">Food List</a></li>
+                        <li><a href="donate.html">Donate</a></li>
+                        <li><a href="volunteer.html">Volunteer</a></li>
+                        <li><a href="food-bank.html">Food Bank</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <p>📞 0800 124 4641</p>
+                    <p>✉️ info@homelessaid.co.uk</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Follow Us</h4>
+                    <div class="social-links">
+                        <a href="https://www.facebook.com/HomelessAidUK" class="social-link">Facebook</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Homeless Aid UK. All rights reserved. | Not a registered charity - 100% volunteer run</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

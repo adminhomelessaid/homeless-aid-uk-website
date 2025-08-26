@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Contact Homeless Aid UK - Get in touch with our volunteer team">
+    <title>Contact - Homeless Aid UK</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="Branding/HomelessAidUKLogo.png" type="image/png">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-content">
+                <a href="index.html" class="logo">
+                    <img src="Branding/HomelessAidUKLogo.png" alt="Homeless Aid UK" class="logo-img">
+                </a>
+                <button class="mobile-menu-btn" onclick="toggleMenu()">☰</button>
+                <ul class="nav-links">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="index.html#feeding-schedule">Food List</a></li>
+                    <li><a href="donate.html">Donate</a></li>
+                    <li><a href="volunteer.html">Volunteer</a></li>
+                    <li><a href="food-bank.html">Food Bank</a></li>
+                    <li><a href="contact.html" class="active">Contact</a></li>
+                    <li><a href="useful-links.html">Useful Links</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <div class="container">
+            <ol class="breadcrumb-list">
+                <li class="breadcrumb-item"><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Contact</li>
+            </ol>
+        </div>
+    </nav>
+
+    <section class="page-hero">
+        <div class="container">
+            <h1><i class="fas fa-phone"></i> Get In Touch</h1>
+            <p class="hero-subtitle">We're here to help. Reach out to us for support, information, or to get involved.</p>
+        </div>
+    </section>
+
+    <section class="contact-main">
+        <div class="container">
+            <div class="contact-grid">
+                <div class="contact-info">
+                    <h2>Contact Information</h2>
+                    <div class="contact-cards">
+                        <div class="contact-card">
+                            <div class="contact-icon">📞</div>
+                            <h3>Freephone</h3>
+                            <a href="tel:08001244641" class="contact-link">0800 124 4641</a>
+                            <p>Call us for support and information</p>
+                        </div>
+                        
+                        <div class="contact-card">
+                            <div class="contact-icon">✉️</div>
+                            <h3>Email</h3>
+                            <a href="mailto:info@homelessaid.co.uk" class="contact-link">info@homelessaid.co.uk</a>
+                            <p>General enquiries and support</p>
+                        </div>
+                        
+                        <div class="contact-card">
+                            <div class="contact-icon">📍</div>
+                            <h3>Operating Areas</h3>
+                            <p>Bolton, Bury, Manchester, Oldham, Liverpool, Wigan, Leigh, Glasgow</p>
+                        </div>
+                    </div>
+
+                    <div class="social-contact">
+                        <h3>Follow Us On Social Media</h3>
+                        <div class="social-buttons">
+                            <a href="https://www.facebook.com/HomelessAidUK" class="social-btn facebook">Facebook</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="contact-form-container">
+                    <h2>Send Us a Message</h2>
+                    <form id="contactForm" onsubmit="handleContactSubmit(event)">
+                        <div class="form-group">
+                            <label for="name">Your Name *</label>
+                            <input type="text" id="name" name="name" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="contactEmail">Email Address *</label>
+                            <input type="email" id="contactEmail" name="email" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="subject">Subject *</label>
+                            <select id="subject" name="subject" required>
+                                <option value="">Select a subject...</option>
+                                <option value="general">General Enquiry</option>
+                                <option value="volunteer">Volunteering</option>
+                                <option value="donation">Donation Enquiry</option>
+                                <option value="help">Request Help</option>
+                                <option value="partnership">Partnership Opportunity</option>
+                                <option value="media">Media Enquiry</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="message">Message *</label>
+                            <textarea id="message" name="message" rows="6" required placeholder="Tell us how we can help..."></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary btn-submit">Send Message</button>
+                    </form>
+                    
+                    <div id="contactSuccessMessage" class="success-message" style="display: none;">
+                        <div class="success-icon">✅</div>
+                        <h3>Message Sent!</h3>
+                        <p>Thank you for getting in touch. We'll respond as soon as possible.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="get-help">
+        <div class="container">
+            <h2>Need Immediate Help?</h2>
+            <div class="help-options">
+                <div class="help-option">
+                    <h3>🍲 Free Food Services</h3>
+                    <p>Check our <a href="index.html#feeding-times">feeding schedule</a> for locations and times across the UK</p>
+                </div>
+                <div class="help-option">
+                    <h3>🏥 Emergency Support</h3>
+                    <p>Call our 24/7 hotline: <strong>0800 124 4641</strong></p>
+                </div>
+                <div class="help-option">
+                    <h3>👕 Clothing & Essentials</h3>
+                    <p>Visit our distribution points or contact us for emergency supplies</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="locations">
+        <div class="container">
+            <h2>Our Feeding Locations</h2>
+            <div class="locations-grid">
+                <div class="location-card">
+                    <h3>Bolton</h3>
+                    <ul>
+                        <li>Street Kitchen - Le Mans Crescent</li>
+                        <li>Multiple restaurant partnerships</li>
+                        <li>Daily food services</li>
+                    </ul>
+                </div>
+                <div class="location-card">
+                    <h3>Manchester</h3>
+                    <ul>
+                        <li>City Centre breakfast service</li>
+                        <li>Saturday evening outreach</li>
+                        <li>Emergency support available</li>
+                    </ul>
+                </div>
+                <div class="location-card">
+                    <h3>Liverpool</h3>
+                    <ul>
+                        <li>Tuesday evening service</li>
+                        <li>City Centre locations</li>
+                        <li>Regular street outreach</li>
+                    </ul>
+                </div>
+                <div class="location-card">
+                    <h3>Glasgow</h3>
+                    <ul>
+                        <li>Saturday outreach from 3pm</li>
+                        <li>Homeless support services</li>
+                        <li>Emergency provisions</li>
+                    </ul>
+                </div>
+                <div class="location-card">
+                    <h3>Bury</h3>
+                    <ul>
+                        <li>NEW: Monday & Tuesday service</li>
+                        <li>Moorgate location</li>
+                        <li>7-8pm service times</li>
+                    </ul>
+                </div>
+                <div class="location-card">
+                    <h3>Other Areas</h3>
+                    <ul>
+                        <li>Wigan - Wednesday evenings</li>
+                        <li>Oldham - Thursday evenings</li>
+                        <li>Leigh - Saturday evenings</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Floating Call Button -->
+    <div class="floating-call-btn">
+        <a href="tel:08001244641" class="call-btn" title="Call us now - Free phone">
+            <i class="fas fa-phone"></i>
+            <span class="call-text">Call Us</span>
+        </a>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-logo">
+                        <img src="Branding/HomelessAidUKLogo.png" alt="Homeless Aid UK" class="footer-logo-img">
+                        <h4>Homeless Aid UK</h4>
+                    </div>
+                    <p>100% volunteer-run organisation helping the homeless and those in need across the UK</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="index.html#feeding-schedule">Food List</a></li>
+                        <li><a href="donate.html">Donate</a></li>
+                        <li><a href="volunteer.html">Volunteer</a></li>
+                        <li><a href="food-bank.html">Food Bank</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <p>📞 0800 124 4641</p>
+                    <p>✉️ info@homelessaid.co.uk</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Follow Us</h4>
+                    <div class="social-links">
+                        <a href="https://www.facebook.com/HomelessAidUK" class="social-link">Facebook</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Homeless Aid UK. All rights reserved. | Not a registered charity - 100% volunteer run</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

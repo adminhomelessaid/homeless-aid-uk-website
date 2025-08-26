@@ -1,0 +1,67 @@
+{
+  "name": "Homeless Aid UK",
+  "short_name": "HomelessAidUK",
+  "description": "Helping the homeless and those in need across the UK with free food, support, and volunteer opportunities",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FFFFFF",
+  "theme_color": "#F39C12",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "en-GB",
+  "categories": ["social", "utilities", "lifestyle"],
+  "icons": [
+    {
+      "src": "Branding/HomelessAidUKLogo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "Branding/HomelessAidUKLogo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "form_factor": "narrow"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Find Food",
+      "short_name": "Food List",
+      "description": "View feeding times and locations",
+      "url": "/#feeding-schedule",
+      "icons": [
+        {
+          "src": "Branding/HomelessAidUKLogo.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Volunteer",
+      "short_name": "Volunteer",
+      "description": "Join our volunteer team",
+      "url": "/volunteer.html",
+      "icons": [
+        {
+          "src": "Branding/HomelessAidUKLogo.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Donate",
+      "short_name": "Donate",
+      "description": "Support our cause",
+      "url": "/donate.html",
+      "icons": [
+        {
+          "src": "Branding/HomelessAidUKLogo.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ]
+}

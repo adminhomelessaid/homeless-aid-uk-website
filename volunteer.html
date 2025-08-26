@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Volunteer with Homeless Aid UK - Join our team helping the homeless across the UK">
+    <title>Volunteer - Homeless Aid UK</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="Branding/HomelessAidUKLogo.png" type="image/png">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-content">
+                <a href="index.html" class="logo">
+                    <img src="Branding/HomelessAidUKLogo.png" alt="Homeless Aid UK" class="logo-img">
+                </a>
+                <button class="mobile-menu-btn" onclick="toggleMenu()">☰</button>
+                <ul class="nav-links">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="index.html#feeding-schedule">Food List</a></li>
+                    <li><a href="donate.html">Donate</a></li>
+                    <li><a href="volunteer.html" class="active">Volunteer</a></li>
+                    <li><a href="food-bank.html">Food Bank</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                    <li><a href="useful-links.html">Useful Links</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <div class="container">
+            <ol class="breadcrumb-list">
+                <li class="breadcrumb-item"><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Volunteer</li>
+            </ol>
+        </div>
+    </nav>
+
+    <section class="page-hero">
+        <div class="container">
+            <h1><i class="fas fa-hand-paper"></i> Become a Volunteer</h1>
+            <p class="hero-subtitle">Join our amazing team of volunteers making a real difference in communities across the UK</p>
+        </div>
+    </section>
+
+    <section class="volunteer-info">
+        <div class="container">
+            <div class="info-intro">
+                <h2>Why Volunteer With Us?</h2>
+                <p>Our volunteers are the heart of Homeless Aid UK. Every week, our dedicated team members help serve meals, distribute supplies, and provide support to those who need it most. No experience necessary - just compassion and commitment.</p>
+            </div>
+            
+            <div class="volunteer-roles">
+                <h3>How You Can Help</h3>
+                <div class="roles-grid">
+                    <div class="role-card">
+                        <div class="role-icon">🍲</div>
+                        <h4>Food Service</h4>
+                        <p>Help prepare and serve meals at our feeding locations</p>
+                    </div>
+                    <div class="role-card">
+                        <div class="role-icon">📦</div>
+                        <h4>Donations Sorting</h4>
+                        <p>Sort and organize donated items for distribution</p>
+                    </div>
+                    <div class="role-card">
+                        <div class="role-icon">🚐</div>
+                        <h4>Street Outreach</h4>
+                        <p>Join our teams reaching out to rough sleepers</p>
+                    </div>
+                    <div class="role-card">
+                        <div class="role-icon">💼</div>
+                        <h4>Admin Support</h4>
+                        <p>Help with coordination and administrative tasks</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="volunteer-form-section">
+        <div class="container">
+            <h2>Sign Up to Volunteer</h2>
+            <div class="form-container">
+                <form id="volunteerForm" onsubmit="handleVolunteerSubmit(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="firstName">First Name *</label>
+                            <input type="text" id="firstName" name="firstName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="lastName">Last Name *</label>
+                            <input type="text" id="lastName" name="lastName" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="email">Email *</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Phone</label>
+                            <input type="tel" id="phone" name="phone">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="location">Preferred Location *</label>
+                        <select id="location" name="location" required>
+                            <option value="">Select a location...</option>
+                            <option value="Bolton">Bolton</option>
+                            <option value="Bury">Bury</option>
+                            <option value="Manchester">Manchester</option>
+                            <option value="Oldham">Oldham</option>
+                            <option value="Liverpool">Liverpool</option>
+                            <option value="Wigan">Wigan</option>
+                            <option value="Leigh">Leigh</option>
+                            <option value="Glasgow">Glasgow</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="availability">When are you available?</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="availability" value="weekday-morning">
+                                <span>Weekday Mornings</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="availability" value="weekday-afternoon">
+                                <span>Weekday Afternoons</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="availability" value="weekday-evening">
+                                <span>Weekday Evenings</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="availability" value="weekend">
+                                <span>Weekends</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="help">How would you like to help? *</label>
+                        <textarea id="help" name="help" rows="4" required placeholder="Tell us about your skills, interests, or how you'd like to contribute..."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="consent" name="consent" required>
+                            <span>I agree to be contacted about volunteer opportunities *</span>
+                        </label>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-submit">Submit Application</button>
+                </form>
+                
+                <div id="successMessage" class="success-message" style="display: none;">
+                    <div class="success-icon">✅</div>
+                    <h3>Thank you for signing up!</h3>
+                    <p>We'll be in touch soon with volunteer opportunities in your area.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="volunteer-testimonials">
+        <div class="container">
+            <h2>What Our Volunteers Say</h2>
+            <div class="testimonial-grid">
+                <div class="testimonial-card">
+                    <p>"Volunteering with Homeless Aid UK has been incredibly rewarding. The team is amazing and the difference we make is visible every day."</p>
+                    <div class="testimonial-author">- Sarah, Bolton</div>
+                </div>
+                <div class="testimonial-card">
+                    <p>"I started helping once a week and now I'm here three times a week. It's become a huge part of my life and I love every minute."</p>
+                    <div class="testimonial-author">- James, Manchester</div>
+                </div>
+                <div class="testimonial-card">
+                    <p>"The organisation is so well run and the impact we have on people's lives is immediate. It's the most fulfilling thing I do."</p>
+                    <div class="testimonial-author">- Emma, Liverpool</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Floating Call Button -->
+    <div class="floating-call-btn">
+        <a href="tel:08001244641" class="call-btn" title="Call us now - Free phone">
+            <i class="fas fa-phone"></i>
+            <span class="call-text">Call Us</span>
+        </a>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-logo">
+                        <img src="Branding/HomelessAidUKLogo.png" alt="Homeless Aid UK" class="footer-logo-img">
+                        <h4>Homeless Aid UK</h4>
+                    </div>
+                    <p>100% volunteer-run organisation helping the homeless and those in need across the UK</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="index.html#feeding-schedule">Food List</a></li>
+                        <li><a href="donate.html">Donate</a></li>
+                        <li><a href="volunteer.html">Volunteer</a></li>
+                        <li><a href="food-bank.html">Food Bank</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <p>📞 0800 124 4641</p>
+                    <p>✉️ info@homelessaid.co.uk</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Follow Us</h4>
+                    <div class="social-links">
+                        <a href="https://www.facebook.com/HomelessAidUK" class="social-link">Facebook</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Homeless Aid UK. All rights reserved. | Not a registered charity - 100% volunteer run</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
