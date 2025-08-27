@@ -849,9 +849,9 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // Add to Calendar button state change
-    const calendarButtons = document.querySelectorAll('.add-calendar-btn');
+    const addCalendarButtons = document.querySelectorAll('.add-calendar-btn');
     
-    calendarButtons.forEach(button => {
+    addCalendarButtons.forEach(button => {
         button.addEventListener('click', function(e) {
             e.preventDefault();
             
