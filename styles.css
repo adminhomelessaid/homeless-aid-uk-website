@@ -1,26 +1,26 @@
 :root {
-    /* Single Theme Color Palette */
-    /* Background Colors - All F2F2F2 */
-    --background-color: #F2F2F2;
-    --accent-bg: #F2F2F2;
-    --accent-bg-light: #F2F2F2;
-    --accent-light: #F2F2F2;
+    /* Warm, Modern Color Palette */
+    /* Background Colors */
+    --background-color: #F9F9F7;
+    --accent-bg: #F9F9F7;
+    --accent-bg-light: #F9F9F7;
+    --accent-light: #F9F9F7;
     
-    /* Text Colors - All #1A2332 */
-    --text-color: #1A2332;
-    --secondary-color: #1A2332;
+    /* Text Colors */
+    --text-color: #2d3748;
+    --secondary-color: #2d3748;
     
-    /* Primary and Action Colors - All #1A2332 */
+    /* Primary and Action Colors */
     --primary-color: #1A2332;
     --action-color: #1A2332;
     --accent-color: #1A2332;
     --accent-dark: #1A2332;
     
     /* Supporting colors */
-    --light-gray: #E8E8E8;
-    --border-color: #D0D0D0;
-    --success-color: #27AE60;
-    --error-color: #E74C3C;
+    --light-gray: #EDF2F7;
+    --border-color: #E2E8F0;
+    --success-color: #48BB78;
+    --error-color: #EF5350;
     
     /* Border thickness settings */
     --border-thin: 1px;
@@ -145,10 +145,14 @@ body * {
     animation: spin 1s linear infinite;
 }
 
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Lora:wght@700&family=Inter:wght@400;500;600;700&display=swap');
+
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    color: var(--text-color);
-    background-color: var(--accent-bg);
+    color: #2d3748;
+    background-color: #F9F9F7;
+    background-image: url("data:image/svg+xml,%3Csvg width='6' height='6' viewBox='0 0 6 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23d2d6dc' fill-opacity='0.4' fill-rule='evenodd'%3E%3Cpath d='M5 0h1L0 6V5zM6 5v1H5z'/%3E%3C/g%3E%3C/svg%3E");
     line-height: 1.6;
     padding-top: 80px;
     transition: background-color 0.3s ease;
@@ -292,23 +296,27 @@ body {
 
 /* Hero Section */
 .hero {
-    background: #F2F2F2;
-    padding: 2rem 0;
+    background: #F9F9F7;
+    background-image: url("data:image/svg+xml,%3Csvg width='6' height='6' viewBox='0 0 6 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23d2d6dc' fill-opacity='0.4' fill-rule='evenodd'%3E%3Cpath d='M5 0h1L0 6V5zM6 5v1H5z'/%3E%3C/g%3E%3C/svg%3E");
+    padding: 3rem 0;
     text-align: center;
+    position: relative;
 }
 
 
 .hero-brand {
+    font-family: 'Lora', serif;
     font-size: 2.5rem;
     font-weight: 700;
-    color: var(--primary-color);
+    color: #2d3748;
     margin-bottom: 0.5rem;
     text-align: center;
 }
 
 .hero h1 {
+    font-family: 'Lora', serif;
     font-size: 2.5rem;
-    color: var(--secondary-color);
+    color: #2d3748;
     margin-bottom: 1.5rem;
 }
 
@@ -355,18 +363,19 @@ body {
 /* Buttons */
 .btn {
     display: inline-block;
-    padding: 0.75rem 2rem;
-    border-radius: 12px;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
     text-decoration: none;
-    font-weight: 600;
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
     cursor: pointer;
-    border: var(--border-button) solid transparent;
-    font-size: 1rem;
+    border: 2px solid transparent;
+    font-size: 0.95rem;
     position: relative;
     overflow: hidden;
-    backdrop-filter: blur(10px);
-    box-shadow: var(--shadow-card);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .btn::before {
@@ -385,26 +394,29 @@ body {
 }
 
 .btn-primary {
-    background: var(--primary-color);
-    color: var(--background-color);
+    background: linear-gradient(135deg, #48BB78, #38A169);
+    color: white;
+    border: none;
 }
 
 .btn-primary:hover {
-    background: linear-gradient(135deg, var(--primary-color), #e67e22);
-    transform: translateY(-4px) scale(1.02);
-    box-shadow: var(--shadow-card-hover);
+    background: linear-gradient(135deg, #38A169, #2F855A);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 .btn-secondary {
-    background: var(--accent-color);
-    color: var(--background-color);
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    background: white;
+    color: #2d3748;
+    border: 2px solid #E2E8F0;
+    transition: all 0.3s ease;
 }
 
 .btn-secondary:hover {
-    background: linear-gradient(135deg, var(--accent-dark), var(--primary-color));
-    transform: translateY(-4px) scale(1.02);
-    box-shadow: var(--accent-shadow);
+    background: #F9F9F7;
+    border-color: #2d3748;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .btn-outline {
@@ -473,17 +485,15 @@ section {
 }
 
 .impact-card {
-    background: var(--glassmorphism);
-    backdrop-filter: blur(10px);
-    border: 2px solid transparent;
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
     padding: 2rem;
-    border-radius: 16px;
+    border-radius: 12px;
     text-align: center;
-    box-shadow: var(--accent-shadow);
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05), 0 1px 3px 1px rgba(0, 0, 0, 0.04);
+    transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
-    border-image: linear-gradient(135deg, rgba(243, 156, 18, 0.2), var(--accent-light)) 1;
 }
 
 .impact-card::before {
@@ -504,10 +514,8 @@ section {
 }
 
 .impact-card:hover {
-    transform: translateY(-10px) scale(1.03);
-    box-shadow: var(--shadow-card-hover);
-    border-image: linear-gradient(135deg, var(--primary-color), var(--accent-color)) 1;
-    background: linear-gradient(135deg, rgba(243, 156, 18, 0.02) 0%, var(--accent-light) 100%);
+    transform: translateY(-3px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 .impact-icon {
@@ -686,18 +694,19 @@ section {
     top: 80px; /* Below navbar */
     text-align: center;
     background: white;
-    color: black;
+    color: #2d3748;
     padding: 1rem;
-    border-radius: 8px;
-    border: 2px solid black;
+    border-radius: 12px;
+    border: 1px solid #E2E8F0;
     margin-bottom: 1rem;
+    font-family: 'Lora', serif;
     font-size: 1.5rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 1px;
     z-index: 100;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    transition: box-shadow 0.3s ease;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05), 0 1px 3px 1px rgba(0, 0, 0, 0.04);
+    transition: all 0.3s ease;
 }
 
 /* Enhanced shadow when stuck */
@@ -707,17 +716,18 @@ section {
 
 .day-cards {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     gap: 1.5rem;
 }
 
-.feeding-card {
-    background: white;
-    border: 2px solid black;
+.feeding-card,
+.event-card {
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
     padding: 0;
-    border-radius: 16px;
-    box-shadow: var(--shadow-card);
-    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border-radius: 12px;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05), 0 1px 3px 1px rgba(0, 0, 0, 0.04);
+    transition: all 0.3s ease;
     text-align: center;
     overflow: visible;
     position: relative;
@@ -745,10 +755,11 @@ section {
     z-index: 1;
 }
 
-.feeding-card:hover {
-    transform: translateY(-8px) scale(1.02);
-    box-shadow: var(--shadow-card-hover);
-    border-color: var(--action-color);
+.feeding-card:hover,
+.event-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    border-color: #E2E8F0;
 }
 
 .feeding-card:active {
@@ -804,17 +815,29 @@ section {
 }
 
 .feeding-time {
-    color: var(--primary-color);
+    background: #2d3748;
+    color: white;
     font-weight: 700;
-    font-size: 1.2rem;
-    margin: 1rem 0;
-    padding: 0 1rem 1.5rem 1rem;
+    font-size: 1.1rem;
+    margin: 0.5rem 1rem;
+    padding: 0.75rem;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
 }
 
-.feeding-location-header {
+.feeding-time i {
+    font-size: 1rem;
+}
+
+.feeding-location-header,
+.venue-name {
     background: white;
-    color: black;
+    color: #2d3748;
     padding: 1rem;
+    font-family: 'Lora', serif;
     font-size: 1.1rem;
     font-weight: 700;
     margin-bottom: 0;
@@ -826,8 +849,8 @@ section {
     line-height: 1.2;
     word-wrap: break-word;
     hyphens: auto;
-    border-bottom: 2px solid black;
-    border-radius: 14px 14px 0 0;
+    border-bottom: 1px solid #E2E8F0;
+    border-radius: 11px 11px 0 0;
 }
 
 .feeding-address {
@@ -912,6 +935,52 @@ section {
     margin: 0.5rem 0;
     text-transform: uppercase;
     text-align: center;
+}
+
+/* Event Category Tags */
+.event-category {
+    display: inline-block;
+    background: #EDF2F7;
+    color: #2d3748;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 0.5rem;
+}
+
+/* Badges */
+.walk-badge,
+.calendar-available {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: linear-gradient(135deg, #48BB78, #38A169);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 0.5rem;
+}
+
+.referral-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: linear-gradient(135deg, #EF5350, #E53E3E);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 0.5rem;
 }
 
 /* Help Section */
@@ -2084,32 +2153,50 @@ footer {
     position: relative;
 }
 
-.calendar-btn {
+.calendar-btn,
+.add-calendar-btn {
     width: 100%;
-    background: var(--action-color);
-    color: var(--background-color);
+    background: linear-gradient(135deg, #4A5568, #2d3748);
+    color: white;
     border: none;
     padding: 0.75rem 1rem;
     border-radius: 8px;
     font-size: 0.95rem;
-    font-weight: 600;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: var(--shadow-action);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.calendar-btn:hover {
+.calendar-btn:hover,
+.add-calendar-btn:hover {
     transform: translateY(-2px);
-    box-shadow: var(--shadow-action-hover);
-    background: linear-gradient(135deg, var(--action-color), #E89A00);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    background: linear-gradient(135deg, #2d3748, #1a202c);
 }
 
-.calendar-btn:active {
+.calendar-btn:active,
+.add-calendar-btn:active {
     transform: translateY(0);
+}
+
+.calendar-btn.btn-added,
+.add-calendar-btn.btn-added {
+    background: linear-gradient(135deg, #48BB78, #38A169);
+    cursor: not-allowed;
+    opacity: 0.9;
+}
+
+.calendar-btn.btn-added:hover,
+.add-calendar-btn.btn-added:hover {
+    transform: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .calendar-btn i {

@@ -848,6 +848,22 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
+    // Add to Calendar button state change
+    const calendarButtons = document.querySelectorAll('.add-calendar-btn');
+    
+    calendarButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Change button state to "Added"
+            this.innerHTML = 'Added ✓';
+            this.classList.add('btn-added');
+            this.disabled = true;
+            
+            console.log('✅ Calendar button marked as added');
+        });
+    });
+    
     // Modal close event handlers
     modalClose.addEventListener('click', closeCalendarModal);
     
