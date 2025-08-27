@@ -7,6 +7,15 @@
     <meta name="theme-color" content="#007A74">
     <title>Install the Homeless Aid UK App</title>
     
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="../manifest.json">
+    
+    <!-- Apple PWA Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Homeless Aid UK">
+    <link rel="apple-touch-icon" href="../Branding/HomelessAidUKLogo.png">
+    
     <style>
         /* Reset and base styles */
         * {
@@ -450,6 +459,16 @@
                 </button>
             </div>
 
+            <!-- Fallback Install Button for when native prompt isn't available -->
+            <div id="fallback-install-section" class="install-section" style="display: none;">
+                <button id="fallback-install-btn" class="install-btn">
+                    <svg class="install-icon" viewBox="0 0 24 24">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                    </svg>
+                    Show Install Guide
+                </button>
+            </div>
+
             <!-- Success state -->
             <div id="success-section" class="success-section">
                 <div class="success-icon">
@@ -641,24 +660,54 @@
             // Show install button if prompt is available
             if (deferredPrompt && !isAppInstalled) {
                 document.getElementById('install-section').style.display = 'block';
-            } else {
-                // Show appropriate fallback instructions
-                if (os === 'ios') {
-                    document.getElementById('ios-instructions').classList.add('active');
-                } else {
-                    document.getElementById('android-instructions').classList.add('active');
+                return;
+            }
+
+            // For browsers that might support PWA but haven't fired the prompt yet
+            // Show fallback install button after a delay
+            setTimeout(() => {
+                if (!deferredPrompt && !isAppInstalled) {
+                    // Show fallback button that will reveal instructions
+                    document.getElementById('fallback-install-section').style.display = 'block';
                 }
+            }, 3000);
+
+            // Always show manual instructions as fallback
+            if (os === 'ios') {
+                document.getElementById('ios-instructions').classList.add('active');
+            } else {
+                document.getElementById('android-instructions').classList.add('active');
+            }
+        }
+
+        // Handle fallback install button (shows instructions)
+        function handleFallbackInstall() {
+            document.getElementById('fallback-install-section').style.display = 'none';
+            // Instructions are already shown, just highlight them
+            const instructions = document.querySelector('.instruction-section.active');
+            if (instructions) {
+                instructions.style.background = 'linear-gradient(135deg, rgba(0, 122, 116, 0.05) 0%, rgba(0, 122, 116, 0.02) 100%)';
+                instructions.style.border = '2px solid #007A74';
+                instructions.style.borderRadius = '12px';
+                instructions.style.padding = '2rem';
+                instructions.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
         }
 
         // Initialize when DOM is loaded
         document.addEventListener('DOMContentLoaded', function() {
             installButton = document.getElementById('install-btn');
+            const fallbackButton = document.getElementById('fallback-install-btn');
             isAppInstalled = checkIfInstalled();
             
             // Add click handler for install button
             if (installButton) {
                 installButton.addEventListener('click', handleInstallClick);
+            }
+
+            // Add click handler for fallback button
+            if (fallbackButton) {
+                fallbackButton.addEventListener('click', handleFallbackInstall);
             }
 
             // Small delay to show loading state briefly and allow beforeinstallprompt to fire
@@ -670,7 +719,7 @@
 
         // Listen for the beforeinstallprompt event
         window.addEventListener('beforeinstallprompt', (e) => {
-            console.log('beforeinstallprompt event fired');
+            console.log('beforeinstallprompt event fired - native prompt available!');
             
             // Prevent the default browser install prompt
             e.preventDefault();
@@ -678,12 +727,16 @@
             // Store the event for later use
             deferredPrompt = e;
             
-            // Show our custom install button
+            // Show our custom install button and hide fallback
             if (!isAppInstalled) {
                 document.getElementById('install-section').style.display = 'block';
-                // Hide manual instructions since we can trigger native prompt
-                document.getElementById('android-instructions').classList.remove('active');
-                document.getElementById('ios-instructions').classList.remove('active');
+                document.getElementById('fallback-install-section').style.display = 'none';
+                // Keep manual instructions visible as backup but less prominent
+                const activeInstructions = document.querySelector('.instruction-section.active');
+                if (activeInstructions) {
+                    activeInstructions.style.opacity = '0.7';
+                    activeInstructions.style.marginTop = '2rem';
+                }
             }
         });
 
@@ -693,10 +746,46 @@
             showSuccessState();
         });
 
-        // Debug: Add OS info to console for testing
-        console.log('User Agent:', navigator.userAgent);
-        console.log('Detected OS:', detectOS());
-        console.log('Is already installed:', checkIfInstalled());
+        // Register service worker if available
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('../sw.js')
+                    .then((registration) => {
+                        console.log('SW registered: ', registration);
+                    })
+                    .catch((registrationError) => {
+                        console.log('SW registration failed: ', registrationError);
+                    });
+            });
+        }
+
+        // Enhanced debugging for install prompt
+        function logInstallStatus() {
+            console.group('PWA Install Debug Info');
+            console.log('User Agent:', navigator.userAgent);
+            console.log('Detected OS:', detectOS());
+            console.log('Is already installed:', checkIfInstalled());
+            console.log('Is HTTPS:', location.protocol === 'https:' || location.hostname === 'localhost');
+            console.log('Has service worker support:', 'serviceWorker' in navigator);
+            console.log('Has beforeinstallprompt fired:', !!deferredPrompt);
+            console.log('Current URL:', location.href);
+            console.log('Manifest linked:', !!document.querySelector('link[rel="manifest"]'));
+            console.groupEnd();
+        }
+
+        // Add debugging button for testing (only show in console)
+        window.debugInstall = function() {
+            logInstallStatus();
+            if (deferredPrompt) {
+                console.log('Manual trigger available - calling handleInstallClick()');
+                handleInstallClick();
+            } else {
+                console.log('No install prompt available. Try waiting or check PWA requirements.');
+            }
+        };
+
+        // Log initial status
+        setTimeout(logInstallStatus, 2000);
     </script>
 </body>
 </html>
