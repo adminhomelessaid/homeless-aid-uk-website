@@ -30,7 +30,9 @@
       "WebFetch(domain:www.homelessaid.co.uk)",
       "Bash(git log:*)",
       "Bash(git checkout:*)",
-      "Bash(git merge:*)"
+      "Bash(git merge:*)",
+      "Bash(git rm:*)",
+      "Bash(grep:*)"
     ],
     "deny": [],
     "ask": []
