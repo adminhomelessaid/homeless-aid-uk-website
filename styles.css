@@ -705,6 +705,7 @@ section {
 /* Feeding Schedule */
 .feeding-schedule {
     background: var(--background-color);
+    position: relative;
 }
 
 .feeding-schedule h2 {
@@ -859,8 +860,10 @@ section {
 }
 
 .day-header {
+    position: sticky;
+    top: 80px; /* Below navbar */
     text-align: center;
-    background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+    background: var(--primary-color);
     color: var(--background-color);
     padding: 1rem;
     border-radius: 8px;
@@ -869,6 +872,14 @@ section {
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 1px;
+    z-index: 100;
+    box-shadow: 0 4px 12px rgba(0, 122, 116, 0.2);
+    transition: box-shadow 0.3s ease;
+}
+
+/* Enhanced shadow when stuck */
+.day-header:hover {
+    box-shadow: 0 6px 20px rgba(0, 122, 116, 0.3);
 }
 
 .day-cards {
@@ -1826,6 +1837,12 @@ footer {
 @media (max-width: 768px) {
     .mobile-menu-btn {
         display: block;
+    }
+    
+    .day-header {
+        top: 70px; /* Adjust for mobile navbar height */
+        font-size: 1.3rem;
+        padding: 0.875rem;
     }
     
     .nav-links {

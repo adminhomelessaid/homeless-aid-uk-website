@@ -270,7 +270,7 @@ async function displayFeedingTimes(data) {
     dayOrder.forEach(day => {
         if (groupedByDay[day] && groupedByDay[day].length > 0) {
             html += `<div class="day-section">`;
-            html += `<h3 class="day-header">${day}</h3>`;
+            html += `<h3 class="day-header">EVERY ${day}</h3>`;
             html += `<div class="day-cards">`;
             
             groupedByDay[day].forEach(item => {
