@@ -11,11 +11,35 @@ const ThemeManager = {
     },
     
     applyTheme(themeName) {
-        document.body.setAttribute('data-theme', themeName);
+        if (themeName === 'custom') {
+            this.applyCustomTheme();
+        } else {
+            document.body.setAttribute('data-theme', themeName);
+        }
         this.currentTheme = themeName;
         localStorage.setItem('selectedTheme', themeName);
         this.updateActiveButton();
         console.log(`Theme changed to: ${themeName}`);
+    },
+
+    applyCustomTheme() {
+        const customTheme = localStorage.getItem('customTheme');
+        if (customTheme) {
+            const colors = JSON.parse(customTheme);
+            
+            // Apply custom CSS variables
+            Object.keys(colors).forEach(key => {
+                const cssVarName = '--' + key.replace(/([A-Z])/g, '-$1').toLowerCase();
+                document.documentElement.style.setProperty(cssVarName, colors[key]);
+            });
+            
+            // Set body theme attribute
+            document.body.setAttribute('data-theme', 'custom');
+            console.log('Custom theme applied');
+        } else {
+            console.log('No custom theme found, falling back to light-blue');
+            this.applyTheme('light-blue');
+        }
     },
     
     updateActiveButton() {

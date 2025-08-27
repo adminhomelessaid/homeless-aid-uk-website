@@ -105,6 +105,11 @@ body[data-theme="forest"] {
     --shadow-hover: 0 8px 25px rgba(44, 95, 45, 0.2);
 }
 
+body[data-theme="custom"] {
+    /* Custom theme - colors set dynamically via JavaScript */
+    /* CSS variables are updated in real-time by theme admin */
+}
+
 * {
     margin: 0;
     padding: 0;
