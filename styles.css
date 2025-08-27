@@ -1,9 +1,10 @@
 :root {
-    /* Professional Color Palette */
-    --teal-primary: #007A74;  /* Deep Teal - Major headings, key info */
-    --orange-action: #F5A623;  /* Brand Orange - CTAs, buttons, links */
-    --charcoal-text: #2F2F2F;  /* Dark Charcoal - Subheadings, text */
-    --white-bg: #FFFFFF;  /* White - Background */
+    /* Light Blue Color Palette (New Default) */
+    --light-blue-primary: #adcbf0;  /* Light Blue - Major headings, key info, boxes */
+    --deep-blue-action: #3e7cb8;   /* Deep Blue - CTAs, buttons, links */
+    --dark-blue-text: #2c3e50;     /* Dark Blue-Gray - Body text */
+    --darker-blue-secondary: #1a2332;  /* Darker Blue-Gray - Headings */
+    --white-bg: #FFFFFF;            /* White - Background */
     
     /* Supporting colors */
     --light-gray: #F8F9FA;
@@ -11,37 +12,55 @@
     --success-color: #27AE60;
     --error-color: #E74C3C;
     
-    /* Applied palette (default professional theme) */
-    --primary-color: #007A74;  /* Changed from orange to teal */
-    --secondary-color: #2F2F2F;  /* Changed to charcoal */
-    --action-color: #F5A623;  /* Orange for actions */
+    /* Applied palette (default light blue theme) */
+    --primary-color: #adcbf0;       /* Light blue for boxes/blocks */
+    --secondary-color: #1a2332;     /* Darker blue-gray for headings */
+    --action-color: #3e7cb8;        /* Deep blue for actions */
     --background-color: #FFFFFF;
-    --text-color: #2F2F2F;
+    --text-color: #2c3e50;          /* Dark blue-gray for text */
     
     /* Shadows updated for new palette */
-    --shadow: 0 4px 12px rgba(0, 122, 116, 0.1);
-    --shadow-hover: 0 8px 25px rgba(0, 122, 116, 0.15);
+    --shadow: 0 4px 12px rgba(173, 203, 240, 0.2);
+    --shadow-hover: 0 8px 25px rgba(173, 203, 240, 0.3);
     --shadow-card: 0 6px 20px rgba(0, 0, 0, 0.08);
     --shadow-card-hover: 0 12px 35px rgba(0, 0, 0, 0.12);
-    --shadow-action: 0 4px 12px rgba(245, 166, 35, 0.2);
-    --shadow-action-hover: 0 8px 25px rgba(245, 166, 35, 0.3);
+    --shadow-action: 0 4px 12px rgba(62, 124, 184, 0.2);
+    --shadow-action-hover: 0 8px 25px rgba(62, 124, 184, 0.3);
     
     /* Glass effects */
     --glassmorphism: rgba(255, 255, 255, 0.95);
-    --glassmorphism-border: rgba(0, 122, 116, 0.15);
+    --glassmorphism-border: rgba(173, 203, 240, 0.2);
     
-    /* Theme accent colors - professional */
-    --accent-color: #007A74;
-    --accent-light: #E6F3F2;
-    --accent-dark: #005550;
+    /* Theme accent colors - light blue */
+    --accent-color: #adcbf0;
+    --accent-light: #e8f2ff;
+    --accent-dark: #7ba7db;
     --accent-bg: #FFFFFF;
-    --accent-bg-light: #F8FAFA;
-    --accent-shadow: rgba(0, 122, 116, 0.1);
+    --accent-bg-light: #f4f8ff;
+    --accent-shadow: rgba(173, 203, 240, 0.15);
 }
 
 /* Theme variations */
+body[data-theme="light-blue"] {
+    /* This is now the default theme - same as :root */
+}
+
 body[data-theme="professional"] {
-    /* This is now the default theme */
+    /* Original teal/orange professional theme */
+    --primary-color: #007A74;
+    --secondary-color: #2F2F2F;
+    --action-color: #F5A623;
+    --text-color: #2F2F2F;
+    --accent-color: #007A74;
+    --accent-light: #E6F3F2;
+    --accent-dark: #005550;
+    --accent-bg-light: #F8FAFA;
+    --shadow: 0 4px 12px rgba(0, 122, 116, 0.1);
+    --shadow-hover: 0 8px 25px rgba(0, 122, 116, 0.15);
+    --shadow-action: 0 4px 12px rgba(245, 166, 35, 0.2);
+    --shadow-action-hover: 0 8px 25px rgba(245, 166, 35, 0.3);
+    --glassmorphism-border: rgba(0, 122, 116, 0.15);
+    --accent-shadow: rgba(0, 122, 116, 0.1);
 }
 
 body[data-theme="classic"] {
