@@ -1,5 +1,65 @@
 console.log('🚀 Script.js is loaded!');
 
+// Theme Switcher Functionality
+const ThemeManager = {
+    currentTheme: localStorage.getItem('selectedTheme') || 'default',
+    
+    init() {
+        // Apply saved theme on load
+        this.applyTheme(this.currentTheme);
+        this.updateActiveButton();
+    },
+    
+    applyTheme(themeName) {
+        document.body.setAttribute('data-theme', themeName);
+        this.currentTheme = themeName;
+        localStorage.setItem('selectedTheme', themeName);
+        this.updateActiveButton();
+        console.log(`Theme changed to: ${themeName}`);
+    },
+    
+    updateActiveButton() {
+        const buttons = document.querySelectorAll('.theme-option');
+        buttons.forEach(btn => {
+            if (btn.getAttribute('data-theme') === this.currentTheme) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+    }
+};
+
+// Theme panel toggle
+function toggleThemePanel() {
+    const panel = document.getElementById('themePanel');
+    panel.classList.toggle('active');
+    
+    // Close panel when clicking outside
+    if (panel.classList.contains('active')) {
+        setTimeout(() => {
+            document.addEventListener('click', closeThemePanelOnOutsideClick);
+        }, 0);
+    }
+}
+
+function closeThemePanelOnOutsideClick(event) {
+    const panel = document.getElementById('themePanel');
+    const switcher = document.querySelector('.theme-switcher');
+    
+    if (!switcher.contains(event.target)) {
+        panel.classList.remove('active');
+        document.removeEventListener('click', closeThemePanelOnOutsideClick);
+    }
+}
+
+// Set theme function
+function setTheme(themeName) {
+    ThemeManager.applyTheme(themeName);
+    // Close panel after selection
+    document.getElementById('themePanel').classList.remove('active');
+}
+
 // Configuration
 const CONFIG = {
     csvUrl: 'feed-times.csv',
@@ -701,6 +761,10 @@ const TouchManager = {
 // Initialize everything when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
     console.log('📋 DOM loaded - attaching event listeners');
+    
+    // Initialize theme manager
+    ThemeManager.init();
+    
     // Load feeding times if on homepage
     loadFeedingTimes();
     

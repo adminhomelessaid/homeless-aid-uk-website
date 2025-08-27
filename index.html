@@ -39,6 +39,59 @@
         </div>
     </nav>
 
+    <!-- Theme Switcher -->
+    <div class="theme-switcher">
+        <button class="theme-toggle-btn" onclick="toggleThemePanel()">
+            <i class="fas fa-palette"></i>
+            <span>Themes</span>
+        </button>
+        <div class="theme-panel" id="themePanel">
+            <h4>Choose Theme</h4>
+            <div class="theme-options">
+                <button class="theme-option" data-theme="default" onclick="setTheme('default')">
+                    <div class="theme-colors">
+                        <span style="background: #F39C12;"></span>
+                        <span style="background: #1A1A1A;"></span>
+                        <span style="background: #FFFFFF;"></span>
+                    </div>
+                    <span>Original</span>
+                </button>
+                <button class="theme-option" data-theme="teal" onclick="setTheme('teal')">
+                    <div class="theme-colors">
+                        <span style="background: #F39C12;"></span>
+                        <span style="background: #006B7D;"></span>
+                        <span style="background: #E6F3F5;"></span>
+                    </div>
+                    <span>Deep Teal</span>
+                </button>
+                <button class="theme-option" data-theme="earth" onclick="setTheme('earth')">
+                    <div class="theme-colors">
+                        <span style="background: #F39C12;"></span>
+                        <span style="background: #8B4513;"></span>
+                        <span style="background: #FDF5E6;"></span>
+                    </div>
+                    <span>Earth Tone</span>
+                </button>
+                <button class="theme-option" data-theme="sage" onclick="setTheme('sage')">
+                    <div class="theme-colors">
+                        <span style="background: #F39C12;"></span>
+                        <span style="background: #6B8E23;"></span>
+                        <span style="background: #F0F4E8;"></span>
+                    </div>
+                    <span>Sage Green</span>
+                </button>
+                <button class="theme-option" data-theme="purple" onclick="setTheme('purple')">
+                    <div class="theme-colors">
+                        <span style="background: #F39C12;"></span>
+                        <span style="background: #663399;"></span>
+                        <span style="background: #F3E6FF;"></span>
+                    </div>
+                    <span>Royal Purple</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
     <section class="hero">
         <div class="container">
             <div class="hero-brand">Homeless Aid UK</div>
