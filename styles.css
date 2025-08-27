@@ -723,9 +723,35 @@ section {
 .day-cards,
 .cards-container {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 24px;
-    margin-bottom: 40px;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+    margin-bottom: 32px;
+}
+
+/* Mobile-specific grid layout for 3 cards per row */
+@media (max-width: 768px) {
+    .day-cards,
+    .cards-container {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+    }
+
+    .container {
+        padding: 0 12px;
+    }
+}
+
+/* Extra small screens - still 3 cards but more compact */
+@media (max-width: 480px) {
+    .day-cards,
+    .cards-container {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 6px;
+    }
+    
+    .container {
+        padding: 0 8px;
+    }
 }
 
 /* --- Event Card Base Style --- */
@@ -733,18 +759,38 @@ section {
 .event-card {
     background: white;
     border-radius: 12px;
-    padding: 24px;
+    padding: 16px;
     box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05), 0 1px 3px 1px rgba(0, 0, 0, 0.04);
     border: 1px solid #E2E8F0;
     display: flex;
     flex-direction: column;
-    min-height: 320px;
+    min-height: 280px;
     transition: all 0.3s cubic-bezier(.25,.8,.25,1);
     text-align: center;
     overflow: visible;
     position: relative;
     cursor: pointer;
     height: 100%;
+}
+
+/* Mobile card adjustments */
+@media (max-width: 768px) {
+    .feeding-card,
+    .event-card {
+        padding: 12px;
+        min-height: 240px;
+        border-radius: 8px;
+    }
+}
+
+/* Extra small screens */
+@media (max-width: 480px) {
+    .feeding-card,
+    .event-card {
+        padding: 10px;
+        min-height: 220px;
+        border-radius: 6px;
+    }
 }
 
 .feeding-card::before {
@@ -778,21 +824,38 @@ section {
 
 /* --- Card Content Sections --- */
 .card-header {
-    margin-bottom: 16px;
+    margin-bottom: 12px;
 }
 
 .card-body {
     flex: 1;
     display: flex;
     flex-direction: column;
+    gap: 8px;
 }
 
 .card-footer {
     margin-top: auto;
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    padding-top: 16px;
+    gap: 8px;
+    padding-top: 12px;
+}
+
+/* Mobile section adjustments */
+@media (max-width: 768px) {
+    .card-header {
+        margin-bottom: 8px;
+    }
+    
+    .card-body {
+        gap: 6px;
+    }
+    
+    .card-footer {
+        gap: 6px;
+        padding-top: 8px;
+    }
 }
 
 /* --- Card Header Components --- */
@@ -800,10 +863,18 @@ section {
 .event-type {
     display: flex;
     align-items: center;
-    gap: 8px;
-    margin-bottom: 8px;
+    gap: 6px;
+    margin-bottom: 6px;
     justify-content: center;
     flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+    .event-header,
+    .event-type {
+        gap: 4px;
+        margin-bottom: 4px;
+    }
 }
 
 .event-type .town,
@@ -812,33 +883,60 @@ section {
     font-size: 16px;
     font-weight: 700;
     font-family: 'Lora', serif;
+    line-height: 1.2;
+}
+
+@media (max-width: 768px) {
+    .event-type .town,
+    .town {
+        font-size: 14px;
+    }
 }
 
 .venue-name {
     font-family: 'Lora', serif;
-    font-size: 24px;
+    font-size: 18px;
     font-weight: 700;
     color: #1a202c;
     line-height: 1.3;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    gap: 6px;
     flex-wrap: wrap;
+    margin: 0;
+}
+
+@media (max-width: 768px) {
+    .venue-name {
+        font-size: 16px;
+        gap: 4px;
+    }
 }
 
 /* --- Address & Time Sections --- */
 .address-section {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 12px;
+    gap: 8px;
+    padding: 10px;
     background: #F7FAFC;
-    border-radius: 8px;
+    border-radius: 6px;
     cursor: pointer;
     transition: background 0.2s;
     border: 1px solid #EDF2F7;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    line-height: 1.3;
+}
+
+@media (max-width: 768px) {
+    .address-section {
+        padding: 8px;
+        gap: 6px;
+        font-size: 12px;
+        margin-bottom: 6px;
+    }
 }
 
 .address-section:hover {
@@ -897,15 +995,25 @@ section {
 .time-section {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 12px;
+    gap: 8px;
+    padding: 10px;
     background: #2d3748;
     color: white;
-    border-radius: 8px;
+    border-radius: 6px;
     justify-content: center;
     font-weight: 600;
-    font-size: 16px;
-    margin: 0.5rem 1rem;
+    font-size: 14px;
+    margin: 0;
+    line-height: 1.2;
+}
+
+@media (max-width: 768px) {
+    .feeding-time,
+    .time-section {
+        padding: 8px;
+        font-size: 12px;
+        gap: 6px;
+    }
 }
 
 .feeding-time i {
@@ -1035,13 +1143,23 @@ section {
     display: inline-block;
     background: #EDF2F7;
     color: #4A5568;
-    padding: 4px 8px;
+    padding: 3px 6px;
     border-radius: 9999px;
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.3px;
     font-family: 'Inter', sans-serif;
+    line-height: 1.2;
+    margin: 0;
+}
+
+@media (max-width: 768px) {
+    .event-category,
+    .event-category-tag {
+        padding: 2px 5px;
+        font-size: 9px;
+    }
 }
 
 /* Badges */
@@ -1049,26 +1167,43 @@ section {
 .card-actions {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 8px;
+}
+
+@media (max-width: 768px) {
+    .card-actions {
+        gap: 6px;
+    }
 }
 
 .referral-badge,
 .walk-badge,
 .calendar-available {
     color: white;
-    padding: 10px;
-    border-radius: 8px;
-    font-size: 13px;
+    padding: 8px 10px;
+    border-radius: 6px;
+    font-size: 12px;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.3px;
     text-align: center;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    gap: 6px;
     border: none;
-    margin: 0.5rem 1rem;
+    margin: 0;
+    line-height: 1.2;
+}
+
+@media (max-width: 768px) {
+    .referral-badge,
+    .walk-badge,
+    .calendar-available {
+        padding: 6px 8px;
+        font-size: 10px;
+        gap: 4px;
+    }
 }
 
 .referral-badge {
@@ -1084,14 +1219,23 @@ section {
     display: flex;
     align-items: center;
     gap: 6px;
-    padding: 8px 12px;
-    border-radius: 8px;
-    font-size: 13px;
+    padding: 8px 10px;
+    border-radius: 6px;
+    font-size: 12px;
     justify-content: center;
     background: #FED7D7;
     color: #C53030;
     border: 1px solid #FEB2B2;
-    margin: 0.5rem 1rem;
+    margin: 0;
+    line-height: 1.2;
+}
+
+@media (max-width: 768px) {
+    .calendar-not-available {
+        padding: 6px 8px;
+        font-size: 10px;
+        gap: 4px;
+    }
 }
 
 /* Help Section */
@@ -2269,18 +2413,28 @@ footer {
 .add-calendar-btn {
     color: white;
     border: none;
-    padding: 12px 24px;
-    border-radius: 8px;
-    font-size: 14px;
+    padding: 10px 12px;
+    border-radius: 6px;
+    font-size: 12px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease-in-out;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    gap: 6px;
     background: linear-gradient(135deg, #4A5568, #2d3748);
     width: 100%;
+    line-height: 1.2;
+}
+
+@media (max-width: 768px) {
+    .calendar-btn,
+    .add-calendar-btn {
+        padding: 8px 10px;
+        font-size: 10px;
+        gap: 4px;
+    }
 }
 
 .calendar-btn:hover,
