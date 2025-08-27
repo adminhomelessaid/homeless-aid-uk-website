@@ -459,14 +459,17 @@
                 </button>
             </div>
 
-            <!-- Fallback Install Button for when native prompt isn't available -->
-            <div id="fallback-install-section" class="install-section" style="display: none;">
-                <button id="fallback-install-btn" class="install-btn">
+            <!-- Always-visible Install Button -->
+            <div id="primary-install-section" class="install-section">
+                <button id="primary-install-btn" class="install-btn">
                     <svg class="install-icon" viewBox="0 0 24 24">
-                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                        <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
                     </svg>
-                    Show Install Guide
+                    Install App
                 </button>
+                <p style="margin-top: 12px; font-size: 0.9rem; color: #666; text-align: center;">
+                    Tap the button above, then follow your browser's install instructions
+                </p>
             </div>
 
             <!-- Success state -->
@@ -490,6 +493,50 @@
             <div id="loading" class="loading">
                 Detecting your device...
             </div>
+
+            <!-- Browser-specific Instructions -->
+            <section id="browser-instructions" class="instruction-section" style="display: none;">
+                <h2>How to Install</h2>
+                
+                <!-- Chrome/Edge Instructions -->
+                <div id="chrome-instructions" class="step" style="display: none;">
+                    <div class="step-number">1</div>
+                    <div class="step-text">
+                        Look for the <strong>⋮</strong> menu (3 dots) in the top-right corner of your browser
+                    </div>
+                </div>
+                
+                <div id="chrome-instructions-2" class="step" style="display: none;">
+                    <div class="step-number">2</div>
+                    <div class="step-text">
+                        Tap <strong>"Add to Home screen"</strong> or <strong>"Install app"</strong>
+                    </div>
+                </div>
+
+                <!-- Samsung Internet Instructions -->
+                <div id="samsung-instructions" class="step" style="display: none;">
+                    <div class="step-number">1</div>
+                    <div class="step-text">
+                        Tap the <strong>☰</strong> menu button, then select <strong>"Add page to"</strong> → <strong>"Home screen"</strong>
+                    </div>
+                </div>
+
+                <!-- Firefox Instructions -->
+                <div id="firefox-instructions" class="step" style="display: none;">
+                    <div class="step-number">1</div>
+                    <div class="step-text">
+                        Tap the <strong>⋮</strong> menu, then <strong>"Add to Home screen"</strong>
+                    </div>
+                </div>
+
+                <!-- Generic fallback -->
+                <div id="generic-instructions" class="step" style="display: none;">
+                    <div class="step-number">📱</div>
+                    <div class="step-text">
+                        Look for <strong>"Add to Home screen"</strong>, <strong>"Install"</strong>, or <strong>"Add to homescreen"</strong> in your browser menu
+                    </div>
+                </div>
+            </section>
 
             <!-- Android Instructions -->
             <section id="android-instructions" class="instruction-section">
@@ -646,6 +693,45 @@
             deferredPrompt = null;
         }
 
+        // Detect specific browser
+        function detectBrowser() {
+            const userAgent = navigator.userAgent.toLowerCase();
+            if (userAgent.includes('chrome') && !userAgent.includes('edge')) return 'chrome';
+            if (userAgent.includes('edge')) return 'edge';
+            if (userAgent.includes('samsung')) return 'samsung';
+            if (userAgent.includes('firefox')) return 'firefox';
+            return 'generic';
+        }
+
+        // Show browser-specific install instructions
+        function showBrowserInstructions() {
+            const browser = detectBrowser();
+            document.getElementById('browser-instructions').classList.add('active');
+            document.getElementById('browser-instructions').style.display = 'block';
+            
+            // Hide other instructions
+            document.getElementById('android-instructions').classList.remove('active');
+            document.getElementById('ios-instructions').classList.remove('active');
+            
+            // Show appropriate browser instructions
+            if (browser === 'chrome' || browser === 'edge') {
+                document.getElementById('chrome-instructions').style.display = 'block';
+                document.getElementById('chrome-instructions-2').style.display = 'block';
+            } else if (browser === 'samsung') {
+                document.getElementById('samsung-instructions').style.display = 'block';
+            } else if (browser === 'firefox') {
+                document.getElementById('firefox-instructions').style.display = 'block';
+            } else {
+                document.getElementById('generic-instructions').style.display = 'block';
+            }
+
+            // Scroll to instructions
+            document.getElementById('browser-instructions').scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'start' 
+            });
+        }
+
         function showInstructions(os) {
             // Hide loading
             const loading = document.getElementById('loading');
@@ -657,22 +743,8 @@
                 return;
             }
 
-            // Show install button if prompt is available
-            if (deferredPrompt && !isAppInstalled) {
-                document.getElementById('install-section').style.display = 'block';
-                return;
-            }
-
-            // For browsers that might support PWA but haven't fired the prompt yet
-            // Show fallback install button after a delay
-            setTimeout(() => {
-                if (!deferredPrompt && !isAppInstalled) {
-                    // Show fallback button that will reveal instructions
-                    document.getElementById('fallback-install-section').style.display = 'block';
-                }
-            }, 3000);
-
-            // Always show manual instructions as fallback
+            // Primary install section is always visible (defined in HTML)
+            // Just show the backup manual instructions based on OS
             if (os === 'ios') {
                 document.getElementById('ios-instructions').classList.add('active');
             } else {
@@ -694,20 +766,31 @@
             }
         }
 
+        // Handle primary install button click
+        function handlePrimaryInstall() {
+            // If we have the native prompt, use it
+            if (deferredPrompt) {
+                handleInstallClick();
+            } else {
+                // Show browser-specific instructions
+                showBrowserInstructions();
+            }
+        }
+
         // Initialize when DOM is loaded
         document.addEventListener('DOMContentLoaded', function() {
             installButton = document.getElementById('install-btn');
-            const fallbackButton = document.getElementById('fallback-install-btn');
+            const primaryButton = document.getElementById('primary-install-btn');
             isAppInstalled = checkIfInstalled();
             
-            // Add click handler for install button
+            // Add click handler for native install button
             if (installButton) {
                 installButton.addEventListener('click', handleInstallClick);
             }
 
-            // Add click handler for fallback button
-            if (fallbackButton) {
-                fallbackButton.addEventListener('click', handleFallbackInstall);
+            // Add click handler for primary install button
+            if (primaryButton) {
+                primaryButton.addEventListener('click', handlePrimaryInstall);
             }
 
             // Small delay to show loading state briefly and allow beforeinstallprompt to fire
@@ -727,11 +810,20 @@
             // Store the event for later use
             deferredPrompt = e;
             
-            // Show our custom install button and hide fallback
+            // Update primary button text to indicate native prompt is ready
             if (!isAppInstalled) {
-                document.getElementById('install-section').style.display = 'block';
-                document.getElementById('fallback-install-section').style.display = 'none';
-                // Keep manual instructions visible as backup but less prominent
+                const primaryButton = document.getElementById('primary-install-btn');
+                if (primaryButton) {
+                    primaryButton.innerHTML = `
+                        <svg class="install-icon" viewBox="0 0 24 24">
+                            <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+                        </svg>
+                        Install App (Ready!)
+                    `;
+                    primaryButton.style.background = 'linear-gradient(135deg, #27AE60, #219A52)';
+                }
+
+                // Make backup instructions less prominent
                 const activeInstructions = document.querySelector('.instruction-section.active');
                 if (activeInstructions) {
                     activeInstructions.style.opacity = '0.7';
