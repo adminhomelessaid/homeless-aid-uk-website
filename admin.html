@@ -239,6 +239,7 @@
             <div class="admin-tabs">
                 <button class="admin-tab active" data-tab="feeding">Feeding Times</button>
                 <button class="admin-tab" data-tab="content">Content Management</button>
+                <button class="admin-tab" data-tab="theme">Theme Admin</button>
                 <button class="admin-tab" data-tab="analytics">Analytics</button>
             </div>
 
@@ -288,6 +289,45 @@
                         </div>
                     </div>
                     <button class="btn btn-primary" id="saveContentBtn">Save Changes</button>
+                </div>
+
+                <!-- Theme Admin -->
+                <div id="theme" class="admin-section">
+                    <h2>Theme Administration</h2>
+                    <p style="color: #e74c3c; margin-bottom: 2rem;">
+                        <strong>Note:</strong> The website now uses a single uniform theme. This admin is kept for legacy purposes but changes here will not affect the live site.
+                    </p>
+                    
+                    <div class="theme-admin-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                        <div class="color-controls">
+                            <h3>Color Controls</h3>
+                            <div class="color-group">
+                                <label>Background Color:</label>
+                                <input type="color" id="bgColor" value="#F2F2F2" disabled>
+                                <span>#F2F2F2 (Fixed)</span>
+                            </div>
+                            <div class="color-group">
+                                <label>Text Color:</label>
+                                <input type="color" id="textColor" value="#1A2332" disabled>
+                                <span>#1A2332 (Fixed)</span>
+                            </div>
+                            <div class="color-group">
+                                <label>Primary Color:</label>
+                                <input type="color" id="primaryColor" value="#1A2332" disabled>
+                                <span>#1A2332 (Fixed)</span>
+                            </div>
+                        </div>
+                        
+                        <div class="theme-info">
+                            <h3>Current Theme Settings</h3>
+                            <div style="background: #F2F2F2; padding: 1rem; border-radius: 8px; border: 1px solid #1A2332;">
+                                <p><strong>Theme:</strong> Single Uniform Theme</p>
+                                <p><strong>Background:</strong> #F2F2F2</p>
+                                <p><strong>Text & Interactive:</strong> #1A2332</p>
+                                <p><strong>Status:</strong> <span style="color: #27ae60;">Active</span></p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Analytics -->

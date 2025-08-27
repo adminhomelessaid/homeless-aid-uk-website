@@ -1,4 +1,4 @@
-const CACHE_NAME = 'homeless-aid-uk-v1';
+const CACHE_NAME = 'homeless-aid-uk-v2';
 const urlsToCache = [
   '/',
   '/index.html',
