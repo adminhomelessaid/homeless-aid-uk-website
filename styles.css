@@ -756,9 +756,7 @@ section {
 }
 
 .card-body {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
+    /* This is no longer a flex container, just a simple wrapper */
 }
 
 .card-footer {
@@ -842,8 +840,7 @@ section {
 }
 
 .referral-badge,
-.walk-badge,
-.calendar-available {
+.walk-badge {
     color: white;
     padding: 10px;
     border-radius: 8px;
@@ -863,54 +860,83 @@ section {
     background: linear-gradient(135deg, #EF5350, #E53E3E);
 }
 
-.walk-badge,
-.calendar-available {
+.walk-badge {
     background: linear-gradient(135deg, #48BB78, #38A169);
-}
-
-.calendar-not-available {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 12px;
-    border-radius: 8px;
-    font-size: 13px;
-    justify-content: center;
-    background: #FED7D7;
-    color: #C53030;
-    border: 1px solid #FEB2B2;
 }
 
 /* --- Buttons --- */
-.add-calendar-btn {
-    color: white;
-    border: none;
-    padding: 12px 24px;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease-in-out;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
+.btn.add-calendar-btn {
     background: linear-gradient(135deg, #4A5568, #2d3748);
 }
 
-.add-calendar-btn:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+.btn.more-info-btn {
+    background: linear-gradient(135deg, #8B5CF6, #6D28D9);
 }
 
-.add-calendar-btn.btn-added {
-    background: linear-gradient(135deg, #48BB78, #38A169);
-    cursor: default;
+
+/* --- Modal Styles --- */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    z-index: 1000;
 }
 
-.add-calendar-btn:disabled {
-    cursor: not-allowed;
-    opacity: 0.8;
+.modal-overlay.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-content {
+    background: white;
+    padding: 32px;
+    border-radius: 12px;
+    max-width: 500px;
+    width: calc(100% - 40px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    transform: scale(0.95);
+    transition: transform 0.3s ease;
+}
+
+.modal-overlay.visible .modal-content {
+    transform: scale(1);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    border-bottom: 1px solid #E2E8F0;
+    padding-bottom: 16px;
+}
+
+.modal-title {
+    font-family: 'Lora', serif;
+    font-size: 22px;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #718096;
+}
+
+.modal-body {
+    font-size: 16px;
+    line-height: 1.6;
+    color: #4A5568;
 }
 
 
