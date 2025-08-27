@@ -23,7 +23,7 @@ The Homeless Aid UK website is a comprehensive Progressive Web Application (PWA)
 - **Data Management**: Enhanced CSV with admin interface
 - **APIs**: Geolocation API, UK Postcodes API, Email API
 - **Styling**: Advanced CSS with responsive design and animations
-- **Fonts**: Google Fonts (Inter) with performance optimization
+- **Fonts**: Google Fonts (Inter + Lora) with warm, modern typography
 
 ## 📧 EMAIL SYSTEM SETUP (COMPLETED)
 
@@ -249,25 +249,40 @@ Homeless Aid UK/
 ## CSS Architecture (`styles.css`)
 
 ### Design System:
-- **Color Palette**: 
-  - Primary: Orange (#F39C12)
-  - Secondary: Dark Gray (#1A1A1A)
-  - Background: White (#FFFFFF)
-  - Success: Green (#27AE60)
+- **Warm, Modern Color Palette**: 
+  - Background: Warm off-white (#F9F9F7) with subtle grain texture
+  - Text: Soft dark grey (#2d3748)
+  - Success/Available: Green gradient (linear-gradient(135deg, #48BB78, #38A169))
+  - Warning/Referral: Red gradient (linear-gradient(135deg, #EF5350, #E53E3E))
+  - Action Buttons: Dark grey gradient (linear-gradient(135deg, #4A5568, #2d3748))
+
+### Typography:
+- **Primary Font**: 'Inter' (sans-serif) for body text and readability
+- **Accent Font**: 'Lora' (serif, bold) for headers and character
+- **Font Loading**: Google Fonts with performance optimization
 
 ### Layout Strategy:
 - Mobile-first responsive design
-- CSS Grid for complex layouts
+- CSS Grid for complex layouts (320px minimum card width)
 - Flexbox for component alignment
 - Custom properties (CSS variables) for theming
 - Consistent spacing and typography scale
 
 ### Component Types:
-- Navigation and branding
-- Hero sections and call-to-actions
-- Card-based layouts for information display
-- Form styling with validation states
-- Interactive elements with hover effects
+- **Navigation and branding**: Fixed header with blur effects
+- **Hero sections and call-to-actions**: Warm backgrounds with texture
+- **Event Cards**: Clean white cards with modern shadows and hover effects
+- **Time Bars**: Dark backgrounds with white text and emoji prefixes
+- **Badges and Tags**: Gradient backgrounds with proper typography
+- **Form styling**: Consistent with warm color scheme
+- **Interactive elements**: Subtle hover animations with 3px lift
+
+### Event Card Components:
+- **Town Names**: Lora font, 16px, bold weight for prominence
+- **Category Tags**: Light grey pills (11px, #EDF2F7 background)
+- **Time Sections**: Dark bars (#2d3748) with 🕰️ emoji prefix
+- **Referral Badges**: Red gradient with phone icon
+- **Calendar Available**: Green gradient with calendar icon
 
 ## Data Structure (`feed-times.csv`)
 

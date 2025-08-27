@@ -814,18 +814,20 @@ section {
     font-size: 1.1rem;
 }
 
-.feeding-time {
+.feeding-time,
+.time-section {
     background: #2d3748;
     color: white;
-    font-weight: 700;
+    font-weight: 600;
     font-size: 1.1rem;
     margin: 0.5rem 1rem;
-    padding: 0.75rem;
+    padding: 12px;
     border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
+    text-align: center;
 }
 
 .feeding-time i {
@@ -846,11 +848,23 @@ section {
     display: flex;
     align-items: center;
     justify-content: center;
+    gap: 0.75rem;
     line-height: 1.2;
     word-wrap: break-word;
     hyphens: auto;
     border-bottom: 1px solid #E2E8F0;
     border-radius: 11px 11px 0 0;
+    flex-wrap: wrap;
+}
+
+.event-header {
+    width: 100%;
+}
+
+.town {
+    font-size: 16px;
+    font-weight: 700;
+    font-family: 'Lora', serif;
 }
 
 .feeding-address {
@@ -938,49 +952,52 @@ section {
 }
 
 /* Event Category Tags */
-.event-category {
+.event-category,
+.event-category-tag {
     display: inline-block;
     background: #EDF2F7;
-    color: #2d3748;
-    padding: 0.25rem 0.75rem;
+    color: #4A5568;
+    padding: 4px 8px;
     border-radius: 9999px;
-    font-size: 0.75rem;
+    font-size: 11px;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    margin: 0.5rem;
+    font-family: 'Inter', sans-serif;
 }
 
 /* Badges */
 .walk-badge,
 .calendar-available {
-    display: inline-flex;
+    display: flex;
+    justify-content: center;
     align-items: center;
-    gap: 0.5rem;
+    gap: 8px;
     background: linear-gradient(135deg, #48BB78, #38A169);
     color: white;
-    padding: 0.5rem 1rem;
+    padding: 10px;
     border-radius: 8px;
     font-size: 0.85rem;
-    font-weight: 700;
+    font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    margin: 0.5rem;
+    margin: 0.5rem 1rem;
 }
 
 .referral-badge {
-    display: inline-flex;
+    display: flex;
+    justify-content: center;
     align-items: center;
-    gap: 0.5rem;
+    gap: 8px;
     background: linear-gradient(135deg, #EF5350, #E53E3E);
     color: white;
-    padding: 0.5rem 1rem;
+    padding: 10px;
     border-radius: 8px;
     font-size: 0.85rem;
-    font-weight: 700;
+    font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    margin: 0.5rem;
+    margin: 0.5rem 1rem;
 }
 
 /* Help Section */

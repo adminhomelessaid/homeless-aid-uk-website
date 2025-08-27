@@ -227,9 +227,14 @@ async function displayFeedingTimes(data) {
                     `<div class="feeding-distance">${item.distance.toFixed(1)} miles</div>` : '';
                 
                 html += `
-                    <div class="feeding-card">
+                    <div class="feeding-card event-card">
                         ${distanceHtml}
-                        <div class="feeding-location-header">${item.Town} - ${item.Type}</div>
+                        <div class="event-header">
+                            <div class="feeding-location-header venue-name">
+                                <span class="town">${item.Town}</span>
+                                <span class="event-category-tag">${item.Type}</span>
+                            </div>
+                        </div>
                         <div class="feeding-address">${item['Address 1']}</div>
                         ${item.Postcode && item.Postcode.trim() ? 
                             `<a href="${mapsUrl}" target="_blank" rel="noopener noreferrer" class="feeding-postcode-link" title="Click to open in Google Maps">
@@ -241,12 +246,20 @@ async function displayFeedingTimes(data) {
                             </a>` : 
                             `<div class="feeding-postcode">${item.Postcode || ''}</div>`
                         }
-                        ${item.Notes && item.Notes.trim() ? `<div class="feeding-notes">${item.Notes}</div>` : ''}
-                        <div class="feeding-time"><i class="fas fa-clock"></i> ${item.Time}</div>
-                        <div class="calendar-status ${calendarStatus.type}">
-                            <span>${calendarStatus.icon}</span>
-                            <span>${calendarStatus.text}</span>
-                        </div>
+                        ${item.Notes && item.Notes.trim() && item.Notes.toLowerCase().includes('referral') ? 
+                            `<div class="referral-badge">
+                                <i class="fas fa-phone"></i>
+                                <span>Referral Only</span>
+                            </div>` : 
+                            item.Notes && item.Notes.trim() ? `<div class="feeding-notes">${item.Notes}</div>` : ''
+                        }
+                        <div class="feeding-time time-section">🕰️ ${item.Time}</div>
+                        ${calendarStatus.type === 'enabled' ? 
+                            `<div class="calendar-available">
+                                <i class="fas fa-calendar-check"></i>
+                                <span>Calendar Available</span>
+                            </div>` : ''
+                        }
                         ${item['Enable Calendar'] && item['Enable Calendar'].toLowerCase() === 'yes' ? 
                             `<div class="calendar-dropdown" 
                                 data-day="${item.Day || ''}" 
@@ -256,7 +269,7 @@ async function displayFeedingTimes(data) {
                                 data-town="${item.Town || ''}" 
                                 data-type="${item.Type || ''}"
                                 data-notes="${(item.Notes || '').replace(/"/g, '&quot;')}">
-                                <button class="calendar-btn">
+                                <button class="calendar-btn add-calendar-btn">
                                     <i class="fas fa-calendar-plus"></i>
                                     <span>Add to Calendar</span>
                                 </button>
