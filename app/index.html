@@ -175,6 +175,129 @@
             margin: 0 auto;
         }
 
+        /* Install button */
+        .install-section {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .install-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: linear-gradient(135deg, #007A74, #005550);
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(0, 122, 116, 0.3);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-decoration: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .install-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .install-btn:hover::before {
+            left: 100%;
+        }
+
+        .install-btn:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 8px 30px rgba(0, 122, 116, 0.4);
+        }
+
+        .install-btn:active {
+            transform: translateY(0) scale(1);
+        }
+
+        .install-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .install-btn.hidden {
+            display: none;
+        }
+
+        .install-icon {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
+
+        /* Success state */
+        .success-section {
+            display: none;
+            text-align: center;
+            background: linear-gradient(135deg, rgba(39, 174, 96, 0.05) 0%, rgba(39, 174, 96, 0.02) 100%);
+            border-radius: 12px;
+            padding: 32px 24px;
+            border-left: 4px solid #27AE60;
+            margin-bottom: 32px;
+        }
+
+        .success-section.active {
+            display: block;
+            animation: successFadeIn 0.5s ease-in;
+        }
+
+        .success-icon {
+            width: 48px;
+            height: 48px;
+            background: #27AE60;
+            border-radius: 50%;
+            margin: 0 auto 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .success-text {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #27AE60;
+            margin-bottom: 12px;
+        }
+
+        .launch-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #27AE60;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-top: 12px;
+        }
+
+        .launch-btn:hover {
+            background: #219A52;
+            transform: translateY(-1px);
+        }
+
+        @keyframes successFadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         /* Android instructions */
         .android-text {
             font-size: 1.1rem;
@@ -317,6 +440,33 @@
         </header>
 
         <main class="instructions">
+            <!-- Install Button Section -->
+            <div id="install-section" class="install-section" style="display: none;">
+                <button id="install-btn" class="install-btn">
+                    <svg class="install-icon" viewBox="0 0 24 24">
+                        <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+                    </svg>
+                    Install App
+                </button>
+            </div>
+
+            <!-- Success state -->
+            <div id="success-section" class="success-section">
+                <div class="success-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                        <polyline points="20,6 9,17 4,12"></polyline>
+                    </svg>
+                </div>
+                <div class="success-text">App Installed Successfully!</div>
+                <p style="margin-bottom: 16px; color: #2F2F2F;">You can now access the app from your home screen.</p>
+                <a href="/" class="launch-btn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M8 5v14l11-7z"/>
+                    </svg>
+                    Launch App
+                </a>
+            </div>
+
             <!-- Loading state -->
             <div id="loading" class="loading">
                 Detecting your device...
@@ -371,6 +521,11 @@
     </div>
 
     <script>
+        // Global variables for install prompt
+        let deferredPrompt;
+        let installButton;
+        let isAppInstalled = false;
+
         // OS Detection and Conditional Rendering
         function detectOS() {
             const userAgent = navigator.userAgent || navigator.vendor || window.opera;
@@ -395,31 +550,153 @@
             return 'android';
         }
 
+        // Check if PWA is already installed
+        function checkIfInstalled() {
+            // Check if running in standalone mode (already installed)
+            if (window.matchMedia('(display-mode: standalone)').matches || 
+                window.navigator.standalone === true) {
+                return true;
+            }
+            
+            // Check localStorage for previous install
+            if (localStorage.getItem('pwa-installed') === 'true') {
+                return true;
+            }
+            
+            return false;
+        }
+
+        // Show success state
+        function showSuccessState() {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('install-section').style.display = 'none';
+            document.getElementById('android-instructions').classList.remove('active');
+            document.getElementById('ios-instructions').classList.remove('active');
+            document.getElementById('success-section').classList.add('active');
+            
+            // Store install state
+            localStorage.setItem('pwa-installed', 'true');
+            isAppInstalled = true;
+        }
+
+        // Handle install button click
+        async function handleInstallClick() {
+            if (!deferredPrompt) {
+                console.log('No install prompt available');
+                return;
+            }
+
+            // Disable button during install process
+            installButton.disabled = true;
+            installButton.textContent = 'Installing...';
+
+            try {
+                // Show the install prompt
+                deferredPrompt.prompt();
+                
+                // Wait for the user's response
+                const { outcome } = await deferredPrompt.userChoice;
+                
+                console.log(`User ${outcome} the install prompt`);
+                
+                if (outcome === 'accepted') {
+                    showSuccessState();
+                } else {
+                    // Re-enable button if user declined
+                    installButton.disabled = false;
+                    installButton.innerHTML = `
+                        <svg class="install-icon" viewBox="0 0 24 24">
+                            <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+                        </svg>
+                        Install App
+                    `;
+                }
+            } catch (error) {
+                console.error('Install failed:', error);
+                // Re-enable button on error
+                installButton.disabled = false;
+                installButton.innerHTML = `
+                    <svg class="install-icon" viewBox="0 0 24 24">
+                        <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+                    </svg>
+                    Install App
+                `;
+            }
+
+            // Clear the prompt
+            deferredPrompt = null;
+        }
+
         function showInstructions(os) {
             // Hide loading
             const loading = document.getElementById('loading');
             loading.style.display = 'none';
             
-            // Show appropriate instructions
-            if (os === 'ios') {
-                document.getElementById('ios-instructions').classList.add('active');
+            // If already installed, show success state
+            if (isAppInstalled) {
+                showSuccessState();
+                return;
+            }
+
+            // Show install button if prompt is available
+            if (deferredPrompt && !isAppInstalled) {
+                document.getElementById('install-section').style.display = 'block';
             } else {
-                document.getElementById('android-instructions').classList.add('active');
+                // Show appropriate fallback instructions
+                if (os === 'ios') {
+                    document.getElementById('ios-instructions').classList.add('active');
+                } else {
+                    document.getElementById('android-instructions').classList.add('active');
+                }
             }
         }
 
         // Initialize when DOM is loaded
         document.addEventListener('DOMContentLoaded', function() {
-            // Small delay to show loading state briefly
+            installButton = document.getElementById('install-btn');
+            isAppInstalled = checkIfInstalled();
+            
+            // Add click handler for install button
+            if (installButton) {
+                installButton.addEventListener('click', handleInstallClick);
+            }
+
+            // Small delay to show loading state briefly and allow beforeinstallprompt to fire
             setTimeout(function() {
                 const detectedOS = detectOS();
                 showInstructions(detectedOS);
-            }, 500);
+            }, 1000);
+        });
+
+        // Listen for the beforeinstallprompt event
+        window.addEventListener('beforeinstallprompt', (e) => {
+            console.log('beforeinstallprompt event fired');
+            
+            // Prevent the default browser install prompt
+            e.preventDefault();
+            
+            // Store the event for later use
+            deferredPrompt = e;
+            
+            // Show our custom install button
+            if (!isAppInstalled) {
+                document.getElementById('install-section').style.display = 'block';
+                // Hide manual instructions since we can trigger native prompt
+                document.getElementById('android-instructions').classList.remove('active');
+                document.getElementById('ios-instructions').classList.remove('active');
+            }
+        });
+
+        // Listen for successful app install
+        window.addEventListener('appinstalled', (e) => {
+            console.log('PWA was installed successfully');
+            showSuccessState();
         });
 
         // Debug: Add OS info to console for testing
         console.log('User Agent:', navigator.userAgent);
         console.log('Detected OS:', detectOS());
+        console.log('Is already installed:', checkIfInstalled());
     </script>
 </body>
 </html>
