@@ -1,62 +1,89 @@
 :root {
-    --primary-color: #F39C12;
-    --secondary-color: #1A1A1A;
-    --background-color: #FFFFFF;
-    --text-color: #333333;
+    /* Professional Color Palette */
+    --teal-primary: #007A74;  /* Deep Teal - Major headings, key info */
+    --orange-action: #F5A623;  /* Brand Orange - CTAs, buttons, links */
+    --charcoal-text: #2F2F2F;  /* Dark Charcoal - Subheadings, text */
+    --white-bg: #FFFFFF;  /* White - Background */
+    
+    /* Supporting colors */
     --light-gray: #F8F9FA;
     --border-color: #E0E0E0;
     --success-color: #27AE60;
-    --shadow: 0 4px 12px rgba(243, 156, 18, 0.1);
-    --shadow-hover: 0 8px 25px rgba(243, 156, 18, 0.2);
-    --shadow-card: 0 6px 20px rgba(0, 0, 0, 0.08);
-    --shadow-card-hover: 0 12px 35px rgba(0, 0, 0, 0.15);
-    --glassmorphism: rgba(255, 255, 255, 0.95);
-    --glassmorphism-border: rgba(243, 156, 18, 0.2);
+    --error-color: #E74C3C;
     
-    /* Theme accent colors - default */
-    --accent-color: #1A1A1A;
-    --accent-light: #F8F9FA;
-    --accent-dark: #0A0A0A;
+    /* Applied palette (default professional theme) */
+    --primary-color: #007A74;  /* Changed from orange to teal */
+    --secondary-color: #2F2F2F;  /* Changed to charcoal */
+    --action-color: #F5A623;  /* Orange for actions */
+    --background-color: #FFFFFF;
+    --text-color: #2F2F2F;
+    
+    /* Shadows updated for new palette */
+    --shadow: 0 4px 12px rgba(0, 122, 116, 0.1);
+    --shadow-hover: 0 8px 25px rgba(0, 122, 116, 0.15);
+    --shadow-card: 0 6px 20px rgba(0, 0, 0, 0.08);
+    --shadow-card-hover: 0 12px 35px rgba(0, 0, 0, 0.12);
+    --shadow-action: 0 4px 12px rgba(245, 166, 35, 0.2);
+    --shadow-action-hover: 0 8px 25px rgba(245, 166, 35, 0.3);
+    
+    /* Glass effects */
+    --glassmorphism: rgba(255, 255, 255, 0.95);
+    --glassmorphism-border: rgba(0, 122, 116, 0.15);
+    
+    /* Theme accent colors - professional */
+    --accent-color: #007A74;
+    --accent-light: #E6F3F2;
+    --accent-dark: #005550;
     --accent-bg: #FFFFFF;
-    --accent-bg-light: #F8F9FA;
-    --accent-shadow: rgba(26, 26, 26, 0.1);
+    --accent-bg-light: #F8FAFA;
+    --accent-shadow: rgba(0, 122, 116, 0.1);
 }
 
 /* Theme variations */
-body[data-theme="teal"] {
-    --accent-color: #006B7D;
-    --accent-light: #E6F3F5;
-    --accent-dark: #004A57;
-    --accent-bg: #F5FAFB;
-    --accent-bg-light: #E6F3F5;
-    --accent-shadow: rgba(0, 107, 125, 0.15);
+body[data-theme="professional"] {
+    /* This is now the default theme */
 }
 
-body[data-theme="earth"] {
-    --accent-color: #8B4513;
-    --accent-light: #FDF5E6;
-    --accent-dark: #5D2F0B;
-    --accent-bg: #FFFAF5;
-    --accent-bg-light: #FDF5E6;
-    --accent-shadow: rgba(139, 69, 19, 0.15);
+body[data-theme="classic"] {
+    /* Original orange/black theme */
+    --primary-color: #F39C12;
+    --secondary-color: #1A1A1A;
+    --action-color: #F39C12;
+    --text-color: #333333;
+    --accent-color: #1A1A1A;
+    --accent-light: #F8F9FA;
+    --accent-dark: #0A0A0A;
+    --shadow: 0 4px 12px rgba(243, 156, 18, 0.1);
+    --shadow-hover: 0 8px 25px rgba(243, 156, 18, 0.2);
+    --shadow-action: 0 4px 12px rgba(243, 156, 18, 0.2);
+    --shadow-action-hover: 0 8px 25px rgba(243, 156, 18, 0.3);
+    --glassmorphism-border: rgba(243, 156, 18, 0.2);
 }
 
-body[data-theme="sage"] {
-    --accent-color: #6B8E23;
-    --accent-light: #F0F4E8;
-    --accent-dark: #4A6319;
-    --accent-bg: #F8FAF5;
-    --accent-bg-light: #F0F4E8;
-    --accent-shadow: rgba(107, 142, 35, 0.15);
+body[data-theme="midnight"] {
+    /* Dark professional theme */
+    --primary-color: #1E3A5F;
+    --secondary-color: #0A1628;
+    --action-color: #F5A623;
+    --text-color: #2F2F2F;
+    --accent-color: #1E3A5F;
+    --accent-light: #E8EEF4;
+    --accent-dark: #0A1628;
+    --shadow: 0 4px 12px rgba(30, 58, 95, 0.15);
+    --shadow-hover: 0 8px 25px rgba(30, 58, 95, 0.2);
 }
 
-body[data-theme="purple"] {
-    --accent-color: #663399;
-    --accent-light: #F3E6FF;
-    --accent-dark: #4B2473;
-    --accent-bg: #FAF5FF;
-    --accent-bg-light: #F3E6FF;
-    --accent-shadow: rgba(102, 51, 153, 0.15);
+body[data-theme="forest"] {
+    /* Nature-inspired professional */
+    --primary-color: #2C5F2D;
+    --secondary-color: #1A3A1A;
+    --action-color: #F5A623;
+    --text-color: #2F2F2F;
+    --accent-color: #2C5F2D;
+    --accent-light: #E8F3E8;
+    --accent-dark: #1A3A1A;
+    --shadow: 0 4px 12px rgba(44, 95, 45, 0.15);
+    --shadow-hover: 0 8px 25px rgba(44, 95, 45, 0.2);
 }
 
 * {
@@ -704,7 +731,7 @@ section {
 }
 
 .near-me-btn {
-    background: linear-gradient(135deg, var(--primary-color), #e67e22);
+    background: var(--action-color);
     color: var(--background-color);
     border: none;
     padding: 1rem 1.5rem;
@@ -716,14 +743,14 @@ section {
     align-items: center;
     gap: 0.5rem;
     transition: all 0.3s ease;
-    box-shadow: var(--shadow);
+    box-shadow: var(--shadow-action);
     white-space: nowrap;
 }
 
 .near-me-btn:hover {
     transform: translateY(-2px);
-    box-shadow: var(--shadow-hover);
-    background: linear-gradient(135deg, #e67e22, var(--primary-color));
+    box-shadow: var(--shadow-action-hover);
+    background: linear-gradient(135deg, var(--action-color), #E89A00);
 }
 
 .near-me-btn:disabled {
@@ -769,7 +796,7 @@ section {
     left: 1.25rem;
     top: 50%;
     transform: translateY(-50%);
-    color: var(--primary-color);
+    color: var(--action-color);
     font-size: 1.1rem;
     pointer-events: none;
 }
@@ -853,11 +880,10 @@ section {
 .feeding-card {
     background: var(--glassmorphism);
     backdrop-filter: blur(10px);
-    border: 2px solid transparent;
-    border-image: linear-gradient(135deg, var(--primary-color), var(--accent-color)) 1;
+    border: 1px solid var(--border-color);
     padding: 0;
     border-radius: 16px;
-    box-shadow: var(--accent-shadow);
+    box-shadow: var(--shadow-card);
     transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     text-align: center;
     overflow: visible;
@@ -885,7 +911,7 @@ section {
 .feeding-card:hover {
     transform: translateY(-8px) scale(1.02);
     box-shadow: var(--shadow-card-hover);
-    border-color: rgba(243, 156, 18, 0.4);
+    border-color: var(--action-color);
 }
 
 .feeding-card:active {
@@ -898,7 +924,7 @@ section {
     position: absolute;
     top: 1rem;
     right: 1rem;
-    background: rgba(243, 156, 18, 0.9);
+    background: var(--primary-color);
     color: var(--background-color);
     padding: 0.25rem 0.75rem;
     border-radius: 50px;
@@ -1392,7 +1418,7 @@ section {
 
 .contact-link {
     font-size: 1.2rem;
-    color: var(--primary-color);
+    color: var(--action-color);
     text-decoration: none;
     font-weight: 700;
     display: block;
@@ -1400,7 +1426,8 @@ section {
 }
 
 .contact-link:hover {
-    color: var(--secondary-color);
+    color: var(--primary-color);
+    text-decoration: underline;
 }
 
 .social-buttons {
@@ -1413,16 +1440,19 @@ section {
 
 .social-btn {
     padding: 0.5rem 1rem;
-    background: var(--primary-color);
+    background: var(--action-color);
     color: var(--background-color);
     text-decoration: none;
     border-radius: 6px;
     font-weight: 500;
-    transition: background 0.3s;
+    transition: all 0.3s;
+    box-shadow: var(--shadow-action);
 }
 
 .social-btn:hover {
-    background: var(--secondary-color);
+    background: linear-gradient(135deg, var(--action-color), #E89A00);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-action-hover);
 }
 
 /* Get Help Section */
@@ -1484,7 +1514,7 @@ section {
 
 /* Footer */
 footer {
-    background: linear-gradient(135deg, var(--secondary-color) 0%, var(--accent-dark) 100%);
+    background: var(--secondary-color);
     color: var(--background-color);
     padding: 3rem 0 1rem;
     margin-top: 4rem;
@@ -1521,7 +1551,7 @@ footer {
 
 .footer-section h4 {
     margin-bottom: 1rem;
-    color: var(--primary-color);
+    color: #FFFFFF;
 }
 
 .footer-section ul {
@@ -1910,14 +1940,14 @@ footer {
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    background: var(--primary-color);
+    background: var(--action-color);
     color: var(--background-color);
     padding: 1rem 1.5rem;
     border-radius: 50px;
     text-decoration: none;
     font-weight: 600;
     font-size: 1rem;
-    box-shadow: var(--shadow-elevated);
+    box-shadow: var(--shadow-action);
     transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     border: 2px solid transparent;
     backdrop-filter: blur(10px);
@@ -2167,7 +2197,7 @@ footer {
 
 .calendar-btn {
     width: 100%;
-    background: linear-gradient(135deg, var(--primary-color) 0%, #e67e22 100%);
+    background: var(--action-color);
     color: var(--background-color);
     border: none;
     padding: 0.75rem 1rem;
@@ -2180,13 +2210,13 @@ footer {
     gap: 0.5rem;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 2px 10px rgba(243, 156, 18, 0.3);
+    box-shadow: var(--shadow-action);
 }
 
 .calendar-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 20px rgba(243, 156, 18, 0.4);
-    background: linear-gradient(135deg, #e67e22 0%, var(--primary-color) 100%);
+    box-shadow: var(--shadow-action-hover);
+    background: linear-gradient(135deg, var(--action-color), #E89A00);
 }
 
 .calendar-btn:active {

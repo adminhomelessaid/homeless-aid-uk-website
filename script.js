@@ -2,7 +2,7 @@ console.log('🚀 Script.js is loaded!');
 
 // Theme Switcher Functionality
 const ThemeManager = {
-    currentTheme: localStorage.getItem('selectedTheme') || 'default',
+    currentTheme: localStorage.getItem('selectedTheme') || 'professional',
     
     init() {
         // Apply saved theme on load
