@@ -1,14 +1,24 @@
 :root {
-    /* Light Blue Color Palette (New Default) */
-    --light-blue-primary: #adcbf0;  /* Light Blue - Major headings, key info, boxes */
-    --deep-blue-action: #3e7cb8;   /* Deep Blue - CTAs, buttons, links */
-    --dark-blue-text: #2c3e50;     /* Dark Blue-Gray - Body text */
-    --darker-blue-secondary: #1a2332;  /* Darker Blue-Gray - Headings */
-    --white-bg: #FFFFFF;            /* White - Background */
+    /* Single Theme Color Palette */
+    /* Background Colors - All F2F2F2 */
+    --background-color: #F2F2F2;
+    --accent-bg: #F2F2F2;
+    --accent-bg-light: #F2F2F2;
+    --accent-light: #F2F2F2;
+    
+    /* Text Colors - All #1A2332 */
+    --text-color: #1A2332;
+    --secondary-color: #1A2332;
+    
+    /* Primary and Action Colors - All #1A2332 */
+    --primary-color: #1A2332;
+    --action-color: #1A2332;
+    --accent-color: #1A2332;
+    --accent-dark: #1A2332;
     
     /* Supporting colors */
-    --light-gray: #F8F9FA;
-    --border-color: #E0E0E0;
+    --light-gray: #E8E8E8;
+    --border-color: #D0D0D0;
     --success-color: #27AE60;
     --error-color: #E74C3C;
     
@@ -20,103 +30,22 @@
     --border-button: 2px;
     --border-input: 2px;
     
-    /* Applied palette (default light blue theme) */
-    --primary-color: #adcbf0;       /* Light blue for boxes/blocks */
-    --secondary-color: #1a2332;     /* Darker blue-gray for headings */
-    --action-color: #3e7cb8;        /* Deep blue for actions */
-    --background-color: #FFFFFF;
-    --text-color: #2c3e50;          /* Dark blue-gray for text */
-    
     /* Shadows updated for new palette */
-    --shadow: 0 4px 12px rgba(173, 203, 240, 0.2);
-    --shadow-hover: 0 8px 25px rgba(173, 203, 240, 0.3);
-    --shadow-card: 0 6px 20px rgba(0, 0, 0, 0.08);
-    --shadow-card-hover: 0 12px 35px rgba(0, 0, 0, 0.12);
-    --shadow-action: 0 4px 12px rgba(62, 124, 184, 0.2);
-    --shadow-action-hover: 0 8px 25px rgba(62, 124, 184, 0.3);
+    --shadow: 0 4px 12px rgba(26, 35, 50, 0.1);
+    --shadow-hover: 0 8px 25px rgba(26, 35, 50, 0.15);
+    --shadow-card: 0 6px 20px rgba(26, 35, 50, 0.08);
+    --shadow-card-hover: 0 12px 35px rgba(26, 35, 50, 0.12);
+    --shadow-action: 0 4px 12px rgba(26, 35, 50, 0.2);
+    --shadow-action-hover: 0 8px 25px rgba(26, 35, 50, 0.3);
     
     /* Glass effects */
-    --glassmorphism: rgba(255, 255, 255, 0.95);
-    --glassmorphism-border: rgba(173, 203, 240, 0.2);
+    --glassmorphism: rgba(242, 242, 242, 0.95);
+    --glassmorphism-border: rgba(26, 35, 50, 0.1);
     
-    /* Theme accent colors - light blue */
-    --accent-color: #adcbf0;
-    --accent-light: #e8f2ff;
-    --accent-dark: #7ba7db;
-    --accent-bg: #FFFFFF;
-    --accent-bg-light: #f4f8ff;
-    --accent-shadow: rgba(173, 203, 240, 0.15);
+    /* Unified shadow */
+    --accent-shadow: rgba(26, 35, 50, 0.1);
 }
 
-/* Theme variations */
-body[data-theme="light-blue"] {
-    /* This is now the default theme - same as :root */
-}
-
-body[data-theme="professional"] {
-    /* Original teal/orange professional theme */
-    --primary-color: #007A74;
-    --secondary-color: #2F2F2F;
-    --action-color: #F5A623;
-    --text-color: #2F2F2F;
-    --accent-color: #007A74;
-    --accent-light: #E6F3F2;
-    --accent-dark: #005550;
-    --accent-bg-light: #F8FAFA;
-    --shadow: 0 4px 12px rgba(0, 122, 116, 0.1);
-    --shadow-hover: 0 8px 25px rgba(0, 122, 116, 0.15);
-    --shadow-action: 0 4px 12px rgba(245, 166, 35, 0.2);
-    --shadow-action-hover: 0 8px 25px rgba(245, 166, 35, 0.3);
-    --glassmorphism-border: rgba(0, 122, 116, 0.15);
-    --accent-shadow: rgba(0, 122, 116, 0.1);
-}
-
-body[data-theme="classic"] {
-    /* Original orange/black theme */
-    --primary-color: #F39C12;
-    --secondary-color: #1A1A1A;
-    --action-color: #F39C12;
-    --text-color: #333333;
-    --accent-color: #1A1A1A;
-    --accent-light: #F8F9FA;
-    --accent-dark: #0A0A0A;
-    --shadow: 0 4px 12px rgba(243, 156, 18, 0.1);
-    --shadow-hover: 0 8px 25px rgba(243, 156, 18, 0.2);
-    --shadow-action: 0 4px 12px rgba(243, 156, 18, 0.2);
-    --shadow-action-hover: 0 8px 25px rgba(243, 156, 18, 0.3);
-    --glassmorphism-border: rgba(243, 156, 18, 0.2);
-}
-
-body[data-theme="midnight"] {
-    /* Dark professional theme */
-    --primary-color: #1E3A5F;
-    --secondary-color: #0A1628;
-    --action-color: #F5A623;
-    --text-color: #2F2F2F;
-    --accent-color: #1E3A5F;
-    --accent-light: #E8EEF4;
-    --accent-dark: #0A1628;
-    --shadow: 0 4px 12px rgba(30, 58, 95, 0.15);
-    --shadow-hover: 0 8px 25px rgba(30, 58, 95, 0.2);
-}
-
-body[data-theme="forest"] {
-    /* Nature-inspired professional */
-    --primary-color: #2C5F2D;
-    --secondary-color: #1A3A1A;
-    --action-color: #F5A623;
-    --text-color: #2F2F2F;
-    --accent-color: #2C5F2D;
-    --accent-light: #E8F3E8;
-    --accent-dark: #1A3A1A;
-    --shadow: 0 4px 12px rgba(44, 95, 45, 0.15);
-    --shadow-hover: 0 8px 25px rgba(44, 95, 45, 0.2);
-}
-
-body[data-theme="custom"] {
-    /* Custom theme - colors set dynamically via JavaScript */
-    /* CSS variables are updated in real-time by theme admin */
-}
 
 * {
     margin: 0;
@@ -129,122 +58,6 @@ body * {
     transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
-/* Theme Switcher */
-.theme-switcher {
-    position: fixed;
-    top: 100px;
-    right: 20px;
-    z-index: 999;
-}
-
-.theme-toggle-btn {
-    background: var(--primary-color);
-    color: white;
-    border: none;
-    border-radius: 12px;
-    padding: 12px 20px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    box-shadow: 0 4px 12px rgba(243, 156, 18, 0.3);
-    transition: all 0.3s ease;
-}
-
-.theme-toggle-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(243, 156, 18, 0.4);
-}
-
-.theme-panel {
-    position: absolute;
-    top: calc(100% + 10px);
-    right: 0;
-    background: white;
-    border-radius: 16px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-    padding: 20px;
-    width: 280px;
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(-10px);
-    transition: all 0.3s ease;
-}
-
-.theme-panel.active {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
-}
-
-.theme-panel h4 {
-    margin: 0 0 15px 0;
-    color: var(--secondary-color);
-    font-size: 1.1rem;
-}
-
-.theme-options {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.theme-option {
-    background: white;
-    border: 2px solid #e0e0e0;
-    border-radius: 10px;
-    padding: 12px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-size: 0.95rem;
-    font-weight: 500;
-    color: var(--text-color);
-}
-
-.theme-option:hover {
-    border-color: var(--primary-color);
-    transform: translateX(5px);
-}
-
-.theme-option.active {
-    border-color: var(--primary-color);
-    background: rgba(243, 156, 18, 0.05);
-}
-
-.theme-colors {
-    display: flex;
-    gap: 4px;
-}
-
-.theme-colors span {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    border: 2px solid white;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-@media (max-width: 768px) {
-    .theme-switcher {
-        top: 90px;
-        right: 10px;
-    }
-    
-    .theme-toggle-btn {
-        padding: 10px 16px;
-        font-size: 0.9rem;
-    }
-    
-    .theme-panel {
-        width: 240px;
-        padding: 15px;
-    }
-}
 
 /* Animation Library */
 @keyframes float {
@@ -362,7 +175,7 @@ body {
 }
 
 .navbar.scrolled {
-    background: rgba(255, 255, 255, 0.95);
+    background: rgba(242, 242, 242, 0.95);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border-bottom: 1px solid rgba(243, 156, 18, 0.1);
@@ -479,7 +292,7 @@ body {
 
 /* Hero Section */
 .hero {
-    background: linear-gradient(135deg, rgba(243, 156, 18, 0.1) 0%, var(--accent-light) 100%);
+    background: var(--background-color);
     padding: 2rem 0;
     text-align: center;
     position: relative;
@@ -1557,8 +1370,8 @@ section {
 
 /* Footer */
 footer {
-    background: var(--secondary-color);
-    color: var(--background-color);
+    background: var(--background-color);
+    color: var(--text-color);
     padding: 3rem 0 1rem;
     margin-top: 4rem;
     transition: background 0.3s ease;

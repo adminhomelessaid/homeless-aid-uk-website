@@ -26,7 +26,11 @@
       "Bash(if [ -z \"$EMAIL_USER\" ])",
       "Bash(else echo \"Set: $EMAIL_USER\")",
       "Bash(if [ -z \"$EMAIL_PASS\" ])",
-      "Bash(else echo \"Set (length: $#EMAIL_PASS)\")"
+      "Bash(else echo \"Set (length: $#EMAIL_PASS)\")",
+      "WebFetch(domain:www.homelessaid.co.uk)",
+      "Bash(git log:*)",
+      "Bash(git checkout:*)",
+      "Bash(git merge:*)"
     ],
     "deny": [],
     "ask": []

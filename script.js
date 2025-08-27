@@ -1,98 +1,5 @@
 console.log('🚀 Script.js is loaded!');
 
-// Theme Switcher Functionality
-const ThemeManager = {
-    currentTheme: localStorage.getItem('selectedTheme') || 'light-blue',
-    
-    init() {
-        // Apply saved theme on load
-        this.applyTheme(this.currentTheme);
-        this.updateActiveButton();
-    },
-    
-    applyTheme(themeName) {
-        if (themeName === 'custom') {
-            this.applyCustomTheme();
-        } else {
-            document.body.setAttribute('data-theme', themeName);
-        }
-        this.currentTheme = themeName;
-        localStorage.setItem('selectedTheme', themeName);
-        this.updateActiveButton();
-        console.log(`Theme changed to: ${themeName}`);
-    },
-
-    applyCustomTheme() {
-        const customTheme = localStorage.getItem('customTheme');
-        if (customTheme) {
-            const theme = JSON.parse(customTheme);
-            
-            // Handle legacy format (colors only) vs new format (colors + borders)
-            const colors = theme.colors || theme;
-            const borders = theme.borders || {};
-            
-            // Apply custom color CSS variables
-            Object.keys(colors).forEach(key => {
-                const cssVarName = '--' + key.replace(/([A-Z])/g, '-$1').toLowerCase();
-                document.documentElement.style.setProperty(cssVarName, colors[key]);
-            });
-
-            // Apply custom border thickness CSS variables
-            Object.keys(borders).forEach(key => {
-                const cssVarName = '--' + key.replace(/([A-Z])/g, '-$1').toLowerCase();
-                document.documentElement.style.setProperty(cssVarName, borders[key] + 'px');
-            });
-            
-            // Set body theme attribute
-            document.body.setAttribute('data-theme', 'custom');
-            console.log('Custom theme applied with colors and borders');
-        } else {
-            console.log('No custom theme found, falling back to light-blue');
-            this.applyTheme('light-blue');
-        }
-    },
-    
-    updateActiveButton() {
-        const buttons = document.querySelectorAll('.theme-option');
-        buttons.forEach(btn => {
-            if (btn.getAttribute('data-theme') === this.currentTheme) {
-                btn.classList.add('active');
-            } else {
-                btn.classList.remove('active');
-            }
-        });
-    }
-};
-
-// Theme panel toggle
-function toggleThemePanel() {
-    const panel = document.getElementById('themePanel');
-    panel.classList.toggle('active');
-    
-    // Close panel when clicking outside
-    if (panel.classList.contains('active')) {
-        setTimeout(() => {
-            document.addEventListener('click', closeThemePanelOnOutsideClick);
-        }, 0);
-    }
-}
-
-function closeThemePanelOnOutsideClick(event) {
-    const panel = document.getElementById('themePanel');
-    const switcher = document.querySelector('.theme-switcher');
-    
-    if (!switcher.contains(event.target)) {
-        panel.classList.remove('active');
-        document.removeEventListener('click', closeThemePanelOnOutsideClick);
-    }
-}
-
-// Set theme function
-function setTheme(themeName) {
-    ThemeManager.applyTheme(themeName);
-    // Close panel after selection
-    document.getElementById('themePanel').classList.remove('active');
-}
 
 // Configuration
 const CONFIG = {
@@ -796,8 +703,6 @@ const TouchManager = {
 document.addEventListener('DOMContentLoaded', function() {
     console.log('📋 DOM loaded - attaching event listeners');
     
-    // Initialize theme manager
-    ThemeManager.init();
     
     // Load feeding times if on homepage
     loadFeedingTimes();
