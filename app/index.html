@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Install the Homeless Aid UK PWA for instant access to support schedules, street kitchen times, and volunteer opportunities - works offline">
+    <meta name="theme-color" content="#007A74">
+    <title>Install the Homeless Aid UK App</title>
+    
+    <style>
+        /* Reset and base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #2F2F2F;
+            background-color: #FFFFFF;
+            padding: 0;
+            margin: 0;
+        }
+
+        /* Mobile-first container */
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            color: #007A74;
+            font-size: 1.75rem;
+            font-weight: 700;
+            line-height: 1.3;
+            margin-bottom: 16px;
+        }
+
+        /* Benefits list */
+        .benefits {
+            background: linear-gradient(135deg, rgba(0, 122, 116, 0.05) 0%, rgba(0, 122, 116, 0.02) 100%);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 40px;
+            border-left: 4px solid #007A74;
+        }
+
+        .benefits ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .benefits li {
+            position: relative;
+            padding: 8px 0 8px 24px;
+            font-size: 1rem;
+            line-height: 1.5;
+            color: #2F2F2F;
+        }
+
+        .benefits li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            top: 8px;
+            color: #007A74;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        /* Instruction sections */
+        .instructions {
+            flex: 1;
+        }
+
+        .instruction-section {
+            display: none;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        .instruction-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h2 {
+            color: #007A74;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .instruction-text {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 32px;
+            text-align: center;
+            color: #2F2F2F;
+        }
+
+        /* iOS steps */
+        .ios-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+        }
+
+        .step {
+            background: #FFFFFF;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(0, 122, 116, 0.1);
+            text-align: center;
+        }
+
+        .step-number {
+            display: inline-block;
+            width: 32px;
+            height: 32px;
+            background: #007A74;
+            color: white;
+            border-radius: 50%;
+            line-height: 32px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 16px;
+        }
+
+        .step-text {
+            font-size: 1.1rem;
+            line-height: 1.5;
+            margin-bottom: 20px;
+            color: #2F2F2F;
+        }
+
+        .step strong {
+            color: #F5A623;
+            font-weight: 600;
+        }
+
+        /* Icon styling */
+        .step-icon {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            margin: 0 auto;
+            background: rgba(245, 166, 35, 0.1);
+            border-radius: 8px;
+            padding: 8px;
+        }
+
+        .step-icon svg {
+            width: 24px;
+            height: 24px;
+            stroke: #F5A623;
+            display: block;
+            margin: 0 auto;
+        }
+
+        /* Android instructions */
+        .android-text {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            text-align: center;
+            background: linear-gradient(135deg, rgba(245, 166, 35, 0.05) 0%, rgba(245, 166, 35, 0.02) 100%);
+            border-radius: 12px;
+            padding: 32px 24px;
+            border-left: 4px solid #F5A623;
+            color: #2F2F2F;
+        }
+
+        .android-text strong {
+            color: #F5A623;
+            font-weight: 600;
+        }
+
+        /* Loading state */
+        .loading {
+            text-align: center;
+            padding: 40px 20px;
+            color: #007A74;
+            font-size: 1.1rem;
+        }
+
+        .loading::before {
+            content: '';
+            display: block;
+            width: 32px;
+            height: 32px;
+            border: 3px solid rgba(0, 122, 116, 0.2);
+            border-top: 3px solid #007A74;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Tablet and desktop responsive */
+        @media (min-width: 768px) {
+            .container {
+                max-width: 600px;
+                padding: 40px;
+            }
+
+            h1 {
+                font-size: 2.25rem;
+                margin-bottom: 20px;
+            }
+
+            h2 {
+                font-size: 1.75rem;
+                margin-bottom: 20px;
+            }
+
+            .benefits {
+                padding: 32px;
+                margin-bottom: 48px;
+            }
+
+            .benefits li {
+                font-size: 1.1rem;
+                padding: 10px 0 10px 28px;
+            }
+
+            .step {
+                padding: 32px;
+            }
+
+            .step-text,
+            .instruction-text,
+            .android-text {
+                font-size: 1.2rem;
+            }
+
+            .ios-steps {
+                gap: 40px;
+            }
+        }
+
+        /* Large desktop */
+        @media (min-width: 1024px) {
+            .container {
+                max-width: 700px;
+                padding: 60px 40px;
+            }
+
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .ios-steps {
+                flex-direction: row;
+                gap: 32px;
+            }
+
+            .step {
+                flex: 1;
+            }
+        }
+
+        /* High contrast mode support */
+        @media (prefers-contrast: high) {
+            .step {
+                border: 2px solid #007A74;
+            }
+            
+            .benefits,
+            .android-text {
+                border: 2px solid;
+            }
+        }
+
+        /* Reduced motion support */
+        @media (prefers-reduced-motion: reduce) {
+            .instruction-section,
+            .loading::before {
+                animation: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Get the Homeless Aid UK Support App</h1>
+            
+            <div class="benefits">
+                <ul>
+                    <li>Get instant access to our support schedule</li>
+                    <li>View street kitchen and takeaway times</li>
+                    <li>Works offline—perfect for when you have no data</li>
+                    <li>Find out about volunteer opportunities</li>
+                </ul>
+            </div>
+        </header>
+
+        <main class="instructions">
+            <!-- Loading state -->
+            <div id="loading" class="loading">
+                Detecting your device...
+            </div>
+
+            <!-- Android Instructions -->
+            <section id="android-instructions" class="instruction-section">
+                <h2>For Android Users</h2>
+                <div class="android-text">
+                    Your device should automatically prompt you to install. Simply tap <strong>'Install'</strong> or <strong>'Add to Home Screen'</strong> to add our app.
+                </div>
+            </section>
+
+            <!-- iOS Instructions -->
+            <section id="ios-instructions" class="instruction-section">
+                <h2>For iPhone & iPad Users</h2>
+                <p class="instruction-text">
+                    Installation is a quick, manual process. Please follow these two steps:
+                </p>
+                
+                <div class="ios-steps">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-text">
+                            Tap the <strong>Share Icon</strong> in your Safari browser menu.
+                        </div>
+                        <div class="step-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
+                                <polyline points="16,6 12,2 8,6"/>
+                                <line x1="12" y1="2" x2="12" y2="15"/>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-text">
+                            Scroll down the options and tap <strong>'Add to Home Screen'</strong>.
+                        </div>
+                        <div class="step-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                <line x1="12" y1="8" x2="12" y2="16"/>
+                                <line x1="8" y1="12" x2="16" y2="12"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // OS Detection and Conditional Rendering
+        function detectOS() {
+            const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+            
+            // iOS detection - covers iPhone, iPad, iPod
+            if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+                return 'ios';
+            }
+            
+            // Android detection
+            if (/android/i.test(userAgent)) {
+                return 'android';
+            }
+            
+            // Default to Android for other mobile devices/unknown
+            // This ensures a fallback instruction set
+            if (/Mobile|Tablet/.test(userAgent)) {
+                return 'android';
+            }
+            
+            // Desktop/unknown devices default to Android instructions
+            return 'android';
+        }
+
+        function showInstructions(os) {
+            // Hide loading
+            const loading = document.getElementById('loading');
+            loading.style.display = 'none';
+            
+            // Show appropriate instructions
+            if (os === 'ios') {
+                document.getElementById('ios-instructions').classList.add('active');
+            } else {
+                document.getElementById('android-instructions').classList.add('active');
+            }
+        }
+
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Small delay to show loading state briefly
+            setTimeout(function() {
+                const detectedOS = detectOS();
+                showInstructions(detectedOS);
+            }, 500);
+        });
+
+        // Debug: Add OS info to console for testing
+        console.log('User Agent:', navigator.userAgent);
+        console.log('Detected OS:', detectOS());
+    </script>
+</body>
+</html>
