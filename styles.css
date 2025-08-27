@@ -1902,8 +1902,8 @@ footer {
         padding-bottom: 0.5rem;
     }
     
-    .feeding-grid {
-        grid-template-columns: 1fr;
+    .day-cards {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     }
     
     .logo-img {
@@ -1941,6 +1941,10 @@ footer {
     .help-grid,
     .donation-grid {
         grid-template-columns: 1fr;
+    }
+    
+    .day-cards {
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     }
 }
 
