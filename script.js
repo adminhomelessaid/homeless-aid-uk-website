@@ -25,17 +25,27 @@ const ThemeManager = {
     applyCustomTheme() {
         const customTheme = localStorage.getItem('customTheme');
         if (customTheme) {
-            const colors = JSON.parse(customTheme);
+            const theme = JSON.parse(customTheme);
             
-            // Apply custom CSS variables
+            // Handle legacy format (colors only) vs new format (colors + borders)
+            const colors = theme.colors || theme;
+            const borders = theme.borders || {};
+            
+            // Apply custom color CSS variables
             Object.keys(colors).forEach(key => {
                 const cssVarName = '--' + key.replace(/([A-Z])/g, '-$1').toLowerCase();
                 document.documentElement.style.setProperty(cssVarName, colors[key]);
             });
+
+            // Apply custom border thickness CSS variables
+            Object.keys(borders).forEach(key => {
+                const cssVarName = '--' + key.replace(/([A-Z])/g, '-$1').toLowerCase();
+                document.documentElement.style.setProperty(cssVarName, borders[key] + 'px');
+            });
             
             // Set body theme attribute
             document.body.setAttribute('data-theme', 'custom');
-            console.log('Custom theme applied');
+            console.log('Custom theme applied with colors and borders');
         } else {
             console.log('No custom theme found, falling back to light-blue');
             this.applyTheme('light-blue');

@@ -190,6 +190,64 @@
             background-color: rgba(231, 76, 60, 0.05);
         }
 
+        /* Border thickness controls */
+        .border-input-row {
+            display: grid;
+            grid-template-columns: 1fr 120px 50px;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+            align-items: center;
+        }
+
+        .border-slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: var(--light-gray);
+            outline: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .border-slider::-webkit-slider-thumb {
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            cursor: pointer;
+            border: 2px solid white;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+            transition: all 0.2s ease;
+        }
+
+        .border-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .border-slider::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            cursor: pointer;
+            border: 2px solid white;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .border-value {
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+            color: var(--secondary-color);
+            font-size: 0.9rem;
+            text-align: center;
+            padding: 0.25rem 0.5rem;
+            background: rgba(173, 203, 240, 0.1);
+            border-radius: 4px;
+            min-width: 40px;
+        }
+
         @media (max-width: 1024px) {
             .admin-container {
                 grid-template-columns: 1fr;
@@ -210,6 +268,12 @@
             .color-input-row {
                 grid-template-columns: 1fr;
                 gap: 0.5rem;
+            }
+            
+            .border-input-row {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+                text-align: center;
             }
             
             .admin-actions {
@@ -384,6 +448,31 @@
                 </div>
             </div>
 
+            <!-- Border Thickness -->
+            <div class="color-group">
+                <h3><i class="fas fa-border-style"></i> Border Thickness</h3>
+                <div class="border-input-row">
+                    <label>Cards & Containers</label>
+                    <input type="range" class="border-slider" id="border-card" min="0" max="5" step="1" value="1">
+                    <span class="border-value" id="border-card-value">1px</span>
+                </div>
+                <div class="border-input-row">
+                    <label>Buttons</label>
+                    <input type="range" class="border-slider" id="border-button" min="0" max="6" step="1" value="2">
+                    <span class="border-value" id="border-button-value">2px</span>
+                </div>
+                <div class="border-input-row">
+                    <label>Input Fields</label>
+                    <input type="range" class="border-slider" id="border-input" min="1" max="5" step="1" value="2">
+                    <span class="border-value" id="border-input-value">2px</span>
+                </div>
+                <div class="border-input-row">
+                    <label>General Borders</label>
+                    <input type="range" class="border-slider" id="border-normal" min="1" max="8" step="1" value="2">
+                    <span class="border-value" id="border-normal-value">2px</span>
+                </div>
+            </div>
+
             <!-- Admin Actions -->
             <div class="admin-actions">
                 <button class="admin-btn success" onclick="saveCustomTheme()">
@@ -441,6 +530,14 @@
             'error-color': '#e74c3c'
         };
 
+        // Border thickness configuration
+        const borderThickness = {
+            'border-card': '1',
+            'border-button': '2',
+            'border-input': '2',
+            'border-normal': '2'
+        };
+
         // Initialize theme admin
         document.addEventListener('DOMContentLoaded', function() {
             initializeThemeAdmin();
@@ -463,6 +560,34 @@
                     preview.addEventListener('click', () => openColorPicker(colorKey));
                 }
             });
+
+            // Set up border thickness controls
+            Object.keys(borderThickness).forEach(borderKey => {
+                const slider = document.getElementById(borderKey);
+                const valueDisplay = document.getElementById(borderKey + '-value');
+                
+                if (slider && valueDisplay) {
+                    slider.value = borderThickness[borderKey];
+                    valueDisplay.textContent = borderThickness[borderKey] + 'px';
+                    
+                    // Add event listener
+                    slider.addEventListener('input', (e) => updateBorderThickness(borderKey, e.target.value));
+                }
+            });
+        }
+
+        function updateBorderThickness(borderKey, value) {
+            const valueDisplay = document.getElementById(borderKey + '-value');
+            const cssVarName = '--' + borderKey.replace(/([A-Z])/g, '-$1').toLowerCase();
+            
+            // Update value display
+            if (valueDisplay) {
+                valueDisplay.textContent = value + 'px';
+            }
+            
+            // Update CSS variable
+            document.documentElement.style.setProperty(cssVarName, value + 'px');
+            borderThickness[borderKey] = value;
         }
 
         function updateColor(colorKey, hexValue) {
@@ -526,21 +651,39 @@
             const savedTheme = localStorage.getItem('customTheme');
             if (savedTheme) {
                 const theme = JSON.parse(savedTheme);
-                Object.keys(theme).forEach(key => {
+                
+                // Load colors
+                Object.keys(theme.colors || {}).forEach(key => {
                     if (themeColors.hasOwnProperty(key)) {
-                        themeColors[key] = theme[key];
+                        themeColors[key] = theme.colors[key];
                         const input = document.getElementById(key);
                         if (input) {
-                            input.value = theme[key];
+                            input.value = theme.colors[key];
                         }
-                        updateColor(key, theme[key]);
+                        updateColor(key, theme.colors[key]);
+                    }
+                });
+
+                // Load border thickness
+                Object.keys(theme.borders || {}).forEach(key => {
+                    if (borderThickness.hasOwnProperty(key)) {
+                        borderThickness[key] = theme.borders[key];
+                        const slider = document.getElementById(key);
+                        if (slider) {
+                            slider.value = theme.borders[key];
+                        }
+                        updateBorderThickness(key, theme.borders[key]);
                     }
                 });
             }
         }
 
         function saveCustomTheme() {
-            localStorage.setItem('customTheme', JSON.stringify(themeColors));
+            const completeTheme = {
+                colors: themeColors,
+                borders: borderThickness
+            };
+            localStorage.setItem('customTheme', JSON.stringify(completeTheme));
             showNotification('Theme saved successfully!', 'success');
         }
 
@@ -587,7 +730,8 @@
             const themeData = {
                 name: "Custom Theme",
                 created: new Date().toISOString(),
-                colors: themeColors
+                colors: themeColors,
+                borders: borderThickness
             };
             
             const blob = new Blob([JSON.stringify(themeData, null, 2)], {type: 'application/json'});
@@ -624,6 +768,22 @@
                                 updateColor(key, themeData.colors[key]);
                             }
                         });
+                    }
+
+                    if (themeData.borders) {
+                        Object.keys(themeData.borders).forEach(key => {
+                            if (borderThickness.hasOwnProperty(key)) {
+                                borderThickness[key] = themeData.borders[key];
+                                const slider = document.getElementById(key);
+                                if (slider) {
+                                    slider.value = themeData.borders[key];
+                                }
+                                updateBorderThickness(key, themeData.borders[key]);
+                            }
+                        });
+                    }
+
+                    if (themeData.colors || themeData.borders) {
                         showNotification('Theme imported successfully!', 'success');
                     } else {
                         showNotification('Invalid theme file format!', 'error');

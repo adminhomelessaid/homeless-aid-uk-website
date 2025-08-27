@@ -12,6 +12,14 @@
     --success-color: #27AE60;
     --error-color: #E74C3C;
     
+    /* Border thickness settings */
+    --border-thin: 1px;
+    --border-normal: 2px;
+    --border-thick: 3px;
+    --border-card: 1px;
+    --border-button: 2px;
+    --border-input: 2px;
+    
     /* Applied palette (default light blue theme) */
     --primary-color: #adcbf0;       /* Light blue for boxes/blocks */
     --secondary-color: #1a2332;     /* Darker blue-gray for headings */
@@ -565,7 +573,7 @@ body {
     font-weight: 600;
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     cursor: pointer;
-    border: none;
+    border: var(--border-button) solid transparent;
     font-size: 1rem;
     position: relative;
     overflow: hidden;
@@ -915,7 +923,7 @@ section {
 .feeding-card {
     background: var(--glassmorphism);
     backdrop-filter: blur(10px);
-    border: 1px solid var(--border-color);
+    border: var(--border-card) solid var(--border-color);
     padding: 0;
     border-radius: 16px;
     box-shadow: var(--shadow-card);
