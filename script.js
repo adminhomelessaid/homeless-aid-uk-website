@@ -962,7 +962,10 @@ window.openCalendarModalForEvent = function(eventId) {
     // Close info modal if open
     closeInfoModal();
     
-    // Use existing calendar modal or create new one
+    // Store current event data FIRST
+    window.currentCalendarEvent = eventData;
+    
+    // Check if modal already exists
     let modal = document.getElementById('calendar-modal-backdrop');
     if (!modal) {
         const modalHTML = `
@@ -986,36 +989,7 @@ window.openCalendarModalForEvent = function(eventId) {
         `;
         document.body.insertAdjacentHTML('beforeend', modalHTML);
         modal = document.getElementById('calendar-modal-backdrop');
-        
-        // Add event listeners
-        document.getElementById('calendar-modal-close').addEventListener('click', function(e) {
-            e.preventDefault();
-            closeCalendarModal();
-        });
-        document.getElementById('calendar-option-google').addEventListener('click', function(e) {
-            e.preventDefault();
-            if (window.currentCalendarEvent) {
-                console.log('📅 Google Calendar clicked with data:', window.currentCalendarEvent);
-                window.addToGoogleCalendar(window.currentCalendarEvent);
-                closeCalendarModal();
-            } else {
-                console.error('❌ No current calendar event data');
-            }
-        });
-        document.getElementById('calendar-option-ics').addEventListener('click', function(e) {
-            e.preventDefault();
-            if (window.currentCalendarEvent) {
-                console.log('💾 ICS Download clicked with data:', window.currentCalendarEvent);
-                window.downloadICS(window.currentCalendarEvent);
-                closeCalendarModal();
-            } else {
-                console.error('❌ No current calendar event data');
-            }
-        });
     }
-    
-    // Store current event data
-    window.currentCalendarEvent = eventData;
     
     // Update modal content
     const title = document.getElementById('calendar-modal-title');
@@ -1028,6 +1002,44 @@ window.openCalendarModalForEvent = function(eventId) {
         ${eventData['Address 1']}${eventData.Postcode ? ', ' + eventData.Postcode : ''}<br>
         ${eventData.Town}
     `;
+    
+    // Remove old event listeners to prevent duplicates
+    const closeBtn = document.getElementById('calendar-modal-close');
+    const googleBtn = document.getElementById('calendar-option-google');
+    const icsBtn = document.getElementById('calendar-option-ics');
+    
+    // Clone elements to remove all old event listeners
+    const newCloseBtn = closeBtn.cloneNode(true);
+    const newGoogleBtn = googleBtn.cloneNode(true);
+    const newIcsBtn = icsBtn.cloneNode(true);
+    
+    closeBtn.parentNode.replaceChild(newCloseBtn, closeBtn);
+    googleBtn.parentNode.replaceChild(newGoogleBtn, googleBtn);
+    icsBtn.parentNode.replaceChild(newIcsBtn, icsBtn);
+    
+    // Add fresh event listeners
+    document.getElementById('calendar-modal-close').addEventListener('click', function(e) {
+        e.preventDefault();
+        closeCalendarModal();
+    });
+    
+    document.getElementById('calendar-option-google').addEventListener('click', function(e) {
+        e.preventDefault();
+        console.log('📅 Google Calendar clicked with data:', window.currentCalendarEvent);
+        if (window.currentCalendarEvent) {
+            window.addToGoogleCalendar(window.currentCalendarEvent);
+            closeCalendarModal();
+        }
+    });
+    
+    document.getElementById('calendar-option-ics').addEventListener('click', function(e) {
+        e.preventDefault();
+        console.log('💾 ICS Download clicked with data:', window.currentCalendarEvent);
+        if (window.currentCalendarEvent) {
+            window.downloadICS(window.currentCalendarEvent);
+            closeCalendarModal();
+        }
+    });
     
     // Show modal
     modal.classList.add('modal-visible');
