@@ -139,10 +139,22 @@ async function loadFeedingTimes() {
                 
                 // Parse LatLong field into separate lat and lng
                 if (entry.LatLong && entry.LatLong.trim()) {
-                    const coords = entry.LatLong.split(',');
-                    if (coords.length === 2) {
-                        entry.lat = parseFloat(coords[0]);
-                        entry.lng = parseFloat(coords[1]);
+                    // Handle if LatLong is a single number or comma-separated
+                    const coordStr = entry.LatLong.toString().trim();
+                    if (coordStr.includes(',')) {
+                        const coords = coordStr.split(',');
+                        if (coords.length === 2) {
+                            entry.lat = parseFloat(coords[0].trim());
+                            entry.lng = parseFloat(coords[1].trim());
+                            console.log('✅ Parsed coordinates for', entry.Name || entry['Address 1'], ':', entry.lat, entry.lng);
+                        }
+                    } else {
+                        // If it's just one number, it might be malformed data
+                        console.warn('⚠️ Invalid LatLong format for', entry.Name || entry['Address 1'], ':', coordStr);
+                        console.warn('Expected format: "latitude,longitude" but got single value');
+                        // For now, we can't calculate distance without both lat and lng
+                        entry.lat = null;
+                        entry.lng = null;
                     }
                 }
                 
@@ -182,6 +194,9 @@ async function displayFeedingTimes(data) {
     
     // Add distance calculations if user location is available
     if (GeolocationManager.userLocation) {
+        console.log('🌍 User location available, calculating distances...');
+        let distancesCalculated = 0;
+        
         for (let item of data) {
             // Use stored coordinates from LatLong field
             if (item.lat && item.lng) {
@@ -192,8 +207,14 @@ async function displayFeedingTimes(data) {
                     item.lng
                 );
                 item.distance = distance;
+                distancesCalculated++;
+                console.log(`📏 Distance to ${item.Name || item['Address 1']}: ${distance.toFixed(1)} miles`);
+            } else {
+                console.log(`❌ No coordinates for ${item.Name || item['Address 1']} - LatLong: "${item.LatLong}"`);
             }
         }
+        
+        console.log(`📊 Total distances calculated: ${distancesCalculated}/${data.length}`);
         
         // Sort by distance if available
         data.sort((a, b) => {
@@ -202,6 +223,10 @@ async function displayFeedingTimes(data) {
             }
             return 0;
         });
+        
+        console.log('📋 Data sorted by distance');
+    } else {
+        console.log('📍 No user location available for distance calculations');
     }
     
     // Group data by day
@@ -238,6 +263,10 @@ async function displayFeedingTimes(data) {
                 // Distance display
                 const distanceHtml = item.distance !== undefined ? 
                     `<div class="feeding-distance">${item.distance.toFixed(1)} miles</div>` : '';
+                
+                if (item.distance !== undefined) {
+                    console.log(`🏷️ Adding distance badge for ${item.Name || item['Address 1']}: ${item.distance.toFixed(1)} miles`);
+                }
                 
                 html += `
                     <div class="event-card" data-event-id="${uniqueId}">
@@ -601,6 +630,54 @@ function formatPhoneNumbers() {
     });
 }
 
+// Simple notification system
+function showNotification(message, type = 'info') {
+    // Remove existing notifications
+    const existing = document.querySelector('.notification');
+    if (existing) existing.remove();
+    
+    const notification = document.createElement('div');
+    notification.className = `notification notification-${type}`;
+    notification.textContent = message;
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: ${type === 'error' ? '#EF5350' : '#48BB78'};
+        color: white;
+        padding: 1rem 1.5rem;
+        border-radius: 6px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        z-index: 10000;
+        font-size: 0.9rem;
+        max-width: 300px;
+        animation: slideIn 0.3s ease;
+    `;
+    
+    // Add CSS animation
+    if (!document.getElementById('notification-styles')) {
+        const style = document.createElement('style');
+        style.id = 'notification-styles';
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+    
+    document.body.appendChild(notification);
+    
+    // Auto remove after 4 seconds
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.style.animation = 'slideIn 0.3s ease reverse';
+            setTimeout(() => notification.remove(), 300);
+        }
+    }, 4000);
+}
+
 // Setup Near Me functionality
 function setupNearMe() {
     const nearMeBtn = document.getElementById('nearMeBtn');
@@ -624,15 +701,39 @@ function setupNearMe() {
         try {
             await GeolocationManager.getCurrentLocation();
             btnText.textContent = 'Location found!';
+            console.log('📍 User location obtained, calculating distances...');
+            
+            // Check if we have valid coordinate data
+            let validCoords = 0;
+            let totalEntries = 0;
+            if (window.feedingData) {
+                totalEntries = window.feedingData.length;
+                validCoords = window.feedingData.filter(item => item.lat && item.lng).length;
+            }
+            
+            console.log(`📊 Coordinate data: ${validCoords}/${totalEntries} entries have valid lat/lng`);
             
             // Refresh the display with distances
             if (window.feedingData) {
                 await displayFeedingTimes([...window.feedingData]);
             }
             
+            // Show success message with data info
+            if (validCoords > 0) {
+                btnText.textContent = `Found ${validCoords} locations`;
+                setTimeout(() => {
+                    btnText.textContent = 'Near Me ✓';
+                }, 2000);
+            } else {
+                btnText.textContent = 'No coordinate data';
+                console.warn('⚠️ No valid coordinates found in CSV data for distance calculation');
+                setTimeout(() => {
+                    btnText.textContent = 'Near Me';
+                }, 3000);
+            }
+            
             // Update button to show success
             setTimeout(() => {
-                btnText.textContent = 'Near Me';
                 this.classList.remove('loading');
                 this.disabled = false;
             }, 1500);
@@ -651,8 +752,8 @@ function setupNearMe() {
                 errorMessage += 'Please try again.';
             }
             
-            // You could show this in a toast/notification
-            console.warn(errorMessage);
+            // Create a simple notification
+            showNotification(errorMessage, 'error');
             
             setTimeout(() => {
                 btnText.textContent = 'Near Me';
