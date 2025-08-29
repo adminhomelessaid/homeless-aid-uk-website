@@ -264,6 +264,10 @@ async function displayFeedingTimes(data) {
                 const distanceHtml = item.distance !== undefined ? 
                     `<div class="feeding-distance">${item.distance.toFixed(1)} miles</div>` : '';
                 
+                // Additional distance badge for header
+                const headerDistanceBadge = item.distance !== undefined ? 
+                    `<span class="distance-badge">${item.distance.toFixed(1)} miles away</span>` : '';
+                
                 if (item.distance !== undefined) {
                     console.log(`🏷️ Adding distance badge for ${item.Name || item['Address 1']}: ${item.distance.toFixed(1)} miles`);
                 }
@@ -276,7 +280,10 @@ async function displayFeedingTimes(data) {
                                 <span class="town">${item.Town}</span>
                                 <span class="event-category-tag">${item.Type}</span>
                             </div>
-                            <h4 class="venue-name">${item.Name || item['Address 1']}</h4>
+                            <div class="venue-header">
+                                <h4 class="venue-name">${item.Name || item['Address 1']}</h4>
+                                ${headerDistanceBadge}
+                            </div>
                         </div>
                         <div class="card-body">
                             <div class="address-section" onclick="window.open('${mapsUrl}', '_blank')">

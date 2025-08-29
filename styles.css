@@ -2345,3 +2345,60 @@ footer {
     overflow-wrap: break-word;
     hyphens: auto;
 }
+
+/* Fix for consistent card heights and better spacing */
+.event-card,
+.feeding-card {
+    display: flex !important;
+    flex-direction: column !important;
+    height: 100% !important; /* Ensures the card fills the entire grid cell */
+}
+
+.card-body {
+    flex-grow: 1 !important; /* Allows the main content area to expand, pushing the footer down */
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+.card-footer {
+    margin-top: auto !important; /* Pushes footer to bottom of card */
+}
+
+/* Better spacing between filter buttons and first section */
+.day-section:first-child {
+    margin-top: 2.5rem;
+}
+
+.day-section {
+    margin-bottom: 2.5rem;
+}
+
+/* Improved filter button spacing */
+.filter-buttons {
+    margin-bottom: 2.5rem !important;
+}
+
+/* Styling for the new "Near Me" distance badge in header */
+.distance-badge {
+    background-color: var(--success-color);
+    color: white;
+    padding: 0.25rem 0.6rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-left: auto; /* Pushes the badge to the right */
+    flex-shrink: 0; /* Prevents the badge from shrinking */
+}
+
+.venue-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px; /* Adds space between title and badge */
+    margin-top: 8px;
+}
+
+.venue-header .venue-name {
+    margin: 0; /* Remove default margins */
+    flex-grow: 1; /* Allow venue name to take available space */
+}
