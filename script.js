@@ -514,8 +514,14 @@ function validateForm(formId) {
 function setupSmoothScroll() {
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
+            const href = this.getAttribute('href');
+            // Skip if it's just a hash (#) or part of calendar modal
+            if (href === '#' || this.closest('.calendar-options') || this.classList.contains('calendar-option')) {
+                return; // Don't prevent default, let other handlers work
+            }
+            
             e.preventDefault();
-            const target = document.querySelector(this.getAttribute('href'));
+            const target = document.querySelector(href);
             if (target) {
                 target.scrollIntoView({
                     behavior: 'smooth',
@@ -982,17 +988,28 @@ window.openCalendarModalForEvent = function(eventId) {
         modal = document.getElementById('calendar-modal-backdrop');
         
         // Add event listeners
-        document.getElementById('calendar-modal-close').addEventListener('click', closeCalendarModal);
-        document.getElementById('calendar-option-google').addEventListener('click', () => {
+        document.getElementById('calendar-modal-close').addEventListener('click', function(e) {
+            e.preventDefault();
+            closeCalendarModal();
+        });
+        document.getElementById('calendar-option-google').addEventListener('click', function(e) {
+            e.preventDefault();
             if (window.currentCalendarEvent) {
-                addToGoogleCalendar(window.currentCalendarEvent);
+                console.log('📅 Google Calendar clicked with data:', window.currentCalendarEvent);
+                window.addToGoogleCalendar(window.currentCalendarEvent);
                 closeCalendarModal();
+            } else {
+                console.error('❌ No current calendar event data');
             }
         });
-        document.getElementById('calendar-option-ics').addEventListener('click', () => {
+        document.getElementById('calendar-option-ics').addEventListener('click', function(e) {
+            e.preventDefault();
             if (window.currentCalendarEvent) {
-                downloadICS(window.currentCalendarEvent);
+                console.log('💾 ICS Download clicked with data:', window.currentCalendarEvent);
+                window.downloadICS(window.currentCalendarEvent);
                 closeCalendarModal();
+            } else {
+                console.error('❌ No current calendar event data');
             }
         });
     }
