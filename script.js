@@ -51,6 +51,7 @@ const GeolocationManager = {
     },
     
     calculateDistance(lat1, lng1, lat2, lng2) {
+        // Haversine formula for calculating distance between two coordinates
         const R = 3959; // Earth's radius in miles
         const dLat = this.toRadian(lat2 - lat1);
         const dLng = this.toRadian(lng2 - lng1);
@@ -135,6 +136,16 @@ async function loadFeedingTimes() {
                 headers.forEach((header, index) => {
                     entry[header.trim()] = values[index].trim();
                 });
+                
+                // Parse LatLong field into separate lat and lng
+                if (entry.LatLong && entry.LatLong.trim()) {
+                    const coords = entry.LatLong.split(',');
+                    if (coords.length === 2) {
+                        entry.lat = parseFloat(coords[0]);
+                        entry.lng = parseFloat(coords[1]);
+                    }
+                }
+                
                 feedingTimes.push(entry);
             }
         }
@@ -172,17 +183,15 @@ async function displayFeedingTimes(data) {
     // Add distance calculations if user location is available
     if (GeolocationManager.userLocation) {
         for (let item of data) {
-            if (item.Postcode && item.Postcode.trim()) {
-                const coords = await GeolocationManager.getCoordinatesFromPostcode(item.Postcode);
-                if (coords) {
-                    const distance = GeolocationManager.calculateDistance(
-                        GeolocationManager.userLocation.lat,
-                        GeolocationManager.userLocation.lng,
-                        coords.lat,
-                        coords.lng
-                    );
-                    item.distance = distance;
-                }
+            // Use stored coordinates from LatLong field
+            if (item.lat && item.lng) {
+                const distance = GeolocationManager.calculateDistance(
+                    GeolocationManager.userLocation.lat,
+                    GeolocationManager.userLocation.lng,
+                    item.lat,
+                    item.lng
+                );
+                item.distance = distance;
             }
         }
         
@@ -214,74 +223,70 @@ async function displayFeedingTimes(data) {
             html += `<h3 class="day-header">EVERY ${day}</h3>`;
             html += `<div class="day-cards">`;
             
-            groupedByDay[day].forEach(item => {
-                // Create Google Maps link for postcode
-                const mapsUrl = item.Postcode && item.Postcode.trim() ? 
-                    `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.Postcode + ' UK')}` : '#';
+            groupedByDay[day].forEach((item, index) => {
+                // Generate unique ID for modal functionality
+                const uniqueId = `event-${day.toLowerCase()}-${index}`;
                 
-                // Get calendar status
-                const calendarStatus = CalendarManager.getStatusInfo(item);
+                // Create Google Maps link using coordinates if available, otherwise fallback to postcode
+                let mapsUrl = '#';
+                if (item.lat && item.lng) {
+                    mapsUrl = `https://www.google.com/maps/search/?api=1&query=${item.lat},${item.lng}`;
+                } else if (item.Postcode && item.Postcode.trim()) {
+                    mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.Postcode + ' UK')}`;
+                }
                 
                 // Distance display
                 const distanceHtml = item.distance !== undefined ? 
                     `<div class="feeding-distance">${item.distance.toFixed(1)} miles</div>` : '';
                 
                 html += `
-                    <div class="feeding-card event-card">
+                    <div class="event-card" data-event-id="${uniqueId}">
                         ${distanceHtml}
                         <div class="card-header">
                             <div class="event-type">
                                 <span class="town">${item.Town}</span>
                                 <span class="event-category-tag">${item.Type}</span>
                             </div>
+                            <h4 class="venue-name">${item.Name || item['Address 1']}</h4>
                         </div>
                         <div class="card-body">
                             <div class="address-section" onclick="window.open('${mapsUrl}', '_blank')">
                                 <i class="fas fa-map-marker-alt"></i>
-                                <span>${item['Address 1']}</span>
-                                ${item.Postcode && item.Postcode.trim() ? `<span class="postcode-text">${item.Postcode}</span>` : ''}
+                                <div class="address-text">
+                                    ${item['Address 1']}<br>
+                                    <strong>${item.Postcode ? item.Postcode + ' • ' : ''}Click for directions</strong>
+                                </div>
                             </div>
                             <div class="time-section">
-                                🕰️ <span>${item.Time}</span>
+                                <i class="fas fa-clock"></i>
+                                <span>${item.StartTime} - ${item.EndTime}</span>
                             </div>
                         </div>
                         <div class="card-footer">
                             <div class="card-actions">
-                                ${item.Notes && item.Notes.trim() && item.Notes.toLowerCase().includes('referral') ? 
-                                    `<div class="referral-badge">
+                                ${item['Enable Calendar'] === 'Yes' ? 
+                                    `<button class="calendar-badge" onclick="openCalendarModalForEvent('${uniqueId}')">
+                                        <i class="fas fa-calendar-plus"></i> 
+                                        Add to Calendar
+                                    </button>` : 
+                                    item.Notes && item.Notes.trim() ? 
+                                    `<div class="notes-badge">
                                         <i class="fas fa-phone"></i>
-                                        <span>Referral Only</span>
+                                        ${item.Notes}
                                     </div>` : ''
                                 }
-                                ${calendarStatus.type === 'enabled' ? 
-                                    `<div class="calendar-available">
-                                        <i class="fas fa-calendar-check"></i>
-                                        <span>Calendar Available</span>
-                                    </div>` : calendarStatus.type === 'disabled' ? 
-                                    `<div class="calendar-not-available">
-                                        <i class="fas fa-calendar-times"></i>
-                                        <span>Calendar Not Available</span>
-                                    </div>` : ''
-                                }
-                                ${item['Enable Calendar'] && item['Enable Calendar'].toLowerCase() === 'yes' ? 
-                                    `<div class="calendar-dropdown" 
-                                        data-day="${item.Day || ''}" 
-                                        data-time="${item.Time || ''}" 
-                                        data-address="${(item['Address 1'] || '').replace(/"/g, '&quot;')}" 
-                                        data-postcode="${item.Postcode || ''}" 
-                                        data-town="${item.Town || ''}" 
-                                        data-type="${item.Type || ''}"
-                                        data-notes="${(item.Notes || '').replace(/"/g, '&quot;')}">
-                                        <button class="calendar-btn add-calendar-btn">
-                                            <i class="fas fa-calendar-plus"></i>
-                                            <span>Add to Calendar</span>
-                                        </button>
-                                    </div>` : ''
-                                }
+                                <button class="btn more-info-btn" onclick="openInfoModal('${uniqueId}')">
+                                    <i class="fas fa-info-circle"></i> 
+                                    More Info
+                                </button>
                             </div>
                         </div>
                     </div>
                 `;
+                
+                // Store event data for modal access
+                if (!window.eventDataStore) window.eventDataStore = {};
+                window.eventDataStore[uniqueId] = item;
             });
             
             html += `</div></div>`;
@@ -798,125 +803,8 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Check if calendar buttons exist
-    const calendarButtons = document.querySelectorAll('.calendar-btn');
-    console.log('🔍 Found calendar buttons:', calendarButtons.length);
-
-    // Test basic click events
-    document.addEventListener('click', function(e) {
-        console.log('👆 Clicked on:', e.target, 'Classes:', e.target.className);
-    });
-
-    // Calendar modal functionality
-    const modal = document.getElementById('calendar-modal-backdrop');
-    const modalTitle = document.getElementById('calendar-modal-title');
-    const modalEventDetails = document.getElementById('calendar-modal-event-details');
-    const modalClose = document.getElementById('calendar-modal-close');
-    const googleOption = document.getElementById('calendar-option-google');
-    const icsOption = document.getElementById('calendar-option-ics');
-    
-    let currentEventData = null;
-    
-    // Function to open calendar modal
-    function openCalendarModal(eventData) {
-        currentEventData = eventData;
-        
-        // Set modal content
-        modalTitle.textContent = `Add "${eventData.Town} - ${eventData.Type}" to Calendar`;
-        modalEventDetails.innerHTML = `
-            <strong>${eventData.Day}s at ${eventData.Time}</strong><br>
-            ${eventData['Address 1']}${eventData.Postcode ? ', ' + eventData.Postcode : ''}<br>
-            ${eventData.Town}${eventData.Notes ? '<br><em>' + eventData.Notes + '</em>' : ''}
-        `;
-        
-        // Show modal
-        modal.classList.add('modal-visible');
-        document.body.style.overflow = 'hidden'; // Prevent background scrolling
-        
-        console.log('📅 Calendar modal opened with data:', eventData);
-    }
-    
-    // Function to close calendar modal
-    function closeCalendarModal() {
-        modal.classList.remove('modal-visible');
-        document.body.style.overflow = ''; // Restore scrolling
-        currentEventData = null;
-        console.log('❌ Calendar modal closed');
-    }
-    
-    // Calendar button event delegation
-    document.addEventListener('click', function(e) {
-        // Handle calendar button clicks
-        if (e.target.closest('.calendar-btn')) {
-            console.log('📅 Calendar button clicked!');
-            e.preventDefault();
-            
-            const calendarDropdown = e.target.closest('.calendar-dropdown');
-            const eventData = {
-                Day: calendarDropdown.dataset.day,
-                Time: calendarDropdown.dataset.time,
-                'Address 1': calendarDropdown.dataset.address,
-                Postcode: calendarDropdown.dataset.postcode,
-                Town: calendarDropdown.dataset.town,
-                Type: calendarDropdown.dataset.type,
-                Notes: calendarDropdown.dataset.notes
-            };
-            
-            openCalendarModal(eventData);
-        }
-    });
-    
-    // Add to Calendar button state change
-    const addCalendarButtons = document.querySelectorAll('.add-calendar-btn');
-    
-    addCalendarButtons.forEach(button => {
-        button.addEventListener('click', function(e) {
-            e.preventDefault();
-            
-            // Change button state to "Added"
-            this.innerHTML = 'Added ✓';
-            this.classList.add('btn-added');
-            this.disabled = true;
-            
-            console.log('✅ Calendar button marked as added');
-        });
-    });
-    
-    // Modal close event handlers
-    modalClose.addEventListener('click', closeCalendarModal);
-    
-    // Close modal when clicking backdrop
-    modal.addEventListener('click', function(e) {
-        if (e.target === modal) {
-            closeCalendarModal();
-        }
-    });
-    
-    // Close modal with Escape key
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && modal.classList.contains('modal-visible')) {
-            closeCalendarModal();
-        }
-    });
-    
-    // Calendar option click handlers
-    googleOption.addEventListener('click', function(e) {
-        e.preventDefault();
-        if (currentEventData) {
-            console.log('📅 Opening Google Calendar...');
-            window.addToGoogleCalendar(currentEventData, e);
-            closeCalendarModal();
-        }
-    });
-    
-    icsOption.addEventListener('click', function(e) {
-        e.preventDefault();
-        if (currentEventData) {
-            console.log('💾 Downloading ICS file...');
-            window.downloadICS(currentEventData, e);
-            closeCalendarModal();
-        }
-    });
+    // Debug logging for development
+    console.log('🔍 Script initialized successfully');
 });
 
 // FAQ Accordion functionality
@@ -974,10 +862,190 @@ function setupStickyNavigation() {
     window.addEventListener('scroll', requestTick, { passive: true });
 }
 
+// Modal Functions for More Info and Calendar
+window.openInfoModal = function(eventId) {
+    const eventData = window.eventDataStore[eventId];
+    if (!eventData) return;
+    
+    // Create modal HTML if it doesn't exist
+    let modal = document.getElementById('info-modal');
+    if (!modal) {
+        const modalHTML = `
+            <div id="info-modal" class="modal-backdrop">
+                <div class="modal-content">
+                    <button class="modal-close" onclick="closeInfoModal()">&times;</button>
+                    <h2 id="info-modal-title"></h2>
+                    <div id="info-modal-body"></div>
+                </div>
+            </div>
+        `;
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
+        modal = document.getElementById('info-modal');
+    }
+    
+    // Populate modal content
+    const title = document.getElementById('info-modal-title');
+    const body = document.getElementById('info-modal-body');
+    
+    // Create Google Maps link
+    let mapsUrl = '#';
+    if (eventData.lat && eventData.lng) {
+        mapsUrl = `https://www.google.com/maps/search/?api=1&query=${eventData.lat},${eventData.lng}`;
+    } else if (eventData.Postcode) {
+        mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(eventData.Postcode + ' UK')}`;
+    }
+    
+    title.textContent = eventData.Name || eventData['Address 1'];
+    body.innerHTML = `
+        <div class="modal-info-section">
+            <h3>Location Details</h3>
+            <p><strong>Address:</strong> ${eventData['Address 1']}, ${eventData.Postcode || ''}</p>
+            <p><strong>Town:</strong> ${eventData.Town}</p>
+            <p><strong>Type:</strong> ${eventData.Type}</p>
+        </div>
+        
+        <div class="modal-info-section">
+            <h3>Schedule</h3>
+            <p><strong>Day:</strong> Every ${eventData.Day}</p>
+            <p><strong>Time:</strong> ${eventData.StartTime} - ${eventData.EndTime}</p>
+        </div>
+        
+        ${eventData.MoreInfo ? `
+        <div class="modal-info-section">
+            <h3>Additional Information</h3>
+            <p>${eventData.MoreInfo}</p>
+        </div>
+        ` : ''}
+        
+        ${eventData.Notes ? `
+        <div class="modal-info-section">
+            <h3>Important Notes</h3>
+            <p class="modal-notes">${eventData.Notes}</p>
+        </div>
+        ` : ''}
+        
+        <div class="modal-actions">
+            <button class="btn btn-primary" onclick="window.open('${mapsUrl}', '_blank')">
+                <i class="fas fa-map-marker-alt"></i> View on Map
+            </button>
+            ${eventData['Enable Calendar'] === 'Yes' ? `
+                <button class="btn btn-success" onclick="openCalendarModalForEvent('${eventId}')">
+                    <i class="fas fa-calendar-plus"></i> Add to Calendar
+                </button>
+            ` : ''}
+        </div>
+    `;
+    
+    // Show modal
+    modal.classList.add('modal-visible');
+    document.body.style.overflow = 'hidden';
+}
+
+window.closeInfoModal = function() {
+    const modal = document.getElementById('info-modal');
+    if (modal) {
+        modal.classList.remove('modal-visible');
+        document.body.style.overflow = '';
+    }
+}
+
+window.openCalendarModalForEvent = function(eventId) {
+    const eventData = window.eventDataStore[eventId];
+    if (!eventData) return;
+    
+    // Close info modal if open
+    closeInfoModal();
+    
+    // Use existing calendar modal or create new one
+    let modal = document.getElementById('calendar-modal-backdrop');
+    if (!modal) {
+        const modalHTML = `
+            <div id="calendar-modal-backdrop" class="modal-backdrop">
+                <div class="modal-content calendar-modal">
+                    <button id="calendar-modal-close" class="modal-close">&times;</button>
+                    <h2 id="calendar-modal-title">Add to Calendar</h2>
+                    <div id="calendar-modal-event-details"></div>
+                    <div class="calendar-options">
+                        <button id="calendar-option-google" class="calendar-option">
+                            <i class="fab fa-google"></i>
+                            <span>Google Calendar</span>
+                        </button>
+                        <button id="calendar-option-ics" class="calendar-option">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>Download ICS File</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
+        modal = document.getElementById('calendar-modal-backdrop');
+        
+        // Add event listeners
+        document.getElementById('calendar-modal-close').addEventListener('click', closeCalendarModal);
+        document.getElementById('calendar-option-google').addEventListener('click', () => {
+            if (window.currentCalendarEvent) {
+                addToGoogleCalendar(window.currentCalendarEvent);
+                closeCalendarModal();
+            }
+        });
+        document.getElementById('calendar-option-ics').addEventListener('click', () => {
+            if (window.currentCalendarEvent) {
+                downloadICS(window.currentCalendarEvent);
+                closeCalendarModal();
+            }
+        });
+    }
+    
+    // Store current event data
+    window.currentCalendarEvent = eventData;
+    
+    // Update modal content
+    const title = document.getElementById('calendar-modal-title');
+    const details = document.getElementById('calendar-modal-event-details');
+    
+    title.textContent = `Add "${eventData.Name || eventData.Town + ' - ' + eventData.Type}" to Calendar`;
+    details.innerHTML = `
+        <strong>${eventData.Day}s at ${eventData.StartTime} - ${eventData.EndTime}</strong><br>
+        ${eventData.Name ? eventData.Name + '<br>' : ''}
+        ${eventData['Address 1']}${eventData.Postcode ? ', ' + eventData.Postcode : ''}<br>
+        ${eventData.Town}
+    `;
+    
+    // Show modal
+    modal.classList.add('modal-visible');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeCalendarModal() {
+    const modal = document.getElementById('calendar-modal-backdrop');
+    if (modal) {
+        modal.classList.remove('modal-visible');
+        document.body.style.overflow = '';
+        window.currentCalendarEvent = null;
+    }
+}
+
+// Add escape key listener for modals
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeInfoModal();
+        closeCalendarModal();
+    }
+});
+
+// Click outside modal to close
+document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('modal-backdrop')) {
+        closeInfoModal();
+        closeCalendarModal();
+    }
+});
+
 // Calendar Integration Functions
 
-function parseTimeToDate(dayName, timeStr) {
-    console.log('🕐 Parsing time:', { dayName, timeStr });
+function parseTimeToDate(dayName, startTimeStr, endTimeStr) {
+    console.log('🕐 Parsing time:', { dayName, startTimeStr, endTimeStr });
     
     // Get next occurrence of the specified day
     const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -991,101 +1059,15 @@ function parseTimeToDate(dayName, timeStr) {
     const targetDate = new Date(today);
     targetDate.setDate(today.getDate() + daysUntilTarget);
     
-    // Parse time with improved logic
-    let startTime = '19:00'; // Default to 7:00 PM
-    let endTime = '20:00'; // Default to 8:00 PM
-    
-    if (timeStr && timeStr.trim()) {
-        const timeString = timeStr.toLowerCase().trim();
-        console.log('🔍 Processing time string:', timeString);
-        
-        // Handle special cases
-        if (timeString.includes('evening') || timeString === 'evening') {
-            startTime = '19:00';
-            endTime = '22:00';
-        } else if (timeString.includes('morning') || timeString.includes('breakfast')) {
-            startTime = '08:00';
-            endTime = '09:00';
-        } else if (timeString.includes('late') || timeString.includes('- late')) {
-            // For times like "7:30pm - Late"
-            const timeMatch = timeString.match(/(\d{1,2}):(\d{2})(am|pm)?/);
-            if (timeMatch) {
-                const hour = parseInt(timeMatch[1]);
-                const minute = timeMatch[2];
-                const ampm = timeMatch[3] || 'pm';
-                
-                let startHour = hour;
-                if (ampm === 'pm' && hour !== 12) startHour += 12;
-                if (ampm === 'am' && hour === 12) startHour = 0;
-                
-                startTime = `${startHour.toString().padStart(2, '0')}:${minute}`;
-                endTime = '23:30'; // Late = 11:30 PM
-            }
-        } else {
-            // Try to match time patterns
-            // Patterns: "7:00-8:00pm", "4:00pm", "6:30am", "7:00 - 8:00 pm"
-            const rangeMatch = timeString.match(/(\d{1,2}):(\d{2})(am|pm)?\s*-\s*(\d{1,2}):(\d{2})(am|pm)?/);
-            const singleMatch = timeString.match(/(\d{1,2}):(\d{2})(am|pm)/);
-            
-            if (rangeMatch) {
-                // Time range like "7:00-8:00pm" or "4:00pm-5:00pm"
-                console.log('📅 Found time range:', rangeMatch);
-                
-                let startHour = parseInt(rangeMatch[1]);
-                const startMin = rangeMatch[2];
-                let startAMPM = rangeMatch[3];
-                
-                let endHour = parseInt(rangeMatch[4]);
-                const endMin = rangeMatch[5];
-                let endAMPM = rangeMatch[6];
-                
-                // If only end time has AM/PM, apply it to start time if start is earlier
-                if (!startAMPM && endAMPM) {
-                    if (startHour < endHour || (startHour === endHour)) {
-                        startAMPM = endAMPM; // Same period
-                    } else {
-                        // Handle cases like "11:30-12:30pm" (11:30am-12:30pm)
-                        startAMPM = endAMPM === 'pm' ? 'am' : 'pm';
-                    }
-                }
-                
-                // Convert start time to 24-hour format
-                if (startAMPM === 'pm' && startHour !== 12) startHour += 12;
-                if (startAMPM === 'am' && startHour === 12) startHour = 0;
-                
-                // Convert end time to 24-hour format
-                if (endAMPM === 'pm' && endHour !== 12) endHour += 12;
-                if (endAMPM === 'am' && endHour === 12) endHour = 0;
-                
-                startTime = `${startHour.toString().padStart(2, '0')}:${startMin}`;
-                endTime = `${endHour.toString().padStart(2, '0')}:${endMin}`;
-                
-            } else if (singleMatch) {
-                // Single time like "6:30am" or "4:00pm"
-                console.log('🕐 Found single time:', singleMatch);
-                
-                let hour = parseInt(singleMatch[1]);
-                const minute = singleMatch[2];
-                const ampm = singleMatch[3];
-                
-                // Convert to 24-hour format
-                if (ampm === 'pm' && hour !== 12) hour += 12;
-                if (ampm === 'am' && hour === 12) hour = 0;
-                
-                startTime = `${hour.toString().padStart(2, '0')}:${minute}`;
-                
-                // Default to 1-hour duration
-                let endHour = hour + 1;
-                if (endHour >= 24) endHour -= 24;
-                endTime = `${endHour.toString().padStart(2, '0')}:${minute}`;
-            }
-        }
-    }
+    // Simply use the provided StartTime and EndTime directly
+    // They should already be in HH:MM format from the CSV
+    const startTime = startTimeStr ? startTimeStr.replace(':', '') : '1900';
+    const endTime = endTimeStr ? endTimeStr.replace(':', '') : '2000';
     
     const result = {
         startDate: `${targetDate.getFullYear()}${(targetDate.getMonth() + 1).toString().padStart(2, '0')}${targetDate.getDate().toString().padStart(2, '0')}`,
-        startTime: startTime.replace(':', ''),
-        endTime: endTime.replace(':', '')
+        startTime: startTime,
+        endTime: endTime
     };
     
     console.log('✅ Parsed time result:', result);
@@ -1096,18 +1078,19 @@ window.addToGoogleCalendar = function(item, event) {
     console.log('🗓️ Google Calendar function called with:', item);
     if (event) event.preventDefault();
     
-    const title = `Homeless Aid UK - ${item.Type} - ${item.Town}`;
-    const details = `${item['Address 1']}${item.Postcode ? ', ' + item.Postcode : ''}${item.Notes ? '\n\nNotes: ' + item.Notes : ''}`;
+    const title = `Homeless Aid UK - ${item.Name || item.Type + ' - ' + item.Town}`;
+    const details = `${item.Name ? item.Name + '\n' : ''}${item['Address 1']}${item.Postcode ? ', ' + item.Postcode : ''}${item.Notes ? '\n\nNotes: ' + item.Notes : ''}${item.MoreInfo ? '\n\n' + item.MoreInfo : ''}`;
     const location = `${item['Address 1']}${item.Postcode ? ', ' + item.Postcode : ''}, ${item.Town}, UK`;
     
-    const dates = parseTimeToDate(item.Day, item.Time);
+    const dates = parseTimeToDate(item.Day, item.StartTime, item.EndTime);
     console.log('📅 Google - parsed dates:', dates);
     
     const dateStr = `${dates.startDate}T${dates.startTime}00/${dates.startDate}T${dates.endTime}00`;
     
     console.log('📅 Google - formatted times:', { 
         dateStr, 
-        originalTime: item.Time 
+        originalStartTime: item.StartTime,
+        originalEndTime: item.EndTime 
     });
     
     const googleUrl = `https://calendar.google.com/calendar/render?` +
@@ -1220,11 +1203,11 @@ window.downloadICS = function(item, event) {
     console.log('⬇️ Download ICS function called with:', item);
     if (event) event.preventDefault();
     
-    const title = `Homeless Aid UK - ${item.Type} - ${item.Town}`;
-    const details = `${item['Address 1']}${item.Postcode ? ', ' + item.Postcode : ''}${item.Notes ? '\n\nNotes: ' + item.Notes : ''}`;
+    const title = `Homeless Aid UK - ${item.Name || item.Type + ' - ' + item.Town}`;
+    const details = `${item.Name ? item.Name + '\n' : ''}${item['Address 1']}${item.Postcode ? ', ' + item.Postcode : ''}${item.Notes ? '\n\nNotes: ' + item.Notes : ''}${item.MoreInfo ? '\n\n' + item.MoreInfo : ''}`;
     const location = `${item['Address 1']}${item.Postcode ? ', ' + item.Postcode : ''}, ${item.Town}, UK`;
     
-    const dates = parseTimeToDate(item.Day, item.Time);
+    const dates = parseTimeToDate(item.Day, item.StartTime, item.EndTime);
     console.log('📅 ICS - parsed dates:', dates);
     
     const startDateTime = `${dates.startDate}T${dates.startTime}00`;
@@ -1233,7 +1216,8 @@ window.downloadICS = function(item, event) {
     console.log('📅 ICS - formatted times:', { 
         startDateTime, 
         endDateTime,
-        originalTime: item.Time 
+        originalStartTime: item.StartTime,
+        originalEndTime: item.EndTime 
     });
     
     const icsContent = 
