@@ -32,7 +32,9 @@
       "Bash(git checkout:*)",
       "Bash(git merge:*)",
       "Bash(git rm:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(powershell:*)",
+      "Bash(git restore:*)"
     ],
     "deny": [],
     "ask": []
