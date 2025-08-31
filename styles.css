@@ -2788,3 +2788,554 @@ footer {
     margin: 0; /* Remove default margins */
     flex-grow: 1; /* Allow venue name to take available space */
 }
+
+/* ===== MODERN PAGE STYLES ===== */
+
+/* Page Hero Section */
+.page-hero {
+    background: linear-gradient(135deg, #1a2332 0%, #2d3748 100%);
+    color: white;
+    padding: 4rem 0 3rem;
+    text-align: center;
+}
+
+.page-hero h1 {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, #ffffff 0%, #e2e8f0 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.page-hero .hero-subtitle {
+    font-size: 1.3rem;
+    opacity: 0.9;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* Modern Card Grid System */
+.donation-grid,
+.volunteer-grid,
+.contact-grid,
+.details-grid,
+.info-grid,
+.ways-grid,
+.contact-cards {
+    display: grid;
+    gap: 2rem;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    margin-top: 2rem;
+}
+
+/* Modern Card Design */
+.donation-card,
+.volunteer-card,
+.contact-card,
+.detail-card,
+.info-card,
+.way-card {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e2e8f0;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.donation-card:hover,
+.volunteer-card:hover,
+.contact-card:hover,
+.detail-card:hover,
+.info-card:hover,
+.way-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+}
+
+/* Card Icons */
+.card-icon,
+.detail-icon,
+.info-icon,
+.contact-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    display: block;
+}
+
+/* Card Titles */
+.donation-card h3,
+.volunteer-card h3,
+.contact-card h3,
+.detail-card h3,
+.info-card h3,
+.way-card h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #1a2332;
+}
+
+/* Card Content */
+.donation-card p,
+.volunteer-card p,
+.contact-card p,
+.detail-card p,
+.info-card p,
+.way-card p {
+    color: #4a5568;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+}
+
+/* Button Styles for Cards */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #007a74 0%, #005c57 100%);
+    color: white;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 122, 116, 0.3);
+}
+
+.btn-secondary {
+    background: white;
+    color: #007a74;
+    border: 2px solid #007a74;
+}
+
+.btn-secondary:hover {
+    background: #007a74;
+    color: white;
+    transform: translateY(-2px);
+}
+
+/* Form Modernization */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    padding: 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+    background: white;
+    font-family: 'Inter', sans-serif;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #007a74;
+    box-shadow: 0 0 0 3px rgba(0, 122, 116, 0.1);
+}
+
+.form-group textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+/* Special Card Styles */
+.bank-transfer {
+    background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+    border-left: 4px solid #007a74;
+}
+
+.paypal {
+    background: linear-gradient(135deg, #fff5f5 0%, #fed7d7 100%);
+    border-left: 4px solid #e53e3e;
+}
+
+.wishlist {
+    background: linear-gradient(135deg, #fffaf0 0%, #feebc8 100%);
+    border-left: 4px solid #dd6b20;
+}
+
+/* Bank Details Styling */
+.bank-details {
+    background: rgba(255, 255, 255, 0.8);
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin-top: 1rem;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.detail-row:last-child {
+    border-bottom: none;
+}
+
+.detail-row .label {
+    font-weight: 600;
+    color: #4a5568;
+}
+
+.detail-row .value {
+    font-weight: 700;
+    color: #1a2332;
+    font-family: 'Courier New', monospace;
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    transition: background 0.2s ease;
+}
+
+.detail-row .value:hover {
+    background: #f7fafc;
+}
+
+/* Reference Note */
+.reference-note {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: #f0fff4;
+    border-radius: 8px;
+    border-left: 4px solid #38a169;
+}
+
+.reference-note p {
+    margin: 0.5rem 0;
+    color: #2f855a;
+}
+
+/* Contact Link Styling */
+.contact-link {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #007a74;
+    text-decoration: none;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.contact-link:hover {
+    color: #005c57;
+}
+
+/* Call Now Button */
+.call-now-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 2rem;
+    background: linear-gradient(135deg, #38a169 0%, #2f855a 100%);
+    color: white;
+    text-decoration: none;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-top: 1rem;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 15px rgba(56, 161, 105, 0.3);
+}
+
+.call-now-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(56, 161, 105, 0.4);
+}
+
+.phone-number {
+    display: block;
+    font-size: 1.2rem;
+    font-family: 'Courier New', monospace;
+}
+
+/* Important Notice */
+.important-notice,
+.appointment-notice {
+    background: linear-gradient(135deg, #fffaf0 0%, #feebc8 100%);
+    border: 1px solid #f6ad55;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 2rem 0;
+}
+
+.important-notice h3,
+.appointment-notice h3 {
+    color: #c05621;
+    margin-bottom: 1rem;
+    font-size: 1.3rem;
+}
+
+.opening-hours {
+    background: #2b77ad !important;
+    border: 2px solid #1a365d;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(43, 119, 173, 0.2);
+}
+
+.opening-hours h4 {
+    color: #ffffff;
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin: 0;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    letter-spacing: 0.5px;
+}
+
+/* Giving Examples */
+.giving-examples {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.example {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 2px solid #e2e8f0;
+    text-align: center;
+    transition: all 0.2s ease;
+}
+
+.example:hover {
+    border-color: #007a74;
+    transform: translateY(-3px);
+}
+
+.example strong {
+    display: block;
+    font-size: 1.3rem;
+    color: #007a74;
+    margin-bottom: 0.5rem;
+}
+
+.example span {
+    color: #4a5568;
+    font-size: 0.9rem;
+}
+
+/* Social Buttons */
+.social-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.social-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.social-btn.facebook {
+    background: #4267b2;
+    color: white;
+}
+
+.social-btn.facebook:hover {
+    background: #365899;
+    transform: translateY(-2px);
+}
+
+/* Section Spacing */
+.donation-options,
+.volunteer-main,
+.food-bank-info,
+.food-bank-details,
+.contact-main {
+    padding: 4rem 0;
+}
+
+.donation-info,
+.regular-giving,
+.other-ways {
+    padding: 3rem 0;
+    background: #f7fafc;
+}
+
+/* ===== MOBILE RESPONSIVE ENHANCEMENTS ===== */
+
+@media (max-width: 768px) {
+    /* Page Hero Mobile */
+    .page-hero {
+        padding: 2.5rem 0 2rem;
+    }
+    
+    .page-hero h1 {
+        font-size: 2.2rem;
+    }
+    
+    .page-hero .hero-subtitle {
+        font-size: 1.1rem;
+        padding: 0 1rem;
+    }
+    
+    /* Card Grids Mobile */
+    .donation-grid,
+    .volunteer-grid,
+    .contact-grid,
+    .details-grid,
+    .info-grid,
+    .ways-grid,
+    .contact-cards {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+    }
+    
+    /* Cards Mobile */
+    .donation-card,
+    .volunteer-card,
+    .contact-card,
+    .detail-card,
+    .info-card,
+    .way-card {
+        padding: 1.5rem;
+        border-radius: 12px;
+    }
+    
+    /* Button Mobile */
+    .btn {
+        padding: 1rem 1.5rem;
+        font-size: 1rem;
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .call-now-btn {
+        padding: 1.2rem 2rem;
+        font-size: 1rem;
+        width: 100%;
+        justify-content: center;
+        text-align: center;
+    }
+    
+    /* Form Mobile */
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+        padding: 1rem;
+        font-size: 16px; /* Prevents zoom on iOS */
+    }
+    
+    /* Giving Examples Mobile */
+    .giving-examples {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    /* Section Spacing Mobile */
+    .donation-options,
+    .volunteer-main,
+    .food-bank-info,
+    .food-bank-details,
+    .contact-main {
+        padding: 2.5rem 0;
+    }
+    
+    .donation-info,
+    .regular-giving,
+    .other-ways {
+        padding: 2rem 0;
+    }
+    
+    /* Social Buttons Mobile */
+    .social-buttons {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .social-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    /* Extra small mobile adjustments */
+    .page-hero h1 {
+        font-size: 1.8rem;
+    }
+    
+    .page-hero .hero-subtitle {
+        font-size: 1rem;
+    }
+    
+    .donation-card,
+    .volunteer-card,
+    .contact-card,
+    .detail-card,
+    .info-card,
+    .way-card {
+        padding: 1.25rem;
+    }
+    
+    .card-icon,
+    .detail-icon,
+    .info-icon,
+    .contact-icon {
+        font-size: 2.5rem;
+    }
+    
+    .call-now-btn {
+        padding: 1rem 1.5rem;
+        font-size: 0.95rem;
+    }
+}
+
+/* Food Bank opening hours - dark grey background */
+.appointment-notice .opening-hours h4 {
+    background: #2D3748 !important; /* Dark grey background */
+    color: white;
+    padding: 1rem;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin: 1rem 0;
+    box-shadow: 0 4px 12px rgba(26, 35, 50, 0.1);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
