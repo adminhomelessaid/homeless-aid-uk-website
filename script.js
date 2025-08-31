@@ -124,14 +124,37 @@ async function loadFeedingTimes() {
         const data = await response.text();
         console.log('✅ CSV data loaded, length:', data.length, 'characters');
         
-        // Parse CSV
+        // Parse CSV with proper handling of quoted fields
         const lines = data.split('\n');
-        const headers = lines[0].split(',');
+        
+        // Function to parse CSV line respecting quotes
+        function parseCSVLine(line) {
+            const result = [];
+            let current = '';
+            let inQuotes = false;
+            
+            for (let i = 0; i < line.length; i++) {
+                const char = line[i];
+                if (char === '"' && (i === 0 || line[i-1] === ',' || inQuotes)) {
+                    inQuotes = !inQuotes;
+                } else if (char === ',' && !inQuotes) {
+                    result.push(current.trim());
+                    current = '';
+                } else {
+                    current += char;
+                }
+            }
+            result.push(current.trim());
+            return result;
+        }
+        
+        const headers = parseCSVLine(lines[0]);
         const feedingTimes = [];
         
         for (let i = 1; i < lines.length; i++) {
-            const values = lines[i].split(',');
-            if (values.length === headers.length) {
+            if (!lines[i].trim()) continue;
+            const values = parseCSVLine(lines[i]);
+            if (values.length >= headers.length) {
                 const entry = {};
                 headers.forEach((header, index) => {
                     entry[header.trim()] = values[index].trim();
@@ -229,28 +252,11 @@ async function displayFeedingTimes(data) {
         console.log('📍 No user location available for distance calculations');
     }
     
-    // Group data by day
-    const dayOrder = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-    const groupedByDay = {};
-    
-    data.forEach(item => {
-        if (!groupedByDay[item.Day]) {
-            groupedByDay[item.Day] = [];
-        }
-        groupedByDay[item.Day].push(item);
-    });
-    
-    // Create HTML for each day section
+    // Generate cards WITHOUT day grouping
     let html = '';
-    dayOrder.forEach(day => {
-        if (groupedByDay[day] && groupedByDay[day].length > 0) {
-            html += `<div class="day-section">`;
-            html += `<h3 class="day-header">EVERY ${day}</h3>`;
-            html += `<div class="day-cards">`;
-            
-            groupedByDay[day].forEach((item, index) => {
-                // Generate unique ID for modal functionality
-                const uniqueId = `event-${day.toLowerCase()}-${index}`;
+    data.forEach((item, index) => {
+        // Generate unique ID for modal functionality
+        const uniqueId = `event-${item.Day.toLowerCase()}-${index}`;
                 
                 // Create Google Maps link using coordinates if available, otherwise fallback to postcode
                 let mapsUrl = '#';
@@ -273,60 +279,47 @@ async function displayFeedingTimes(data) {
                 }
                 
                 html += `
-                    <div class="event-card" data-event-id="${uniqueId}">
-                        ${distanceHtml}
-                        <div class="card-header">
-                            <div class="event-type">
-                                <span class="town">${item.Town}</span>
-                                <span class="event-category-tag">${item.Type}</span>
-                            </div>
-                            <div class="venue-header">
-                                <h4 class="venue-name">${item.Name || item['Address 1']}</h4>
-                                ${headerDistanceBadge}
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <div class="address-section" onclick="window.open('${mapsUrl}', '_blank')">
-                                <i class="fas fa-map-marker-alt"></i>
-                                <div class="address-text">
-                                    ${item['Address 1']}<br>
-                                    <strong>${item.Postcode ? item.Postcode + ' • ' : ''}Click for directions</strong>
-                                </div>
-                            </div>
-                            <div class="time-section">
-                                <i class="fas fa-clock"></i>
-                                <span>${item.StartTime} - ${item.EndTime}</span>
-                            </div>
-                        </div>
-                        <div class="card-footer">
-                            <div class="card-actions">
-                                ${item['Enable Calendar'] === 'Yes' ? 
-                                    `<button class="calendar-badge" onclick="openCalendarModalForEvent('${uniqueId}')">
-                                        <i class="fas fa-calendar-plus"></i> 
-                                        Add to Calendar
-                                    </button>` : 
-                                    item.Notes && item.Notes.trim() ? 
-                                    `<div class="notes-badge">
-                                        <i class="fas fa-phone"></i>
-                                        ${item.Notes}
-                                    </div>` : ''
-                                }
-                                <button class="btn more-info-btn" onclick="openInfoModal('${uniqueId}')">
-                                    <i class="fas fa-info-circle"></i> 
-                                    More Info
-                                </button>
-                            </div>
+            <div class="event-card" data-event-id="${uniqueId}">
+                ${distanceHtml}
+                <div class="day-time-badge">
+                    Every ${item.Day} • ${item.StartTime} - ${item.EndTime}
+                </div>
+                <div class="card-content">
+                    <div class="venue-header">
+                        <h3 class="venue-name">${item.Name || item['Address 1']}</h3>
+                        <span class="event-category-tag">${item.Type}</span>
+                    </div>
+                    
+                    <div class="address-section" onclick="window.open('${mapsUrl}', '_blank')">
+                        <span>📍</span>
+                        <div class="address-text">
+                            ${item['Address 1']}<br>
+                            <strong>${item.Postcode ? item.Postcode + ' • ' : ''}Click for directions</strong>
                         </div>
                     </div>
+                    
+                    <!-- Action buttons row - ALL inline -->
+                    <div class="card-actions">
+                        ${item['Enable Calendar'] === 'Yes' ? 
+                            `<button class="calendar-badge" onclick="openCalendarModalForEvent('${uniqueId}')">
+                                📅 Add to Calendar
+                            </button>` : 
+                            item.Notes && item.Notes.trim() ? 
+                            `<div class="notes-badge-inline">
+                                📞 ${item.Notes}
+                            </div>` : ''
+                        }
+                        <button class="more-info-btn" onclick="openInfoModal('${uniqueId}')">
+                            ℹ️ More Info
+                        </button>
+                    </div>
+                </div>
+            </div>
                 `;
                 
-                // Store event data for modal access
-                if (!window.eventDataStore) window.eventDataStore = {};
-                window.eventDataStore[uniqueId] = item;
-            });
-            
-            html += `</div></div>`;
-        }
+        // Store event data for modal access
+        if (!window.eventDataStore) window.eventDataStore = {};
+        window.eventDataStore[uniqueId] = item;
     });
     
     container.innerHTML = html;
@@ -335,6 +328,38 @@ async function displayFeedingTimes(data) {
     const calendarButtonsAfter = document.querySelectorAll('.calendar-btn');
     console.log('🎯 Calendar buttons after HTML update:', calendarButtonsAfter.length);
 }
+
+// Make applyFilters globally accessible for filter buttons
+function applyFilters(dayFilter, searchTerm) {
+    if (!window.feedingData) return;
+    
+    let filtered = window.feedingData;
+    
+    // Apply day filter
+    if (dayFilter !== 'all') {
+        filtered = filtered.filter(item => item.Day === dayFilter);
+    }
+    
+    // Apply search filter
+    if (searchTerm) {
+        filtered = filtered.filter(item => {
+            const searchableText = [
+                item.Town || '',
+                item['Address 1'] || '',
+                item.Postcode || '',
+                item.Type || '',
+                item.Notes || ''
+            ].join(' ').toLowerCase();
+            
+            return searchableText.includes(searchTerm);
+        });
+    }
+    
+    displayFeedingTimes(filtered);
+}
+
+// Make it available globally
+window.applyFilters = applyFilters;
 
 // Search functionality for feeding locations
 function setupSearch() {
@@ -365,34 +390,6 @@ function setupSearch() {
         filterButtons[0].classList.add('active'); // Set "All Days" as active
         
         applyFilters('all', searchTerm);
-    }
-    
-    function applyFilters(dayFilter, searchTerm) {
-        if (!window.feedingData) return;
-        
-        let filtered = window.feedingData;
-        
-        // Apply day filter
-        if (dayFilter !== 'all') {
-            filtered = filtered.filter(item => item.Day === dayFilter);
-        }
-        
-        // Apply search filter
-        if (searchTerm) {
-            filtered = filtered.filter(item => {
-                const searchableText = [
-                    item.Town || '',
-                    item['Address 1'] || '',
-                    item.Postcode || '',
-                    item.Type || '',
-                    item.Notes || ''
-                ].join(' ').toLowerCase();
-                
-                return searchableText.includes(searchTerm);
-            });
-        }
-        
-        displayFeedingTimes(filtered);
     }
     
     // Search input event listener with debouncing

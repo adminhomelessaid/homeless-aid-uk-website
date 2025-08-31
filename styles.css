@@ -2399,6 +2399,318 @@ footer {
     margin-bottom: 2.5rem !important;
 }
 
+/* ==============================================
+   NEW CARD DESIGN - BLACK HEADER BADGES
+   ============================================== */
+
+/* Remove day sections completely */
+.day-section,
+.day-header {
+    display: none !important;
+}
+
+/* Fix 1: Make header pill full width with rounded top corners */
+.day-time-badge {
+    background: #1A2332;
+    color: white;
+    padding: 12px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: left;
+    letter-spacing: 0.3px;
+    margin: 0;
+    position: relative;
+    
+    /* CRITICAL FIXES */
+    width: 100% !important; /* Override 95% width */
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    border-radius: 12px 12px 0 0 !important; /* Rounded top corners only */
+}
+
+/* Fix 2: Ensure card-content has proper width but NOT the header */
+.card-content {
+    padding: 20px;
+    width: 100% !important; /* Full width container */
+}
+
+/* Apply 95% width ONLY to content children, not header */
+.card-content > * {
+    width: 95%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Fix 3: Remove bottom spacing from cards */
+.event-card {
+    position: relative;
+    background: white;
+    border-radius: 12px;
+    padding: 0 !important;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border: 1px solid #E2E8F0;
+    transition: all 0.3s ease;
+    margin: 0 !important; /* No margins */
+    display: flex;
+    flex-direction: column;
+}
+
+/* Fix 4: Tighter card grid spacing */
+#feeding-times {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 14px !important; /* Reduced gap */
+    padding: 15px 0;
+}
+
+/* Desktop: 3-4 cards per row */
+@media (min-width: 1200px) {
+    #feeding-times {
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    }
+}
+
+/* Tablet: 2-3 cards per row */
+@media (min-width: 768px) and (max-width: 1199px) {
+    #feeding-times {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    }
+}
+
+/* Mobile adjustments */
+@media (max-width: 767px) {
+    #feeding-times {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px !important;
+        padding: 10px 5px;
+    }
+    
+    .day-time-badge {
+        padding: 10px 15px;
+        font-size: 13px;
+    }
+    
+    .card-content {
+        padding: 15px;
+    }
+    
+    .card-actions {
+        gap: 8px;
+    }
+    
+    .calendar-badge,
+    .more-info-btn {
+        font-size: 12px;
+        padding: 8px;
+        min-height: 38px;
+    }
+}
+
+/* Very small screens: allow 1 column if needed */
+@media (max-width: 380px) {
+    #feeding-times {
+        grid-template-columns: 1fr;
+    }
+    
+    .day-time-badge {
+        font-size: 11px;
+        padding: 8px 12px;
+    }
+    
+    .card-content {
+        padding: 12px;
+    }
+    
+    .venue-name {
+        font-size: 1rem;
+    }
+}
+
+/* ==============================================
+   CARD WIDTH OPTIMIZATION - 95% WIDTH IMPLEMENTATION
+   ============================================== */
+
+/* Impact card content width optimization */
+.impact-card h3,
+.impact-card p {
+    width: 95%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Event card content sections with 95% width */
+.event-card .card-header,
+.event-card .card-body,
+.event-card .card-footer {
+    width: 95%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Direct children of event cards - excluding absolute positioned elements */
+.event-card > *:not(.feeding-distance) {
+    width: 95%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Venue header layout for new design */
+.venue-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.venue-header .venue-name {
+    margin: 0;
+    flex: 1;
+}
+
+.venue-header .event-category-tag {
+    background: var(--secondary-color);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: clamp(10px, 2.5vw, 12px);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+}
+
+/* Ensure venue name and event type use full available width */
+.venue-name,
+.event-type {
+    width: 100%;
+}
+
+/* Time and address sections with proper width */
+.time-section,
+.address-section {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Fix 5: Remove any bottom padding from last elements */
+.card-actions {
+    display: flex;
+    flex-direction: row !important;
+    gap: 10px;
+    margin-top: 16px;
+    margin-bottom: 0 !important;
+    align-items: stretch;
+    min-height: 44px;
+    width: 100%;
+}
+
+.card-content > *:last-child {
+    margin-bottom: 0 !important;
+}
+
+/* Calendar button styling */
+.calendar-badge {
+    background: #48BB78;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    flex: 1;
+    min-height: 44px;
+}
+
+/* More Info button styling */
+.more-info-btn {
+    background: #2D3748;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    flex: 1;
+    min-height: 44px;
+}
+
+/* Notes badge when inline with buttons */
+.notes-badge-inline {
+    background: #FFF3CD;
+    color: #856404;
+    padding: 10px 16px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    flex: 1;
+    text-align: center;
+    min-height: 44px;
+}
+
+/* Remove old notes-badge styles */
+.notes-badge {
+    display: none !important;
+}
+
+/* Distance badge positioned in header */
+.feeding-distance {
+    position: absolute !important;
+    top: 12px !important;
+    right: 20px !important;
+    background: #48BB78 !important;
+    color: white !important;
+    font-size: 0.75rem !important;
+    font-weight: 600 !important;
+    padding: 4px 8px !important;
+    border-radius: 12px !important;
+    z-index: 20 !important;
+}
+
+/* Ensure all cards use border-box sizing */
+.feeding-card,
+.event-card,
+.impact-card {
+    box-sizing: border-box;
+}
+
+/* Additional spacing for better visual breathing room */
+.card-body > * {
+    margin-bottom: 2px;
+}
+
+/* Maintain proper spacing in responsive layouts */
+@media (max-width: 767px) {
+    .event-card > *:not(.feeding-distance) {
+        width: 95%;
+    }
+    
+    .referral-badge,
+    .walk-badge,
+    .calendar-available,
+    .notes-badge,
+    .more-info-btn {
+        width: calc(100% - 4px);
+    }
+}
+
 /* Styling for the new "Near Me" distance badge in header */
 .distance-badge {
     background-color: var(--success-color);
