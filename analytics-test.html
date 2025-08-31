@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics Tracking Test - Homeless Aid UK</title>
+    <link rel="stylesheet" href="styles.css?v=2024.12.19.1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Google tag (gtag.js) with Consent Mode -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-8L51XD6M9J"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      
+      // Configure consent mode defaults
+      gtag('consent', 'default', {
+        'analytics_storage': 'denied',
+        'ad_storage': 'denied',
+        'wait_for_update': 500
+      });
+      
+      gtag('config', 'G-8L51XD6M9J', {
+        'anonymize_ip': true
+      });
+    </script>
+</head>
+<body>
+    <div class="container" style="padding: 2rem; max-width: 1000px; margin: 2rem auto;">
+        <h1>📊 Analytics Tracking Test Dashboard</h1>
+        
+        <div class="test-section">
+            <h2>🍪 Cookie Consent & Analytics Status</h2>
+            <div id="status-panel" style="background: #f5f5f5; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+                <p><strong>Cookie Consent:</strong> <span id="consent-status">Loading...</span></p>
+                <p><strong>Analytics Allowed:</strong> <span id="analytics-status">Loading...</span></p>
+                <p><strong>Google Analytics:</strong> <span id="ga-status">Loading...</span></p>
+                <p><strong>User Properties Set:</strong> <span id="user-props-status">Loading...</span></p>
+            </div>
+            <button onclick="acceptCookies()" class="btn btn-primary">Accept Analytics Cookies</button>
+            <button onclick="refreshStatus()" class="btn btn-secondary">Refresh Status</button>
+        </div>
+
+        <div class="test-section">
+            <h2>📱 PWA Installation Tests</h2>
+            <div id="pwa-status" style="background: #f0f8ff; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+                <p><strong>PWA Support:</strong> <span id="pwa-support">Checking...</span></p>
+                <p><strong>Install Prompt Available:</strong> <span id="install-prompt">Checking...</span></p>
+                <p><strong>Currently Installed:</strong> <span id="pwa-installed">Checking...</span></p>
+                <p><strong>Launch Mode:</strong> <span id="launch-mode">Checking...</span></p>
+            </div>
+            <button onclick="triggerPWAInstall()" class="btn btn-primary">Test PWA Install</button>
+            <button onclick="simulatePWAEvents()" class="btn btn-secondary">Simulate PWA Events</button>
+        </div>
+
+        <div class="test-section">
+            <h2>🗓️ Calendar Tracking Tests</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; margin: 1rem 0;">
+                <button onclick="testCalendarModal()" class="btn btn-primary">Test Calendar Modal</button>
+                <button onclick="testGoogleCalendar()" class="btn btn-secondary">Test Google Calendar</button>
+                <button onclick="testICSDownload()" class="btn btn-secondary">Test ICS Download</button>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>📍 Location & Features Tests</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin: 1rem 0;">
+                <button onclick="testNearMe()" class="btn btn-primary">Test Near Me</button>
+                <button onclick="testGeolocationSuccess()" class="btn btn-secondary">Simulate Location Success</button>
+                <button onclick="testGeolocationError()" class="btn btn-secondary">Simulate Location Error</button>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>📝 Form Submission Tests</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin: 1rem 0;">
+                <button onclick="testVolunteerForm()" class="btn btn-primary">Test Volunteer Form</button>
+                <button onclick="testContactForm()" class="btn btn-primary">Test Contact Form</button>
+                <button onclick="testFormError()" class="btn btn-secondary">Simulate Form Error</button>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>👤 User Properties Tests</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin: 1rem 0;">
+                <button onclick="setVolunteerType()" class="btn btn-primary">Set Volunteer Type</button>
+                <button onclick="setDonorType()" class="btn btn-primary">Set Donor Type</button>
+                <button onclick="setServiceUserType()" class="btn btn-primary">Set Service User Type</button>
+                <button onclick="setLocationPreference()" class="btn btn-secondary">Set Location Preference</button>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>📈 Engagement Tests</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin: 1rem 0;">
+                <button onclick="testScrollTracking()" class="btn btn-primary">Test Scroll Tracking</button>
+                <button onclick="testCustomEvent()" class="btn btn-secondary">Send Custom Event</button>
+                <button onclick="clearUserData()" class="btn btn-secondary">Clear User Data</button>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>📋 Event Log</h2>
+            <div id="event-log" style="background: #1a1a1a; color: #00ff00; padding: 1rem; border-radius: 8px; font-family: monospace; height: 300px; overflow-y: auto;">
+                <div>🔄 Analytics test dashboard loaded...</div>
+            </div>
+            <button onclick="clearLog()" class="btn btn-secondary" style="margin-top: 1rem;">Clear Log</button>
+        </div>
+
+        <div class="test-section">
+            <h2>📊 How to View Results</h2>
+            <div style="background: #e8f5e8; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+                <h4>In Google Analytics:</h4>
+                <ol>
+                    <li>Go to <strong>Reports → Engagement → Events</strong></li>
+                    <li>Look for these tracked events:</li>
+                    <ul>
+                        <li><strong>pwa_installed</strong> - PWA installations</li>
+                        <li><strong>calendar_add</strong> - Google Calendar additions</li>
+                        <li><strong>calendar_download</strong> - ICS downloads</li>
+                        <li><strong>near_me_click</strong> - Location feature usage</li>
+                        <li><strong>form_submit_success</strong> - Form completions</li>
+                        <li><strong>scroll_depth</strong> - Page engagement</li>
+                    </ul>
+                    <li>Events appear in GA within <strong>24-48 hours</strong></li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- Fake data for testing -->
+        <div style="display: none;">
+            <div id="nearMeBtn"><i class="fas fa-location-arrow"></i><span>Near Me</span></div>
+        </div>
+    </div>
+
+    <script src="script.js?v=2024.12.19.1"></script>
+    <script>
+        let logDiv;
+        const testEventData = {
+            Day: 'Monday',
+            StartTime: '19:00',
+            EndTime: '20:00',
+            Name: 'Test Venue',
+            'Address 1': '123 Test Street',
+            Postcode: 'TE1 1ST',
+            Town: 'Bolton',
+            Type: 'Street Kitchen',
+            MoreInfo: 'Test venue for calendar integration'
+        };
+
+        function log(message, type = 'info') {
+            if (!logDiv) logDiv = document.getElementById('event-log');
+            const timestamp = new Date().toLocaleTimeString();
+            const color = type === 'error' ? '#ff4444' : 
+                         type === 'success' ? '#44ff44' : 
+                         type === 'warning' ? '#ffaa00' : '#44aaff';
+            logDiv.innerHTML += `<div style="color: ${color}">[${timestamp}] ${message}</div>`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+            console.log(message);
+        }
+
+        function refreshStatus() {
+            log('🔄 Refreshing status...', 'info');
+            
+            const consent = CookieConsent?.getConsent();
+            document.getElementById('consent-status').textContent = consent ? '✅ Set' : '❌ Not Set';
+            document.getElementById('analytics-status').textContent = consent?.analytics ? '✅ Allowed' : '❌ Denied';
+            document.getElementById('ga-status').textContent = typeof gtag === 'function' ? '✅ Loaded' : '❌ Not Loaded';
+            document.getElementById('user-props-status').textContent = localStorage.getItem('user_properties_set') ? '✅ Set' : '❌ Not Set';
+            
+            // PWA Status
+            document.getElementById('pwa-support').textContent = 'serviceWorker' in navigator ? '✅ Supported' : '❌ Not Supported';
+            document.getElementById('install-prompt').textContent = localStorage.getItem('pwa_prompt_shown') ? '✅ Shown' : '❌ Not Shown';
+            document.getElementById('pwa-installed').textContent = localStorage.getItem('pwa_installed') ? '✅ Installed' : '❌ Not Installed';
+            document.getElementById('launch-mode').textContent = window.matchMedia('(display-mode: standalone)').matches ? '📱 Standalone' : '🌐 Browser';
+            
+            log('✅ Status refreshed', 'success');
+        }
+
+        function acceptCookies() {
+            log('🍪 Accepting cookies for testing...', 'info');
+            CookieConsent?.acceptAll();
+            setTimeout(refreshStatus, 500);
+        }
+
+        function clearLog() {
+            if (logDiv) logDiv.innerHTML = '<div>📋 Event log cleared...</div>';
+        }
+
+        // PWA Tests
+        function triggerPWAInstall() {
+            log('📱 Simulating PWA install prompt...', 'info');
+            if (window.AnalyticsTracker) {
+                window.AnalyticsTracker.trackEvent('pwa_install_available', {
+                    'event_category': 'PWA',
+                    'event_label': 'Install prompt available (test)'
+                });
+                log('📊 PWA install available event sent', 'success');
+            }
+        }
+
+        function simulatePWAEvents() {
+            log('🚀 Simulating PWA events...', 'info');
+            if (window.AnalyticsTracker) {
+                window.AnalyticsTracker.trackEvent('pwa_installed', {
+                    'event_category': 'PWA',
+                    'event_label': 'App installed successfully (test)'
+                });
+                window.AnalyticsTracker.trackEvent('pwa_launch', {
+                    'event_category': 'PWA',
+                    'event_label': 'Launched as installed app (test)'
+                });
+                log('📊 PWA events sent', 'success');
+            }
+        }
+
+        // Calendar Tests
+        function testCalendarModal() {
+            log('🗓️ Testing calendar modal tracking...', 'info');
+            if (window.AnalyticsTracker) {
+                window.AnalyticsTracker.trackEvent('calendar_modal_open', {
+                    'event_category': 'Calendar',
+                    'event_label': 'Test Venue - Bolton',
+                    'custom_parameter_1': 'Bolton',
+                    'custom_parameter_2': 'Monday'
+                });
+                log('📊 Calendar modal open event sent', 'success');
+            }
+        }
+
+        function testGoogleCalendar() {
+            log('📅 Testing Google Calendar tracking...', 'info');
+            if (window.addToGoogleCalendar) {
+                window.addToGoogleCalendar(testEventData);
+                log('📊 Google Calendar event sent', 'success');
+            }
+        }
+
+        function testICSDownload() {
+            log('📥 Testing ICS download tracking...', 'info');
+            if (window.downloadICS) {
+                window.downloadICS(testEventData);
+                log('📊 ICS download event sent', 'success');
+            }
+        }
+
+        // Location Tests
+        function testNearMe() {
+            log('📍 Testing Near Me tracking...', 'info');
+            if (window.AnalyticsTracker) {
+                window.AnalyticsTracker.trackEvent('near_me_click', {
+                    'event_category': 'Features',
+                    'event_label': 'Near Me location search (test)'
+                });
+                log('📊 Near Me click event sent', 'success');
+            }
+        }
+
+        function testGeolocationSuccess() {
+            log('🌍 Testing geolocation success...', 'info');
+            if (window.AnalyticsTracker) {
+                window.AnalyticsTracker.trackEvent('geolocation_success', {
+                    'event_category': 'Features',
+                    'event_label': 'Location acquired successfully (test)'
+                });
+                window.AnalyticsTracker.trackEvent('near_me_success', {
+                    'event_category': 'Features',
+                    'event_label': 'Venues sorted by distance (test)',
+                    'event_value': 25
+                });
+                log('📊 Geolocation success events sent', 'success');
+            }
+        }
+
+        function testGeolocationError() {
+            log('❌ Testing geolocation error...', 'warning');
+            if (window.AnalyticsTracker) {
+                window.AnalyticsTracker.trackEvent('geolocation_error', {
+                    'event_category': 'Features',
+                    'event_label': 'Location access denied or failed (test)',
+                    'custom_parameter_1': 'User denied permission'
+                });
+                log('📊 Geolocation error event sent', 'success');
+            }
+        }
+
+        // Form Tests
+        function testVolunteerForm() {
+            log('📝 Testing volunteer form tracking...', 'info');
+            if (window.AnalyticsTracker) {
+                window.AnalyticsTracker.trackEvent('form_submit_start', {
+                    'event_category': 'Forms',
+                    'event_label': 'Volunteer Application (test)'
+                });
+                window.AnalyticsTracker.trackEvent('form_submit_success', {
+                    'event_category': 'Forms',
+                    'event_label': 'Volunteer Application (test)',
+                    'custom_parameter_1': 'Bolton'
+                });
+                log('📊 Volunteer form events sent', 'success');
+            }
+        }
+
+        function testContactForm() {
+            log('📧 Testing contact form tracking...', 'info');
+            if (window.AnalyticsTracker) {
+                window.AnalyticsTracker.trackEvent('form_submit_start', {
+                    'event_category': 'Forms',
+                    'event_label': 'Contact Form (test)'
+                });
+                window.AnalyticsTracker.trackEvent('form_submit_success', {
+                    'event_category': 'Forms',
+                    'event_label': 'Contact Form (test)',
+                    'custom_parameter_1': 'general'
+                });
+                log('📊 Contact form events sent', 'success');
+            }
+        }
+
+        function testFormError() {
+            log('❌ Testing form error tracking...', 'warning');
+            if (window.AnalyticsTracker) {
+                window.AnalyticsTracker.trackEvent('form_submit_error', {
+                    'event_category': 'Forms',
+                    'event_label': 'Form submission failed (test)',
+                    'custom_parameter_1': 'Network error'
+                });
+                log('📊 Form error event sent', 'success');
+            }
+        }
+
+        // User Properties Tests
+        function setVolunteerType() {
+            log('👥 Setting user type to volunteer...', 'info');
+            if (window.AnalyticsTracker) {
+                window.AnalyticsTracker.setUserProperties({
+                    'user_type': 'volunteer_applicant',
+                    'location_preference': 'Bolton'
+                });
+                localStorage.setItem('user_properties_set', 'true');
+                log('📊 Volunteer user properties set', 'success');
+                refreshStatus();
+            }
+        }
+
+        function setDonorType() {
+            log('💝 Setting user type to donor...', 'info');
+            if (window.AnalyticsTracker) {
+                window.AnalyticsTracker.setUserProperties({
+                    'user_type': 'potential_donor'
+                });
+                localStorage.setItem('user_properties_set', 'true');
+                log('📊 Donor user properties set', 'success');
+                refreshStatus();
+            }
+        }
+
+        function setServiceUserType() {
+            log('🤝 Setting user type to service user...', 'info');
+            if (window.AnalyticsTracker) {
+                window.AnalyticsTracker.setUserProperties({
+                    'user_type': 'service_user',
+                    'location_preference': 'Manchester'
+                });
+                localStorage.setItem('user_properties_set', 'true');
+                log('📊 Service user properties set', 'success');
+                refreshStatus();
+            }
+        }
+
+        function setLocationPreference() {
+            log('📍 Setting location preference...', 'info');
+            if (window.AnalyticsTracker) {
+                window.AnalyticsTracker.setUserProperties({
+                    'location_preference': 'Liverpool'
+                });
+                log('📊 Location preference set', 'success');
+            }
+        }
+
+        // Engagement Tests
+        function testScrollTracking() {
+            log('📜 Testing scroll tracking...', 'info');
+            if (window.AnalyticsTracker) {
+                window.AnalyticsTracker.trackEvent('scroll_depth', {
+                    'event_category': 'Engagement',
+                    'event_label': '75% of page (test)',
+                    'event_value': 75
+                });
+                log('📊 Scroll depth event sent', 'success');
+            }
+        }
+
+        function testCustomEvent() {
+            log('⚡ Sending custom test event...', 'info');
+            if (window.AnalyticsTracker) {
+                window.AnalyticsTracker.trackEvent('test_event', {
+                    'event_category': 'Testing',
+                    'event_label': 'Manual test event',
+                    'event_value': 1,
+                    'custom_parameter_1': 'test_data'
+                });
+                log('📊 Custom test event sent', 'success');
+            }
+        }
+
+        function clearUserData() {
+            log('🗑️ Clearing user data...', 'warning');
+            localStorage.removeItem('user_properties_set');
+            localStorage.removeItem('pwa_prompt_shown');
+            localStorage.removeItem('pwa_installed');
+            CookieConsent?.clearConsent();
+            log('✅ User data cleared', 'success');
+            setTimeout(refreshStatus, 500);
+        }
+
+        // Initialize test page
+        document.addEventListener('DOMContentLoaded', function() {
+            log('✅ Analytics test dashboard loaded');
+            
+            // Wait for analytics to initialize
+            setTimeout(() => {
+                refreshStatus();
+                log('📊 Analytics tracking system ready');
+                if (window.AnalyticsTracker) {
+                    window.AnalyticsTracker.trackEvent('test_dashboard_load', {
+                        'event_category': 'Testing',
+                        'event_label': 'Analytics test dashboard loaded'
+                    });
+                    log('📊 Dashboard load event sent', 'success');
+                }
+            }, 2000);
+        });
+    </script>
+</body>
+</html>

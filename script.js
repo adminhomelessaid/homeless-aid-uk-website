@@ -1077,6 +1077,16 @@ window.openCalendarModalForEvent = function(eventId) {
     const eventData = window.eventDataStore[eventId];
     if (!eventData) return;
     
+    // Track calendar modal open
+    if (window.AnalyticsTracker) {
+        window.AnalyticsTracker.trackEvent('calendar_modal_open', {
+            'event_category': 'Calendar',
+            'event_label': eventData.Town + ' - ' + (eventData.Name || eventData.Type),
+            'custom_parameter_1': eventData.Town,
+            'custom_parameter_2': eventData.Day
+        });
+    }
+    
     // Close info modal if open
     closeInfoModal();
     
@@ -1728,13 +1738,433 @@ const CookieConsent = {
     }
 };
 
-// Initialize cookie consent when DOM is ready
+// Analytics Tracking System
+const AnalyticsTracker = {
+    // Helper to safely track events only if analytics is allowed
+    trackEvent(eventName, parameters = {}) {
+        if (typeof gtag === 'function' && CookieConsent.isAllowed('analytics')) {
+            console.log(`📊 Analytics Event: ${eventName}`, parameters);
+            gtag('event', eventName, parameters);
+            return true;
+        } else {
+            console.log(`🚫 Analytics blocked - Event not sent: ${eventName}`, parameters);
+            return false;
+        }
+    },
+
+    // Set user properties
+    setUserProperties(properties) {
+        if (typeof gtag === 'function' && CookieConsent.isAllowed('analytics')) {
+            console.log('👤 Setting user properties:', properties);
+            gtag('set', 'user_properties', properties);
+        }
+    },
+
+    // Initialize all tracking
+    init() {
+        console.log('📈 Initializing Analytics Tracking...');
+        this.initPWATracking();
+        this.initUserProperties();
+        this.initPageTracking();
+    },
+
+    // PWA Installation Tracking
+    initPWATracking() {
+        let deferredPrompt;
+
+        // Track when install prompt becomes available
+        window.addEventListener('beforeinstallprompt', (e) => {
+            console.log('📱 PWA install prompt available');
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            this.trackEvent('pwa_install_available', {
+                'event_category': 'PWA',
+                'event_label': 'Install prompt available'
+            });
+
+            // Store that prompt was shown
+            localStorage.setItem('pwa_prompt_shown', 'true');
+        });
+
+        // Track actual PWA installation
+        window.addEventListener('appinstalled', (e) => {
+            console.log('✅ PWA installed successfully');
+            
+            this.trackEvent('pwa_installed', {
+                'event_category': 'PWA',
+                'event_label': 'App installed successfully'
+            });
+
+            // Store installation status
+            localStorage.setItem('pwa_installed', 'true');
+            
+            // Update user properties
+            this.setUserProperties({
+                'has_installed_pwa': 'yes'
+            });
+        });
+
+        // Track PWA launches (when app is opened as installed PWA)
+        if (window.matchMedia('(display-mode: standalone)').matches) {
+            console.log('🚀 Launched as installed PWA');
+            
+            this.trackEvent('pwa_launch', {
+                'event_category': 'PWA',
+                'event_label': 'Launched as installed app'
+            });
+
+            // Update user properties
+            this.setUserProperties({
+                'launch_mode': 'standalone'
+            });
+        }
+    },
+
+    // User Properties Tracking
+    initUserProperties() {
+        const userProperties = {
+            'user_type': 'visitor', // Default, can be updated based on actions
+            'has_installed_pwa': localStorage.getItem('pwa_installed') ? 'yes' : 'no',
+            'prompt_shown': localStorage.getItem('pwa_prompt_shown') ? 'yes' : 'no',
+            'launch_mode': window.matchMedia('(display-mode: standalone)').matches ? 'standalone' : 'browser'
+        };
+
+        this.setUserProperties(userProperties);
+    },
+
+    // Page and Session Tracking
+    initPageTracking() {
+        // Track page engagement
+        let engagementTime = 0;
+        const startTime = Date.now();
+
+        // Track scroll depth
+        let maxScrollDepth = 0;
+        window.addEventListener('scroll', () => {
+            const scrollTop = window.pageYOffset;
+            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const scrollPercent = Math.round((scrollTop / docHeight) * 100);
+            
+            if (scrollPercent > maxScrollDepth) {
+                maxScrollDepth = scrollPercent;
+                
+                // Track scroll milestones
+                if (maxScrollDepth >= 25 && maxScrollDepth < 50) {
+                    this.trackEvent('scroll_depth', {
+                        'event_category': 'Engagement',
+                        'event_label': '25% of page',
+                        'event_value': 25
+                    });
+                } else if (maxScrollDepth >= 50 && maxScrollDepth < 75) {
+                    this.trackEvent('scroll_depth', {
+                        'event_category': 'Engagement',
+                        'event_label': '50% of page',
+                        'event_value': 50
+                    });
+                } else if (maxScrollDepth >= 75) {
+                    this.trackEvent('scroll_depth', {
+                        'event_category': 'Engagement',
+                        'event_label': '75% of page',
+                        'event_value': 75
+                    });
+                }
+            }
+        });
+
+        // Track time on page before unload
+        window.addEventListener('beforeunload', () => {
+            engagementTime = Math.round((Date.now() - startTime) / 1000);
+            
+            this.trackEvent('page_engagement', {
+                'event_category': 'Engagement',
+                'event_label': document.title,
+                'event_value': engagementTime
+            });
+        });
+    }
+};
+
+// Enhanced Calendar Tracking Functions
+window.addToGoogleCalendar = function(item, event) {
+    console.log('🗓️ Google Calendar function called with:', item);
+    if (event) event.preventDefault();
+    
+    // Track the calendar addition
+    AnalyticsTracker.trackEvent('calendar_add', {
+        'event_category': 'Calendar',
+        'event_label': 'Google Calendar',
+        'custom_parameter_1': item.Town,
+        'custom_parameter_2': item.Day,
+        'custom_parameter_3': item.Type || 'Unknown'
+    });
+    
+    const title = `Homeless Aid UK - ${item.Name || item.Type + ' - ' + item.Town}`;
+    const startDate = parseTimeToDate(item.Day, item.StartTime);
+    const endDate = parseTimeToDate(item.Day, item.EndTime);
+    const details = `${item.Type} at ${item.Name}\n${item['Address 1']}\n${item.Postcode}\n\n${item.MoreInfo || ''}`;
+    const location = item.Postcode ? `${item['Address 1']}, ${item.Postcode}` : item['Address 1'];
+    
+    const startFormatted = formatDateForCalendar(startDate);
+    const endFormatted = formatDateForCalendar(endDate);
+    
+    const googleUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${startFormatted}/${endFormatted}&details=${encodeURIComponent(details)}&location=${encodeURIComponent(location)}&recur=RRULE:FREQ=WEEKLY`;
+    
+    console.log('🔗 Opening Google Calendar with URL:', googleUrl);
+    window.open(googleUrl, '_blank');
+};
+
+window.downloadICS = function(item, event) {
+    console.log('⬇️ Download ICS function called with:', item);
+    if (event) event.preventDefault();
+    
+    // Track the ICS download
+    AnalyticsTracker.trackEvent('calendar_download', {
+        'event_category': 'Calendar',
+        'event_label': 'ICS File',
+        'custom_parameter_1': item.Town,
+        'custom_parameter_2': item.Day,
+        'custom_parameter_3': item.Type || 'Unknown'
+    });
+    
+    const title = `Homeless Aid UK - ${item.Name || item.Type + ' - ' + item.Town}`;
+    const startDate = parseTimeToDate(item.Day, item.StartTime);
+    const endDate = parseTimeToDate(item.Day, item.EndTime);
+    const details = `${item.Type} at ${item.Name}\\n${item['Address 1']}\\n${item.Postcode}\\n\\n${item.MoreInfo || ''}`;
+    const location = item.Postcode ? `${item['Address 1']}, ${item.Postcode}` : item['Address 1'];
+    
+    const startFormatted = formatDateForICS(startDate);
+    const endFormatted = formatDateForICS(endDate);
+    const now = new Date();
+    const timestamp = now.getFullYear() + 
+        String(now.getMonth() + 1).padStart(2, '0') + 
+        String(now.getDate()).padStart(2, '0') + 'T' +
+        String(now.getHours()).padStart(2, '0') + 
+        String(now.getMinutes()).padStart(2, '0') + 
+        String(now.getSeconds()).padStart(2, '0') + 'Z';
+
+    const icsContent = `BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Homeless Aid UK//Event//EN
+METHOD:PUBLISH
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:${timestamp}@homelessaid.co.uk
+DTSTAMP:${timestamp}
+DTSTART:${startFormatted}
+DTEND:${endFormatted}
+RRULE:FREQ=WEEKLY
+SUMMARY:${title}
+DESCRIPTION:${details.replace(/\n/g, '\\n')}
+LOCATION:${location}
+END:VEVENT
+END:VCALENDAR`;
+
+    const blob = new Blob([icsContent], { type: 'text/calendar' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `homeless-aid-uk-${item.Town.toLowerCase().replace(/\s+/g, '-')}-${item.Day.toLowerCase()}.ics`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+};
+
+// Enhanced Near Me Tracking
+function enhanceNearMeTracking() {
+    const nearMeBtn = document.getElementById('nearMeBtn');
+    if (nearMeBtn) {
+        // Remove existing listeners and add tracked version
+        nearMeBtn.addEventListener('click', async function(event) {
+            console.log('📍 Near Me clicked - starting location search');
+            
+            // Track Near Me usage
+            AnalyticsTracker.trackEvent('near_me_click', {
+                'event_category': 'Features',
+                'event_label': 'Near Me location search'
+            });
+
+            // Update button state
+            const icon = nearMeBtn.querySelector('i');
+            const text = nearMeBtn.querySelector('span');
+            
+            nearMeBtn.disabled = true;
+            icon.className = 'fas fa-spinner fa-spin';
+            text.textContent = 'Getting Location...';
+
+            try {
+                console.log('🌍 Getting user location...');
+                const userLocation = await GeolocationManager.getCurrentLocation();
+                
+                // Track successful geolocation
+                AnalyticsTracker.trackEvent('geolocation_success', {
+                    'event_category': 'Features',
+                    'event_label': 'Location acquired successfully'
+                });
+
+                console.log('📊 Calculating distances and sorting venues...');
+                
+                if (window.feedingData && window.feedingData.length > 0) {
+                    window.feedingData.forEach(item => {
+                        if (item.lat && item.lng) {
+                            const distance = GeolocationManager.calculateDistance(
+                                userLocation.lat, userLocation.lng, 
+                                parseFloat(item.lat), parseFloat(item.lng)
+                            );
+                            item.distance = distance;
+                        }
+                    });
+
+                    window.feedingData.sort((a, b) => (a.distance || Infinity) - (b.distance || Infinity));
+                    
+                    displayFeedingTimes(window.feedingData);
+                    
+                    // Track successful sorting
+                    AnalyticsTracker.trackEvent('near_me_success', {
+                        'event_category': 'Features',
+                        'event_label': 'Venues sorted by distance',
+                        'event_value': window.feedingData.length
+                    });
+                    
+                    showNotification('📍 Venues sorted by distance from your location!', 'success');
+                    
+                    // Update user properties with location preference
+                    if (window.feedingData[0] && window.feedingData[0].Town) {
+                        AnalyticsTracker.setUserProperties({
+                            'location_preference': window.feedingData[0].Town
+                        });
+                    }
+                }
+
+            } catch (error) {
+                console.error('❌ Geolocation failed:', error);
+                
+                // Track geolocation failure
+                AnalyticsTracker.trackEvent('geolocation_error', {
+                    'event_category': 'Features',
+                    'event_label': 'Location access denied or failed',
+                    'custom_parameter_1': error.message
+                });
+                
+                showNotification('❌ Location access denied. Please enable location services and try again.', 'error');
+            } finally {
+                // Reset button state
+                nearMeBtn.disabled = false;
+                icon.className = 'fas fa-location-arrow';
+                text.textContent = 'Near Me';
+            }
+        });
+    }
+}
+
+// Enhanced Form Tracking
+function enhanceFormTracking() {
+    // Volunteer Form Tracking
+    const originalVolunteerSubmit = window.sendVolunteerEmail;
+    if (originalVolunteerSubmit) {
+        window.sendVolunteerEmail = async function(event) {
+            // Track form submission start
+            AnalyticsTracker.trackEvent('form_submit_start', {
+                'event_category': 'Forms',
+                'event_label': 'Volunteer Application'
+            });
+            
+            // Get form data for enhanced tracking
+            const form = document.getElementById('volunteerFormNew');
+            const formData = new FormData(form);
+            const location = formData.get('Preferred_Location');
+            
+            try {
+                // Call original function
+                await originalVolunteerSubmit.call(this, event);
+                
+                // Track successful submission
+                AnalyticsTracker.trackEvent('form_submit_success', {
+                    'event_category': 'Forms',
+                    'event_label': 'Volunteer Application',
+                    'custom_parameter_1': location
+                });
+                
+                // Update user properties
+                AnalyticsTracker.setUserProperties({
+                    'user_type': 'volunteer_applicant',
+                    'location_preference': location
+                });
+                
+            } catch (error) {
+                // Track submission failure
+                AnalyticsTracker.trackEvent('form_submit_error', {
+                    'event_category': 'Forms',
+                    'event_label': 'Volunteer Application Failed',
+                    'custom_parameter_1': error.message
+                });
+            }
+        };
+    }
+
+    // Contact Form Tracking  
+    const originalContactSubmit = window.sendContactEmail;
+    if (originalContactSubmit) {
+        window.sendContactEmail = async function(event) {
+            // Track form submission start
+            AnalyticsTracker.trackEvent('form_submit_start', {
+                'event_category': 'Forms',
+                'event_label': 'Contact Form'
+            });
+            
+            const form = document.getElementById('contactFormNew');
+            const formData = new FormData(form);
+            const subject = formData.get('Subject');
+            
+            try {
+                // Call original function
+                await originalContactSubmit.call(this, event);
+                
+                // Track successful submission
+                AnalyticsTracker.trackEvent('form_submit_success', {
+                    'event_category': 'Forms',
+                    'event_label': 'Contact Form',
+                    'custom_parameter_1': subject
+                });
+                
+                // Update user properties based on inquiry type
+                let userType = 'visitor';
+                if (subject === 'volunteer') userType = 'potential_volunteer';
+                else if (subject === 'donation') userType = 'potential_donor';
+                else if (subject === 'help') userType = 'service_user';
+                
+                AnalyticsTracker.setUserProperties({
+                    'user_type': userType
+                });
+                
+            } catch (error) {
+                // Track submission failure
+                AnalyticsTracker.trackEvent('form_submit_error', {
+                    'event_category': 'Forms',
+                    'event_label': 'Contact Form Failed',
+                    'custom_parameter_1': error.message
+                });
+            }
+        };
+    }
+}
+
+// Initialize cookie consent and analytics tracking when DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize cookie consent first (before other tracking)
     CookieConsent.init();
     
-    // Make CookieConsent globally available
+    // Initialize analytics tracking after cookie consent is ready
+    setTimeout(() => {
+        AnalyticsTracker.init();
+        enhanceNearMeTracking();
+        enhanceFormTracking();
+    }, 100);
+    
+    // Make systems globally available
     window.CookieConsent = CookieConsent;
+    window.AnalyticsTracker = AnalyticsTracker;
 });
 
 // Service Worker for offline functionality (optional enhancement)
