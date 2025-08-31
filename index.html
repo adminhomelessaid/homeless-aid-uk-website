@@ -2,11 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="description" content="Homeless Aid UK - Helping the homeless and those in need across the UK with free food, support, and volunteer opportunities">
     <meta name="keywords" content="homeless aid, UK charity, volunteer, donate, food bank, Manchester, Bolton, Liverpool, Glasgow">
     <title>Homeless Aid UK - Helping The Homeless & Those In Need</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css?v=2024.12.19.1">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -22,6 +25,25 @@
     <link rel="apple-touch-icon" sizes="120x120" href="Branding/HomelessAidUKLogo.png">
     <meta name="msapplication-TileImage" content="Branding/HomelessAidUKLogo.png">
     <meta name="msapplication-TileColor" content="#007A74">
+    
+    <!-- Google tag (gtag.js) with Consent Mode -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-8L51XD6M9J"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      
+      // Configure consent mode defaults
+      gtag('consent', 'default', {
+        'analytics_storage': 'denied',
+        'ad_storage': 'denied',
+        'wait_for_update': 500
+      });
+      
+      gtag('config', 'G-8L51XD6M9J', {
+        'anonymize_ip': true
+      });
+    </script>
 </head>
 <body>
     <nav class="navbar">
@@ -206,6 +228,6 @@
         </div>
     </footer>
 
-    <script src="script.js"></script>
+    <script src="script.js?v=2024.12.19.1"></script>
 </body>
 </html>

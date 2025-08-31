@@ -1,4 +1,5 @@
-const CACHE_NAME = 'homeless-aid-uk-v2';
+const CACHE_VERSION = 'v2024.12.19.1';
+const CACHE_NAME = `homeless-aid-${CACHE_VERSION}`;
 const urlsToCache = [
   '/',
   '/index.html',
@@ -30,57 +31,30 @@ self.addEventListener('install', function(event) {
   );
 });
 
-// Activate service worker
-self.addEventListener('activate', function(event) {
-  console.log('✅ Service Worker: Activating...');
-  event.waitUntil(
-    caches.keys().then(function(cacheNames) {
-      return Promise.all(
-        cacheNames.map(function(cacheName) {
-          if (cacheName !== CACHE_NAME) {
-            console.log('🗑️ Service Worker: Deleting old cache', cacheName);
-            return caches.delete(cacheName);
-          }
+// Clear old caches on activation
+self.addEventListener('activate', event => {
+    console.log('🔧 Service Worker: Activating...');
+    event.waitUntil(
+        caches.keys().then(cacheNames => {
+            return Promise.all(
+                cacheNames
+                    .filter(cacheName => cacheName !== CACHE_NAME)
+                    .map(cacheName => {
+                        console.log('🗑️ Service Worker: Deleting old cache', cacheName);
+                        return caches.delete(cacheName);
+                    })
+            );
+        }).then(() => {
+            console.log('✅ Service Worker: Activated with cache', CACHE_NAME);
+            return self.clients.claim();
         })
-      );
-    })
-  );
+    );
 });
 
-// Fetch event - serve from cache, fallback to network
+// FORCE DISABLE SERVICE WORKER - DELETE ALL CACHES
 self.addEventListener('fetch', function(event) {
-  event.respondWith(
-    caches.match(event.request)
-      .then(function(response) {
-        // Return cached version or fetch from network
-        if (response) {
-          console.log('📦 Service Worker: Serving from cache', event.request.url);
-          return response;
-        }
-        
-        return fetch(event.request).then(function(response) {
-          // Don't cache if not a valid response
-          if (!response || response.status !== 200 || response.type !== 'basic') {
-            return response;
-          }
-          
-          // Clone the response
-          const responseToCache = response.clone();
-          
-          caches.open(CACHE_NAME)
-            .then(function(cache) {
-              cache.put(event.request, responseToCache);
-            });
-          
-          return response;
-        }).catch(function() {
-          // If both cache and network fail, return a custom offline page
-          if (event.request.destination === 'document') {
-            return caches.match('/');
-          }
-        });
-      })
-  );
+  console.log('🗑️ Service Worker: DISABLED - fetching from network only');
+  event.respondWith(fetch(event.request));
 });
 
 // Handle background sync for offline actions

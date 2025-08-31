@@ -110,11 +110,17 @@ const CalendarManager = {
 // Load and display feeding times from CSV
 async function loadFeedingTimes() {
     const feedingContainer = document.getElementById('feeding-times');
-    if (!feedingContainer) return;
+    if (!feedingContainer) {
+        console.error('❌ feeding-times container not found in DOM');
+        return;
+    }
+    console.log('✅ Found feeding-times container:', feedingContainer);
     
     try {
         console.log('📥 Attempting to fetch CSV file...');
-        const response = await fetch('feed-times.csv');
+        // Add cache-busting parameter to bypass Service Worker cache
+        const cacheBuster = new Date().getTime();
+        const response = await fetch(`feed-times.csv?v=${cacheBuster}`);
         console.log('📊 CSV response status:', response.status, response.statusText);
         
         if (!response.ok) {
@@ -195,6 +201,8 @@ async function loadFeedingTimes() {
         
         // Store original data
         window.feedingData = feedingTimes;
+        console.log('📊 Parsed feeding times count:', feedingTimes.length);
+        console.log('📋 First few entries:', feedingTimes.slice(0, 3));
         
         // Display all feeding times initially
         displayFeedingTimes(feedingTimes);
@@ -208,9 +216,14 @@ async function loadFeedingTimes() {
 // Display feeding times grouped by day
 async function displayFeedingTimes(data) {
     const container = document.getElementById('feeding-times');
-    if (!container) return;
+    if (!container) {
+        console.error('❌ Container not found in displayFeedingTimes');
+        return;
+    }
+    console.log('🎯 displayFeedingTimes called with', data.length, 'entries');
     
     if (data.length === 0) {
+        console.log('⚠️ No data to display');
         container.innerHTML = '<p>No feeding times found for the selected filter.</p>';
         return;
     }
@@ -1385,7 +1398,348 @@ END:VCALENDAR`;
     console.log('✅ ICS file downloaded successfully');
 }
 
+// Cookie Consent Management
+const CookieConsent = {
+    // Cookie consent configuration
+    config: {
+        cookieName: 'homelessaid_cookie_consent',
+        expireDays: 365,
+        categories: {
+            necessary: { name: 'Necessary', enabled: true, locked: true },
+            analytics: { name: 'Analytics', enabled: false, locked: false },
+            marketing: { name: 'Marketing', enabled: false, locked: false }
+        }
+    },
+
+    // Initialize cookie consent
+    init() {
+        console.log('🍪 Initializing Cookie Consent');
+        this.createBanner();
+        this.createSettingsModal();
+        
+        // Check if user has already made a choice
+        const consent = this.getConsent();
+        if (!consent) {
+            // Show banner after a brief delay
+            setTimeout(() => this.showBanner(), 1000);
+        } else {
+            // Apply saved preferences
+            this.applyCookieSettings(consent);
+        }
+    },
+
+    // Create cookie consent banner
+    createBanner() {
+        const banner = document.createElement('div');
+        banner.id = 'cookie-consent-banner';
+        banner.className = 'cookie-consent';
+        banner.innerHTML = `
+            <div class="cookie-consent-content">
+                <div class="cookie-consent-text">
+                    <h4>🍪 We use cookies</h4>
+                    <p>We use cookies to improve your experience and analyze our website traffic. You can choose which cookies to accept.</p>
+                </div>
+                <div class="cookie-consent-buttons">
+                    <button class="cookie-consent-btn accept" onclick="CookieConsent.acceptAll()">
+                        Accept All
+                    </button>
+                    <button class="cookie-consent-btn decline" onclick="CookieConsent.declineAll()">
+                        Decline All
+                    </button>
+                    <button class="cookie-consent-btn settings" onclick="CookieConsent.showSettings()">
+                        Settings
+                    </button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(banner);
+    },
+
+    // Create settings modal
+    createSettingsModal() {
+        const modal = document.createElement('div');
+        modal.id = 'cookie-settings-modal';
+        modal.className = 'cookie-settings-modal';
+        modal.innerHTML = `
+            <div class="cookie-settings-content">
+                <div class="cookie-settings-header">
+                    <h3>Cookie Settings</h3>
+                </div>
+                <div class="cookie-settings-body">
+                    <div class="cookie-category">
+                        <div class="cookie-category-header">
+                            <h4>Necessary Cookies</h4>
+                            <label class="cookie-toggle">
+                                <input type="checkbox" checked disabled>
+                                <span class="cookie-slider disabled"></span>
+                            </label>
+                        </div>
+                        <p>These cookies are essential for the website to function properly and cannot be disabled.</p>
+                    </div>
+                    
+                    <div class="cookie-category">
+                        <div class="cookie-category-header">
+                            <h4>Analytics Cookies</h4>
+                            <label class="cookie-toggle">
+                                <input type="checkbox" id="analytics-toggle">
+                                <span class="cookie-slider"></span>
+                            </label>
+                        </div>
+                        <p>These cookies help us understand how visitors interact with our website by collecting and reporting information anonymously.</p>
+                    </div>
+                    
+                    <div class="cookie-category">
+                        <div class="cookie-category-header">
+                            <h4>Marketing Cookies</h4>
+                            <label class="cookie-toggle">
+                                <input type="checkbox" id="marketing-toggle">
+                                <span class="cookie-slider"></span>
+                            </label>
+                        </div>
+                        <p>These cookies are used to track visitors across websites to display relevant advertisements.</p>
+                    </div>
+                </div>
+                <div class="cookie-settings-footer">
+                    <button class="cookie-settings-btn secondary" onclick="CookieConsent.hideSettings()">
+                        Cancel
+                    </button>
+                    <button class="cookie-settings-btn primary" onclick="CookieConsent.saveSettings()">
+                        Save Settings
+                    </button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+
+        // Close modal when clicking outside
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                this.hideSettings();
+            }
+        });
+    },
+
+    // Show cookie banner
+    showBanner() {
+        const banner = document.getElementById('cookie-consent-banner');
+        if (banner) {
+            banner.classList.add('show');
+        }
+    },
+
+    // Hide cookie banner
+    hideBanner() {
+        const banner = document.getElementById('cookie-consent-banner');
+        if (banner) {
+            banner.classList.remove('show');
+        }
+    },
+
+    // Show settings modal
+    showSettings() {
+        const modal = document.getElementById('cookie-settings-modal');
+        if (modal) {
+            modal.classList.add('show');
+            
+            // Load current preferences
+            const consent = this.getConsent();
+            if (consent) {
+                document.getElementById('analytics-toggle').checked = consent.analytics;
+                document.getElementById('marketing-toggle').checked = consent.marketing;
+            }
+        }
+    },
+
+    // Hide settings modal
+    hideSettings() {
+        const modal = document.getElementById('cookie-settings-modal');
+        if (modal) {
+            modal.classList.remove('show');
+        }
+    },
+
+    // Accept all cookies
+    acceptAll() {
+        const consent = {
+            necessary: true,
+            analytics: true,
+            marketing: true,
+            timestamp: Date.now()
+        };
+        
+        this.saveConsent(consent);
+        this.applyCookieSettings(consent);
+        this.hideBanner();
+        
+        console.log('✅ All cookies accepted');
+        this.showNotification('Cookie preferences saved', 'success');
+    },
+
+    // Decline all optional cookies
+    declineAll() {
+        const consent = {
+            necessary: true,
+            analytics: false,
+            marketing: false,
+            timestamp: Date.now()
+        };
+        
+        this.saveConsent(consent);
+        this.applyCookieSettings(consent);
+        this.hideBanner();
+        
+        console.log('⚠️ Optional cookies declined');
+        this.showNotification('Cookie preferences saved', 'success');
+    },
+
+    // Save custom settings
+    saveSettings() {
+        const consent = {
+            necessary: true,
+            analytics: document.getElementById('analytics-toggle').checked,
+            marketing: document.getElementById('marketing-toggle').checked,
+            timestamp: Date.now()
+        };
+        
+        this.saveConsent(consent);
+        this.applyCookieSettings(consent);
+        this.hideSettings();
+        this.hideBanner();
+        
+        console.log('💾 Custom cookie preferences saved:', consent);
+        this.showNotification('Cookie preferences saved', 'success');
+    },
+
+    // Save consent to localStorage and cookie
+    saveConsent(consent) {
+        const consentString = JSON.stringify(consent);
+        
+        // Save to localStorage
+        localStorage.setItem(this.config.cookieName, consentString);
+        
+        // Save to cookie as backup
+        const expireDate = new Date();
+        expireDate.setTime(expireDate.getTime() + (this.config.expireDays * 24 * 60 * 60 * 1000));
+        document.cookie = `${this.config.cookieName}=${consentString}; expires=${expireDate.toUTCString()}; path=/; SameSite=Lax`;
+    },
+
+    // Get consent from storage
+    getConsent() {
+        // Try localStorage first
+        let consentString = localStorage.getItem(this.config.cookieName);
+        
+        // Fallback to cookie
+        if (!consentString) {
+            const cookies = document.cookie.split(';');
+            for (let cookie of cookies) {
+                const [name, value] = cookie.trim().split('=');
+                if (name === this.config.cookieName) {
+                    consentString = value;
+                    break;
+                }
+            }
+        }
+        
+        if (consentString) {
+            try {
+                return JSON.parse(consentString);
+            } catch (e) {
+                console.warn('⚠️ Invalid consent data, clearing');
+                this.clearConsent();
+                return null;
+            }
+        }
+        
+        return null;
+    },
+
+    // Clear consent data
+    clearConsent() {
+        localStorage.removeItem(this.config.cookieName);
+        document.cookie = `${this.config.cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+    },
+
+    // Apply cookie settings (enable/disable tracking)
+    applyCookieSettings(consent) {
+        console.log('🔧 Applying cookie settings:', consent);
+        
+        // Analytics (Google Analytics)
+        if (consent.analytics) {
+            this.enableAnalytics();
+        } else {
+            this.disableAnalytics();
+        }
+        
+        // Marketing cookies would be handled here
+        if (consent.marketing) {
+            // Enable marketing cookies
+            console.log('📊 Marketing cookies enabled');
+        } else {
+            // Disable marketing cookies
+            console.log('🚫 Marketing cookies disabled');
+        }
+    },
+
+    // Enable Google Analytics
+    enableAnalytics() {
+        console.log('📈 Enabling Google Analytics');
+        
+        // Enable gtag if it exists
+        if (typeof gtag === 'function') {
+            gtag('consent', 'update', {
+                'analytics_storage': 'granted'
+            });
+            
+            // Track page view
+            gtag('event', 'page_view', {
+                page_title: document.title,
+                page_location: window.location.href
+            });
+        }
+    },
+
+    // Disable Google Analytics
+    disableAnalytics() {
+        console.log('🚫 Disabling Google Analytics');
+        
+        // Disable gtag if it exists
+        if (typeof gtag === 'function') {
+            gtag('consent', 'update', {
+                'analytics_storage': 'denied'
+            });
+        }
+    },
+
+    // Show notification
+    showNotification(message, type = 'info') {
+        // Use existing notification system if available
+        if (typeof showNotification === 'function') {
+            showNotification(message, type);
+        } else {
+            // Simple fallback notification
+            console.log(`📣 ${type.toUpperCase()}: ${message}`);
+        }
+    },
+
+    // Check if specific cookie category is allowed
+    isAllowed(category) {
+        const consent = this.getConsent();
+        return consent && consent[category] === true;
+    }
+};
+
+// Initialize cookie consent when DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize cookie consent first (before other tracking)
+    CookieConsent.init();
+    
+    // Make CookieConsent globally available
+    window.CookieConsent = CookieConsent;
+});
+
 // Service Worker for offline functionality (optional enhancement)
+// TEMPORARILY DISABLED FOR DEVELOPMENT - prevents cache issues with CSV updates
+/*
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
         // Only register service worker if one exists
@@ -1400,3 +1754,4 @@ if ('serviceWorker' in navigator) {
         });
     });
 }
+*/

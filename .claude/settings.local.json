@@ -34,7 +34,15 @@
       "Bash(git rm:*)",
       "Bash(grep:*)",
       "Bash(powershell:*)",
-      "Bash(git restore:*)"
+      "Bash(git restore:*)",
+      "Bash(dir feed-times.csv)",
+      "Bash(start /B python -m http.server 8000)",
+      "Bash(ngrok:*)",
+      "Bash(where ngrok)",
+      "Bash(taskkill:*)",
+      "Bash(del \"C:\\Users\\Ben-Work\\Desktop\\Claude\\Website\\Homeless Aid UK\\test_csv.html\")",
+      "Bash(del CLAUDE.md)",
+      "Bash(dir:*)"
     ],
     "deny": [],
     "ask": []

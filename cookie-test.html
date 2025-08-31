@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cookie Consent Test - Homeless Aid UK</title>
+    <link rel="stylesheet" href="styles.css?v=2024.12.19.1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google tag (gtag.js) with Consent Mode -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-8L51XD6M9J"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      
+      // Configure consent mode defaults
+      gtag('consent', 'default', {
+        'analytics_storage': 'denied',
+        'ad_storage': 'denied',
+        'wait_for_update': 500
+      });
+      
+      gtag('config', 'G-8L51XD6M9J', {
+        'anonymize_ip': true
+      });
+    </script>
+</head>
+<body>
+    <div class="container" style="padding: 2rem; max-width: 800px; margin: 2rem auto;">
+        <h1>🍪 Cookie Consent Testing Page</h1>
+        
+        <div class="test-section">
+            <h2>Current Cookie Status</h2>
+            <div id="cookie-status" style="background: #f5f5f5; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+                <p><strong>Consent Status:</strong> <span id="consent-status">Loading...</span></p>
+                <p><strong>Analytics:</strong> <span id="analytics-status">Loading...</span></p>
+                <p><strong>Marketing:</strong> <span id="marketing-status">Loading...</span></p>
+                <p><strong>Google Analytics:</strong> <span id="ga-status">Loading...</span></p>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>Test Actions</h2>
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin: 1rem 0;">
+                <button onclick="showCookieBanner()" class="btn btn-primary">Show Cookie Banner</button>
+                <button onclick="clearAllConsent()" class="btn btn-secondary">Clear All Consent</button>
+                <button onclick="checkStatus()" class="btn btn-secondary">Refresh Status</button>
+                <button onclick="testAnalytics()" class="btn btn-secondary">Test Analytics Event</button>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>Console Output</h2>
+            <div id="console-output" style="background: #1a1a1a; color: #00ff00; padding: 1rem; border-radius: 8px; font-family: monospace; height: 200px; overflow-y: auto;">
+                <div>🔄 Initializing cookie consent test...</div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>How It Works</h2>
+            <ul>
+                <li><strong>Default State:</strong> Analytics denied by default (GDPR compliant)</li>
+                <li><strong>Banner Appears:</strong> For new visitors after 1 second</li>
+                <li><strong>Consent Storage:</strong> Saved in localStorage + cookie backup</li>
+                <li><strong>Google Analytics:</strong> Respects consent decisions</li>
+                <li><strong>Settings Modal:</strong> Granular control over cookie categories</li>
+            </ul>
+        </div>
+    </div>
+
+    <script src="script.js?v=2024.12.19.1"></script>
+    <script>
+        // Test page specific functionality
+        let consoleDiv;
+
+        function log(message, type = 'info') {
+            if (!consoleDiv) consoleDiv = document.getElementById('console-output');
+            const timestamp = new Date().toLocaleTimeString();
+            const color = type === 'error' ? '#ff0000' : type === 'success' ? '#00ff00' : '#00aaff';
+            consoleDiv.innerHTML += `<div style="color: ${color}">[${timestamp}] ${message}</div>`;
+            consoleDiv.scrollTop = consoleDiv.scrollHeight;
+            console.log(message);
+        }
+
+        function checkStatus() {
+            log('🔍 Checking cookie consent status...');
+            
+            const consent = CookieConsent.getConsent();
+            document.getElementById('consent-status').textContent = consent ? 'Set' : 'Not Set';
+            document.getElementById('analytics-status').textContent = consent?.analytics ? '✅ Allowed' : '❌ Denied';
+            document.getElementById('marketing-status').textContent = consent?.marketing ? '✅ Allowed' : '❌ Denied';
+            document.getElementById('ga-status').textContent = typeof gtag === 'function' ? '✅ Loaded' : '❌ Not Loaded';
+            
+            if (consent) {
+                log(`📊 Consent: Analytics=${consent.analytics}, Marketing=${consent.marketing}`, 'success');
+            } else {
+                log('⚠️ No consent data found', 'error');
+            }
+        }
+
+        function showCookieBanner() {
+            log('🍪 Manually showing cookie banner...');
+            CookieConsent.showBanner();
+        }
+
+        function clearAllConsent() {
+            log('🗑️ Clearing all consent data...');
+            CookieConsent.clearConsent();
+            checkStatus();
+            // Show banner again
+            setTimeout(() => CookieConsent.showBanner(), 500);
+        }
+
+        function testAnalytics() {
+            if (typeof gtag === 'function') {
+                const allowed = CookieConsent.isAllowed('analytics');
+                if (allowed) {
+                    gtag('event', 'test_event', {
+                        event_category: 'Cookie Test',
+                        event_label: 'Manual Test',
+                        value: 1
+                    });
+                    log('📈 Analytics test event sent!', 'success');
+                } else {
+                    log('🚫 Analytics blocked - no event sent', 'error');
+                }
+            } else {
+                log('❌ Google Analytics not loaded', 'error');
+            }
+        }
+
+        // Initialize test page
+        document.addEventListener('DOMContentLoaded', function() {
+            log('✅ Test page loaded');
+            
+            // Check initial status
+            setTimeout(() => {
+                checkStatus();
+                log('🍪 Cookie consent system ready');
+            }, 1000);
+
+            // Monitor consent changes
+            const originalSaveConsent = CookieConsent.saveConsent;
+            CookieConsent.saveConsent = function(consent) {
+                originalSaveConsent.call(this, consent);
+                log(`💾 Consent saved: Analytics=${consent.analytics}, Marketing=${consent.marketing}`, 'success');
+                setTimeout(checkStatus, 100);
+            };
+        });
+    </script>
+</body>
+</html>
