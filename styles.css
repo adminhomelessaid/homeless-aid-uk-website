@@ -750,13 +750,13 @@ section {
     position: relative; /* For distance badge positioning */
     background: white;
     border-radius: 12px;
-    padding: 24px;
+    padding: 20px;
     box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05), 0 1px 3px 1px rgba(0, 0, 0, 0.04);
     border: 1px solid #E2E8F0;
     display: flex;
     flex-direction: column;
-    min-height: 320px;
-    font-size: clamp(0.85rem, 2.5vw, 0.95rem);
+    min-height: 300px;
+    font-size: clamp(0.8rem, 2.3vw, 0.9rem);
     transition: all 0.3s cubic-bezier(.25,.8,.25,1);
 }
 
@@ -1017,8 +1017,8 @@ section {
     /* Remove conflicting grid rules - handled by specific breakpoints below */
     
     .event-card {
-        min-height: 280px;
-        font-size: 0.95rem;
+        min-height: 260px;
+        font-size: 0.9rem;
     }
     
     .venue-name {
@@ -1057,8 +1057,8 @@ section {
     }
     
     .event-card {
-        min-height: 300px;
-        padding: 20px;
+        min-height: 280px;
+        padding: 18px;
     }
 }
 
@@ -1080,8 +1080,8 @@ section {
     
     .event-card {
         min-height: 280px;
-        padding: 18px;
-        font-size: 0.9rem;
+        padding: 16px;
+        font-size: 0.85rem;
     }
     
     .venue-name {
@@ -1126,8 +1126,8 @@ section {
     
     .event-card {
         min-height: 260px;
-        padding: 16px;
-        font-size: 0.85rem;
+        padding: 14px;
+        font-size: 0.8rem;
     }
     
     .venue-name {
@@ -1172,8 +1172,8 @@ section {
     
     .event-card {
         min-height: 240px;
-        padding: 16px;
-        font-size: 0.85rem;
+        padding: 14px;
+        font-size: 0.8rem;
     }
     
     .venue-name {
