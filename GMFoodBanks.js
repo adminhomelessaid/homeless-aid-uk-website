@@ -20,6 +20,27 @@ class GMFoodBanks {
         this.init();
     }
 
+    // Analytics tracking helper
+    trackEvent(eventName, parameters = {}) {
+        // Use the AnalyticsTracker from script.js if available
+        if (typeof AnalyticsTracker !== 'undefined' && AnalyticsTracker.trackEvent) {
+            return AnalyticsTracker.trackEvent(eventName, {
+                page: 'gm_food_banks',
+                ...parameters
+            });
+        }
+        // Fallback to direct gtag if AnalyticsTracker not available
+        else if (typeof gtag === 'function' && window.CookieConsent && window.CookieConsent.isAllowed && window.CookieConsent.isAllowed('analytics')) {
+            console.log(`📊 GM Food Banks Event: ${eventName}`, parameters);
+            gtag('event', eventName, {
+                page: 'gm_food_banks',
+                ...parameters
+            });
+            return true;
+        }
+        return false;
+    }
+
     init() {
         this.loadFoodBanks();
         this.setupEventListeners();
@@ -35,6 +56,15 @@ class GMFoodBanks {
         searchInput.addEventListener('input', this.debounce((e) => {
             this.filters.search = e.target.value.toLowerCase();
             clearSearch.style.display = e.target.value ? 'flex' : 'none';
+            
+            // Track search usage
+            if (e.target.value.length >= 3) {
+                this.trackEvent('search_performed', {
+                    search_term: e.target.value,
+                    results_count: this.filteredFoodBanks.length
+                });
+            }
+            
             this.applyFilters();
         }, 300));
 
@@ -216,6 +246,13 @@ class GMFoodBanks {
         document.getElementById('loadingContainer').style.display = 'none';
         document.getElementById('totalFoodbanks').textContent = this.foodBanks.length;
         document.getElementById('lastUpdated').textContent = new Date().toLocaleDateString();
+        
+        // Track successful page load and data processing
+        this.trackEvent('page_loaded', {
+            total_food_banks: this.foodBanks.length,
+            total_boroughs: this.uniqueBoroughs.size,
+            load_time: performance.now()
+        });
     }
 
     cleanText(text) {
@@ -375,6 +412,7 @@ class GMFoodBanks {
     requestLocation() {
         if (!navigator.geolocation) {
             this.showLocationError('Geolocation is not supported by this browser');
+            this.trackEvent('location_request_failed', { reason: 'not_supported' });
             return;
         }
 
@@ -387,6 +425,7 @@ class GMFoodBanks {
         locationText.textContent = 'Getting location...';
 
         this.locationRequested = true;
+        this.trackEvent('location_request_started');
 
         navigator.geolocation.getCurrentPosition(
             (position) => {
@@ -407,12 +446,26 @@ class GMFoodBanks {
                 this.applyFilters();
                 
                 document.getElementById('locationStatus').textContent = '(sorted by distance)';
+                
+                // Track successful location access
+                const nearYou = this.foodBanks.filter(bank => bank.distance && bank.distance <= 5).length;
+                this.trackEvent('location_access_granted', {
+                    food_banks_within_5_miles: nearYou,
+                    accuracy: position.coords.accuracy
+                });
             },
             (error) => {
                 this.showLocationError(this.getLocationErrorMessage(error));
                 locationIcon.className = 'fas fa-location-arrow';
                 locationText.textContent = 'Near Me';
                 locationBtn.disabled = false;
+                
+                // Track location access failure
+                this.trackEvent('location_request_failed', {
+                    reason: error.code === 1 ? 'permission_denied' : 
+                           error.code === 2 ? 'position_unavailable' : 
+                           error.code === 3 ? 'timeout' : 'unknown'
+                });
             },
             {
                 enableHighAccuracy: true,
@@ -785,6 +838,17 @@ class GMFoodBanks {
         
         // Focus management for accessibility
         document.getElementById('modalClose').focus();
+        
+        // Track detailed view
+        this.trackEvent('food_bank_details_viewed', {
+            food_bank_name: bank.name,
+            borough: bank.borough,
+            distance: bank.distance ? bank.distance.toFixed(1) : null,
+            status: bank.status,
+            has_phone: !!bank.phone,
+            has_email: !!bank.email,
+            has_website: !!bank.website
+        });
     }
 
     createDetailedView(bank) {
@@ -951,13 +1015,14 @@ class GMFoodBanks {
         
         window.open(googleMapsUrl, '_blank');
         
-        // Track event for analytics
-        if (typeof gtag === 'function') {
-            gtag('event', 'directions_requested', {
-                'food_bank_name': bank.name,
-                'borough': bank.borough
-            });
-        }
+        // Enhanced tracking for analytics
+        this.trackEvent('directions_requested', {
+            food_bank_name: bank.name,
+            borough: bank.borough,
+            distance: bank.distance ? bank.distance.toFixed(1) : null,
+            status: bank.status,
+            access_type: bank.accessType
+        });
     }
 
     shareLocation(bankId) {
@@ -972,11 +1037,24 @@ class GMFoodBanks {
                 title: bank.name,
                 text: shareText,
                 url: shareUrl
+            }).then(() => {
+                this.trackEvent('food_bank_shared', {
+                    food_bank_name: bank.name,
+                    borough: bank.borough,
+                    share_method: 'native'
+                });
+            }).catch(() => {
+                // User cancelled sharing
             });
         } else {
             // Fallback to clipboard
             navigator.clipboard.writeText(`${shareText}\n${shareUrl}`).then(() => {
                 this.showToast('Location details copied to clipboard');
+                this.trackEvent('food_bank_shared', {
+                    food_bank_name: bank.name,
+                    borough: bank.borough,
+                    share_method: 'clipboard'
+                });
             });
         }
     }

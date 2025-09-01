@@ -14,7 +14,12 @@
     { "source": "/donate", "destination": "/donate.html" },
     { "source": "/food-bank", "destination": "/food-bank.html" },
     { "source": "/useful-links", "destination": "/useful-links.html" },
-    { "source": "/admin", "destination": "/admin.html" }
+    { "source": "/admin", "destination": "/admin.html" },
+    { "source": "/GMFoodBanks", "destination": "/GMFoodBanks.html" },
+    { "source": "/gmfoodbanks", "destination": "/GMFoodBanks.html" },
+    { "source": "/gm-food-banks", "destination": "/GMFoodBanks.html" },
+    { "source": "/gm-foodbanks", "destination": "/GMFoodBanks.html" },
+    { "source": "/greater-manchester-food-banks", "destination": "/GMFoodBanks.html" }
   ],
   "redirects": [
     { "source": "/index.html", "destination": "/", "permanent": true },
@@ -23,6 +28,7 @@
     { "source": "/donate.html", "destination": "/donate", "permanent": true },
     { "source": "/food-bank.html", "destination": "/food-bank", "permanent": true },
     { "source": "/useful-links.html", "destination": "/useful-links", "permanent": true },
-    { "source": "/admin.html", "destination": "/admin", "permanent": true }
+    { "source": "/admin.html", "destination": "/admin", "permanent": true },
+    { "source": "/GMFoodBanks.html", "destination": "/GMFoodBanks", "permanent": true }
   ]
 }
