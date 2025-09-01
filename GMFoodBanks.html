@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="Greater Manchester Food Banks Directory - Find open food banks near you with real-time status updates, distance calculations, and filtering options">
+    <meta name="keywords" content="food banks, Greater Manchester, Bolton, Manchester, Salford, emergency food, free meals, community support">
+    <title>Greater Manchester Food Banks - Homeless Aid UK</title>
+    <link rel="stylesheet" href="styles.css?v=2024.12.19.1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="Branding/HomelessAidUKLogo.png" type="image/png">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1A2332">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="GM Food Banks">
+    <link rel="apple-touch-icon" href="Branding/HomelessAidUKLogo.png">
+
+    <!-- Google tag (gtag.js) with Consent Mode -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-8L51XD6M9J"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      
+      gtag('consent', 'default', {
+        'analytics_storage': 'denied',
+        'ad_storage': 'denied',
+        'wait_for_update': 500
+      });
+      
+      gtag('config', 'G-8L51XD6M9J', {
+        'anonymize_ip': true
+      });
+    </script>
+
+    <!-- Papa Parse for CSV parsing -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-content">
+                <a href="/" class="logo">
+                    <img src="Branding/HomelessAidUKLogo.png" alt="Homeless Aid UK" class="logo-img">
+                </a>
+                <button class="mobile-menu-btn" onclick="toggleMenu()">☰</button>
+                <ul class="nav-links">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="donate.html">Donate</a></li>
+                    <li><a href="volunteer.html">Volunteer</a></li>
+                    <li><a href="useful-links.html">Resources</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+
+    <!-- Header Section -->
+    <header class="foodbank-header">
+        <div class="container">
+            <div class="header-content">
+                <h1 class="header-title">Greater Manchester Food Banks</h1>
+                <p class="header-description">Find open food banks near you with real-time status updates</p>
+                <div class="header-stats">
+                    <div class="stat-item">
+                        <span class="stat-number" id="totalFoodbanks">348</span>
+                        <span class="stat-label">Food Banks</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number" id="openNow">-</span>
+                        <span class="stat-label">Open Now</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number" id="nearYou">-</span>
+                        <span class="stat-label">Near You</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Search and Filters Section -->
+    <section class="search-filters-section">
+        <div class="container">
+            <!-- Search Bar -->
+            <div class="search-container">
+                <div class="search-bar">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" id="searchInput" placeholder="Search by name, address, or postcode..." aria-label="Search food banks">
+                    <button class="clear-search" id="clearSearch" aria-label="Clear search">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <button class="location-btn" id="locationBtn" aria-label="Find food banks near me">
+                    <i class="fas fa-location-arrow"></i>
+                    <span class="location-text">Near Me</span>
+                </button>
+            </div>
+
+            <!-- Quick Filters -->
+            <div class="quick-filters">
+                <button class="quick-filter active" data-filter="all">All</button>
+                <button class="quick-filter" data-filter="open-now">Open Now</button>
+                <button class="quick-filter" data-filter="free-only">Free Only</button>
+                <button class="quick-filter" data-filter="walk-in">Walk-in</button>
+                <button class="quick-filter" data-filter="delivery">Delivery</button>
+            </div>
+
+            <!-- Advanced Filters -->
+            <div class="advanced-filters" id="advancedFilters">
+                <div class="filter-group">
+                    <label for="boroughFilter">Borough</label>
+                    <select id="boroughFilter" aria-label="Filter by borough">
+                        <option value="all">All Boroughs</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="dayFilter">Day</label>
+                    <select id="dayFilter" aria-label="Filter by day">
+                        <option value="all">Any Day</option>
+                        <option value="today">Today</option>
+                        <option value="tomorrow">Tomorrow</option>
+                        <option value="weekday">Weekdays</option>
+                        <option value="weekend">Weekends</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="serviceFilter">Services</label>
+                    <select id="serviceFilter" aria-label="Filter by services">
+                        <option value="all">All Services</option>
+                        <option value="foodbank">Food Bank</option>
+                        <option value="meals">Community Meals</option>
+                        <option value="delivery">Delivery</option>
+                        <option value="clothing">Clothing</option>
+                        <option value="furniture">Furniture</option>
+                        <option value="utilities">Utilities</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="sortBy">Sort By</label>
+                    <select id="sortBy" aria-label="Sort results">
+                        <option value="distance">Distance (Near Me)</option>
+                        <option value="name">Name A-Z</option>
+                        <option value="opening-soon">Opening Soon</option>
+                        <option value="borough">Borough</option>
+                    </select>
+                </div>
+            </div>
+
+            <button class="filters-toggle" id="filtersToggle" aria-label="Show more filters">
+                <span>More Filters</span>
+                <i class="fas fa-chevron-down"></i>
+            </button>
+        </div>
+    </section>
+
+    <!-- Results Section -->
+    <section class="results-section">
+        <div class="container">
+            <!-- Results Header -->
+            <div class="results-header">
+                <div class="results-count">
+                    <span id="resultsCount">0</span> results found
+                    <span id="locationStatus" class="location-status"></span>
+                </div>
+                <button class="view-toggle" id="viewToggle" aria-label="Toggle view mode">
+                    <i class="fas fa-th-large"></i>
+                </button>
+            </div>
+
+            <!-- Loading State -->
+            <div class="loading-container" id="loadingContainer">
+                <div class="loading-spinner">
+                    <i class="fas fa-spinner fa-spin"></i>
+                </div>
+                <p>Loading food banks...</p>
+            </div>
+
+            <!-- No Results Message -->
+            <div class="no-results" id="noResults" style="display: none;">
+                <div class="no-results-icon">
+                    <i class="fas fa-search"></i>
+                </div>
+                <h3>No food banks found</h3>
+                <p>Try adjusting your search criteria or filters</p>
+                <button class="btn btn-primary" onclick="clearAllFilters()">Clear All Filters</button>
+            </div>
+
+            <!-- Food Banks Grid -->
+            <div class="foodbanks-grid" id="foodbanksGrid">
+                <!-- Food bank cards will be dynamically generated here -->
+            </div>
+
+            <!-- Load More Button -->
+            <div class="load-more-container" id="loadMoreContainer" style="display: none;">
+                <button class="btn btn-outline" id="loadMoreBtn">
+                    <i class="fas fa-plus"></i>
+                    Load More Results
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Food Bank Detail Modal -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-content" id="modalContent">
+            <button class="modal-close" id="modalClose" aria-label="Close modal">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="modal-body" id="modalBody">
+                <!-- Modal content will be dynamically generated -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <img src="Branding/HomelessAidUKLogo.png" alt="Homeless Aid UK Logo" class="footer-logo">
+                    <p class="footer-description">Helping the homeless and those in need across the UK</p>
+                    <div class="footer-social">
+                        <a href="#" class="social-link" aria-label="Facebook">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="social-link" aria-label="Twitter">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="social-link" aria-label="Instagram">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul class="footer-links">
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="donate.html">Donate</a></li>
+                        <li><a href="volunteer.html">Volunteer</a></li>
+                        <li><a href="useful-links.html">Resources</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Legal</h4>
+                    <ul class="footer-links">
+                        <li><a href="#" id="cookieSettingsLink">Cookie Settings</a></li>
+                        <li><a href="#" class="privacy-link">Privacy Policy</a></li>
+                        <li><a href="#" class="terms-link">Terms of Service</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Homeless Aid UK. All rights reserved. | Data last updated: <span id="lastUpdated">Loading...</span></p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Cookie Consent Banner -->
+    <div id="cookieConsent" class="cookie-consent">
+        <div class="cookie-content">
+            <div class="cookie-text">
+                <h4>We value your privacy</h4>
+                <p>We use cookies to enhance your browsing experience and analyze site traffic. You can choose which cookies to accept.</p>
+            </div>
+            <div class="cookie-buttons">
+                <button id="cookieAcceptAll" class="btn btn-primary">Accept All</button>
+                <button id="cookieRejectAll" class="btn btn-outline">Reject All</button>
+                <button id="cookieSettings" class="btn btn-link">Cookie Settings</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cookie Settings Modal -->
+    <div id="cookieSettingsModal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close" id="cookieModalClose">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="modal-body">
+                <h3>Cookie Settings</h3>
+                <p>Choose which cookies you'd like to accept. You can change these settings at any time.</p>
+                
+                <div class="cookie-category">
+                    <div class="cookie-header">
+                        <h4>Essential Cookies</h4>
+                        <span class="cookie-required">Always Active</span>
+                    </div>
+                    <p>These cookies are necessary for the website to function and cannot be switched off.</p>
+                </div>
+                
+                <div class="cookie-category">
+                    <div class="cookie-header">
+                        <h4>Analytics Cookies</h4>
+                        <label class="cookie-toggle">
+                            <input type="checkbox" id="analyticsCookies">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <p>These cookies help us understand how visitors interact with our website.</p>
+                </div>
+                
+                <div class="cookie-actions">
+                    <button id="saveCookieSettings" class="btn btn-primary">Save Settings</button>
+                    <button id="acceptAllCookies" class="btn btn-outline">Accept All</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="script.js"></script>
+    <script src="GMFoodBanks.js"></script>
+</body>
+</html>
