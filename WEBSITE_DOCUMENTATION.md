@@ -4,7 +4,7 @@
 The Homeless Aid UK website is a comprehensive Progressive Web Application (PWA) for a volunteer-run organization that provides food, support, and resources to homeless individuals across the UK. The organization operates in multiple cities including Bolton, Bury, Manchester, Oldham, Liverpool, Wigan, Leigh, and Glasgow.
 
 **Last Updated**: August 31, 2024  
-**Version**: 6.1 - **GOOGLE ANALYTICS & COOKIE CONSENT IMPLEMENTATION** with comprehensive privacy compliance
+**Version**: 6.2 - **ADVANCED ANALYTICS TRACKING SYSTEM** with comprehensive user behavior intelligence
 **Cache-Busting Version**: 2024.12.19.1
 **Google Analytics ID**: G-8L51XD6M9J
 
@@ -17,10 +17,37 @@ The Homeless Aid UK website is a comprehensive Progressive Web Application (PWA)
 - **Performance**: Optimized mobile responsive grid system
 - **Geolocation**: Near Me functionality with distance calculation
 - **Cache Control**: Comprehensive cache-busting implementation with .htaccess rules
-- **Analytics**: Google Analytics (GA4) with privacy-compliant consent mode
+- **Analytics**: Google Analytics (GA4) with comprehensive behavior tracking
 - **Privacy Compliance**: GDPR-compliant cookie consent system
+- **User Intelligence**: Advanced tracking of PWA, features, forms, and engagement
 
-## ⚡ RECENT UPDATES (Version 6.1) - JUST DEPLOYED!
+## ⚡ RECENT UPDATES (Version 6.2) - JUST DEPLOYED!
+
+### 📊 Advanced Analytics Tracking System
+- **PWA Installation Tracking**: Monitor app installations, launches, and usage patterns
+- **Calendar Integration Analytics**: Track Google Calendar additions and ICS downloads by location
+- **Feature Usage Intelligence**: Near Me geolocation adoption and success rates  
+- **Form Conversion Tracking**: Complete funnel analysis for volunteers and contact forms
+- **User Behavior Insights**: Scroll depth, page engagement, and interaction patterns
+- **Dynamic User Classification**: Automatic user type categorization (visitor → volunteer/donor)
+- **Privacy-First Implementation**: All tracking respects cookie consent settings
+
+### 🧪 Analytics Testing & Validation
+- **Testing Dashboard**: `analytics-test.html` for real-time event validation
+- **Interactive Test Suite**: Buttons to test all tracking features individually
+- **Live Event Monitoring**: Real-time display of analytics events and status
+- **User Property Testing**: Simulate different user types and behaviors
+- **Debug Console**: Comprehensive logging for troubleshooting
+
+### 🎯 Tracked Events & Insights
+- **PWA Events**: `pwa_install_available`, `pwa_installed`, `pwa_launch`
+- **Calendar Events**: `calendar_modal_open`, `calendar_add`, `calendar_download`  
+- **Location Events**: `near_me_click`, `geolocation_success`, `geolocation_error`
+- **Form Events**: `form_submit_start`, `form_submit_success`, `form_submit_error`
+- **Engagement Events**: `scroll_depth`, `page_engagement`, custom interactions
+- **User Properties**: Dynamic classification, location preferences, PWA usage
+
+### 🚀 Previous Updates (Version 6.1)
 
 ### 🍪 Google Analytics & Cookie Consent System
 - **Google Analytics Integration**: GA4 (G-8L51XD6M9J) deployed across all 7 pages
@@ -139,21 +166,25 @@ Homeless Aid UK/
 │   ├── contact.html                  # Contact form and information
 │   ├── food-bank.html                # Food parcel service info
 │   ├── useful-links.html             # Resources and FAQ
-│   └── admin.html                    # Administrative interface
+│   ├── admin.html                    # Administrative interface
+│   └── GMFoodBanks.html              # Greater Manchester Food Banks directory
 │
 ├── Frontend Assets
 │   ├── styles.css                    # Complete CSS architecture (3,600+ lines)
 │   ├── script.js                     # Core JavaScript functionality (1,750+ lines)
 │   ├── admin.js                      # Admin panel JavaScript
+│   ├── GMFoodBanks.js                # Greater Manchester Food Banks functionality (1,156+ lines)
 │   └── sw.js                         # Service worker for PWA
 │
 ├── Data & Configuration
 │   ├── feed-times.csv                # Main feeding schedule data
+│   ├── greater_manchester_foodbanks.csv # GM Food Banks data (348 entries)
 │   ├── manifest.json                 # PWA configuration
 │   ├── vercel.json                   # Deployment configuration
 │   ├── package.json                  # Dependencies and scripts
-│   ├── .htaccess                     # Cache control rules (NEW)
-│   ├── cookie-test.html              # Cookie consent testing page (NEW)
+│   ├── .htaccess                     # Cache control rules
+│   ├── cookie-test.html              # Cookie consent testing page
+│   ├── analytics-test.html           # Analytics tracking testing dashboard
 │   └── .gitignore                    # Version control rules
 │
 ├── API Functions (Serverless)
@@ -282,6 +313,44 @@ Homeless Aid UK/
 - **Content Management**: Hero text, contact details editing
 - **Analytics Dashboard**: Usage statistics, form submissions
 - **System Status**: Email system, deployment monitoring
+
+### 8. Greater Manchester Food Banks (`GMFoodBanks.html`) - Comprehensive Food Bank Directory
+**Purpose**: Advanced food bank discovery system for Greater Manchester region
+
+**Core Components**:
+- **Interactive Header**: Real-time statistics display (348 food banks, open now count, near you count)
+- **Advanced Search System**: Multi-field search with real-time filtering and debounced input
+- **Location Services**: GPS-powered "Near Me" functionality with distance calculations
+- **Comprehensive Filtering**: Borough, day, service type, and quick filters (open now, free only, walk-in, delivery)
+- **Dynamic Food Bank Cards**: Real-time status updates, service icons, and distance indicators
+- **Detailed Modal Views**: Complete information including opening hours, contact details, services, and requirements
+
+**Advanced Features**:
+- **Real-time Status Calculation**: Open/closed/opening soon status based on current time and day
+- **Distance-based Sorting**: Haversine formula for accurate proximity calculations
+- **Service Type Recognition**: Icons for food banks, community meals, delivery, clothing, furniture, utilities
+- **Access Type Classification**: Walk-in, referral required, or both options clearly displayed
+- **Mobile-responsive Design**: Optimized card grid layout for all screen sizes
+- **Accessibility**: Full keyboard navigation, ARIA labels, and screen reader compatibility
+
+**Interactive Elements**:
+- **Live Search**: Instant results across name, address, borough, and postcode fields
+- **Quick Action Buttons**: Get directions (Google Maps integration) and detailed information modal
+- **Load More Pagination**: Performance-optimized display with progressive loading
+- **Filter Toggle**: Expandable advanced filter panel with sorting options
+- **Share Functionality**: Native sharing API with clipboard fallback
+
+**Data Management**:
+- **CSV-powered**: Loads from `greater_manchester_foodbanks.csv` with 348 entries
+- **Rich Data Schema**: 30+ fields including location, services, requirements, opening hours, contact details
+- **Real-time Processing**: Papa Parse library for efficient CSV parsing and data transformation
+- **Geographic Coverage**: Bolton, Salford, Manchester, Oldham boroughs with precise coordinates
+
+**Analytics Integration**:
+- **Event Tracking**: Search usage, location requests, filter usage, directions requests, detail views
+- **User Journey Mapping**: Track feature adoption and engagement patterns
+- **Performance Monitoring**: Load times, search efficiency, and user interactions
+- **Privacy Compliant**: All tracking respects cookie consent settings
 
 ## CSS Architecture & Design System
 
@@ -491,6 +560,52 @@ Day,StartTime,EndTime,Name,Address 1,Postcode,LatLong,Town,Type,Notes,Enable Cal
 - **Outreach**: Mobile teams visiting multiple locations
 - **Drink & Cake**: Light refreshment and social interaction
 
+### Greater Manchester Food Banks Data Structure
+
+#### CSV Schema (`greater_manchester_foodbanks.csv`)
+```csv
+Name,Borough,Area,Full_Address,Postcode,Opening_Times,Phone,Email,Website,Requirements,Cost,Services,Contact_Person,Notes,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday,Opening_Time,Closing_Time,Time_Notes,Service_FoodBank,Service_CommunityMeals,Service_Delivery,Service_Clothing,Service_Utilities,Service_Furniture,Access_Type,Latitude,Longitude,Has_Complete_Info,Last_Updated,Coordinate_Source
+```
+
+**Key Field Descriptions**:
+- **Name**: Food bank/service provider name
+- **Borough**: Administrative area (Bolton, Salford, Manchester, Oldham)
+- **Area**: Specific neighborhood or district
+- **Full_Address**: Complete street address
+- **Postcode**: UK postcode for precise geocoding
+- **Opening_Times**: Human-readable opening hours description
+- **Phone/Email/Website**: Contact information
+- **Requirements**: Eligibility criteria or referral requirements
+- **Cost**: Pricing information (Free, membership fees, per-visit costs)
+- **Services**: Description of available services
+- **Monday-Sunday**: Y/N flags for days of operation
+- **Opening_Time/Closing_Time**: Structured time data (HH:MM format)
+- **Time_Notes**: Additional timing information
+- **Service_[Type]**: Y/N flags for service categories
+- **Access_Type**: Walk-in, Referral, Both, or Unknown
+- **Latitude/Longitude**: GPS coordinates for mapping
+- **Has_Complete_Info**: Data completeness flag
+- **Last_Updated**: Data refresh timestamp
+- **Coordinate_Source**: How coordinates were obtained
+
+#### Data Coverage Statistics
+- **Total Entries**: 348 food banks and community food services
+- **Geographic Coverage**: 
+  - Bolton: 13 services
+  - Salford: 26 services  
+  - Manchester: 8 services
+  - Oldham: 1 service
+- **Service Types**: Food banks, community meals, delivery services, clothing support, furniture assistance, utilities help
+- **Access Models**: Walk-in (open access), referral-only, and hybrid models
+- **Pricing Range**: Free services to membership-based community groceries (£2.50-£12.50)
+
+#### Real-time Processing Features
+- **Status Calculation**: Dynamic open/closed/opening-soon status based on current day/time
+- **Distance Calculation**: GPS-based proximity sorting using Haversine formula
+- **Multi-field Search**: Searches across name, address, borough, area, and postcode
+- **Service Filtering**: Filter by food bank type, community meals, delivery, clothing, utilities, furniture
+- **Access Filtering**: Filter by walk-in availability vs referral requirements
+
 ## Performance & Optimization
 
 ### Loading Performance
@@ -562,7 +677,25 @@ git push origin feature/enhancement-name
 - **Development**: Local development server (Python/Node.js)
 - **Environment Variables**: Secure configuration management
 
-## Recent Major Updates (August 29, 2025)
+## Recent Major Updates (September 1, 2025)
+
+### ✅ **Greater Manchester Food Banks Directory Implementation**
+- **Comprehensive Database**: 348 food banks across Bolton, Salford, Manchester, and Oldham
+- **Advanced Search System**: Multi-field search with real-time filtering and debounced input
+- **Real-time Status Updates**: Dynamic open/closed/opening-soon calculations based on current time
+- **Location Services**: GPS-powered "Near Me" with Haversine distance calculations
+- **Rich Filtering Options**: Borough, day, service type, access type, and quick filters
+- **Interactive Food Bank Cards**: Service icons, status badges, and distance indicators
+- **Detailed Modal Views**: Complete information including opening hours, services, contact details
+- **Mobile-responsive Design**: Optimized for all screen sizes with touch interactions
+- **Analytics Integration**: Comprehensive event tracking for user behavior analysis
+- **Accessibility Features**: Full keyboard navigation, ARIA labels, screen reader support
+
+### ✅ **Enhanced Data Processing**
+- **Papa Parse Integration**: Client-side CSV parsing for large datasets (348 entries)
+- **Rich Data Schema**: 30+ fields per food bank including coordinates, services, requirements
+- **Real-time Processing**: Dynamic status calculation and distance sorting
+- **Performance Optimization**: Efficient filtering and progressive loading
 
 ### ✅ **Near Me Functionality Implementation**
 - **GPS Integration**: Real-time location detection with user permission
@@ -663,7 +796,7 @@ git push origin feature/enhancement-name
 ### HTML Architecture Analysis
 
 #### Page Structure Overview
-The website consists of 7 main HTML pages with consistent architecture:
+The website consists of 8 main HTML pages with consistent architecture:
 
 **Core Pages:**
 - `index.html` - Homepage with dynamic feeding schedule (289 lines)
@@ -673,6 +806,7 @@ The website consists of 7 main HTML pages with consistent architecture:
 - `food-bank.html` - Food parcel service information (173 lines)
 - `useful-links.html` - Resources and FAQ system (281 lines)
 - `admin.html` - Administrative management interface (441 lines)
+- `GMFoodBanks.html` - Greater Manchester Food Banks directory (323 lines)
 
 #### HTML5 Features Implemented
 - **Semantic Markup**: Proper use of `<section>`, `<nav>`, `<article>`, `<footer>`
@@ -720,6 +854,12 @@ Primary Palette:
 5. **Form Processing**: Volunteer and contact form handling
 6. **Cookie Consent Management**: GDPR-compliant privacy control system
 7. **Analytics Integration**: Google Analytics with consent mode
+8. **Advanced Analytics Tracking**: Comprehensive user behavior intelligence system
+9. **PWA Installation Monitoring**: Track app installations and usage patterns
+10. **Feature Usage Analytics**: Monitor adoption of key website features
+11. **GM Food Banks System**: Advanced food bank directory with real-time status and filtering
+12. **Papa Parse Integration**: Client-side CSV parsing for large datasets
+13. **Advanced Modal System**: Detailed information overlays with accessibility features
 
 ### Data Sources Analysis
 
@@ -741,14 +881,190 @@ Primary Palette:
 2. **JavaScript Modularization**: Split large files
 3. **Build Process**: Implement minification pipeline
 
-### Google Analytics & Privacy Implementation (NEW)
+### Advanced Analytics Tracking System (NEW)
 
-#### Analytics Configuration
-**Google Analytics 4 (GA4) Setup**:
+#### Analytics Architecture Overview
+**Comprehensive User Intelligence Platform**:
 - **Tracking ID**: `G-8L51XD6M9J`
+- **Privacy-First Design**: All tracking respects cookie consent
+- **Real-time Event Monitoring**: Comprehensive user behavior tracking
+- **Dynamic User Classification**: Automatic user type identification
+- **Feature Adoption Analysis**: Track usage of key website features
+- **Conversion Funnel Tracking**: Complete user journey analysis
+
+#### Core Analytics Components
+
+**1. AnalyticsTracker System**
+```javascript
+const AnalyticsTracker = {
+    trackEvent(eventName, parameters) {
+        // Only track if analytics cookies are allowed
+        if (typeof gtag === 'function' && CookieConsent.isAllowed('analytics')) {
+            gtag('event', eventName, parameters);
+        }
+    },
+    
+    setUserProperties(properties) {
+        // Dynamic user classification
+        gtag('set', 'user_properties', properties);
+    }
+}
+```
+
+**2. PWA Installation Intelligence**
+- **Install Prompt Tracking**: Monitor when install prompts appear
+- **Installation Success**: Track successful PWA installations
+- **Launch Mode Detection**: Standalone app vs browser usage
+- **User Property Updates**: Automatic PWA status classification
+
+**3. Feature Usage Analytics**
+- **Calendar Integration**: Track Google Calendar and ICS usage by location
+- **Geolocation Features**: Near Me button clicks and success rates
+- **Form Interactions**: Complete submission funnel with success/error tracking
+- **Search Behavior**: Query patterns and filter usage
+
+**4. User Journey Intelligence**
+- **Dynamic Classification**: Visitor → Volunteer/Donor → Service User
+- **Location Preferences**: Track geographic interests and usage
+- **Engagement Patterns**: Scroll depth, time on page, interaction frequency
+- **Conversion Tracking**: Form submissions, calendar additions, feature adoption
+
+#### Tracked Events & Parameters
+
+**PWA Installation Events**:
+```javascript
+// Install prompt available
+pwa_install_available: {
+    event_category: 'PWA',
+    event_label: 'Install prompt available'
+}
+
+// Successful installation
+pwa_installed: {
+    event_category: 'PWA', 
+    event_label: 'App installed successfully'
+}
+
+// App launched as PWA
+pwa_launch: {
+    event_category: 'PWA',
+    event_label: 'Launched as installed app'
+}
+```
+
+**Calendar Integration Events**:
+```javascript
+// Calendar modal opened
+calendar_modal_open: {
+    event_category: 'Calendar',
+    event_label: 'Bolton - Street Kitchen',
+    custom_parameter_1: 'Bolton',
+    custom_parameter_2: 'Monday'
+}
+
+// Google Calendar addition
+calendar_add: {
+    event_category: 'Calendar',
+    event_label: 'Google Calendar',
+    custom_parameter_1: 'Town',
+    custom_parameter_2: 'Day',
+    custom_parameter_3: 'Service Type'
+}
+
+// ICS file download
+calendar_download: {
+    event_category: 'Calendar',
+    event_label: 'ICS File',
+    custom_parameter_1: 'Location Data'
+}
+```
+
+**Feature Usage Events**:
+```javascript
+// Near Me feature usage
+near_me_click: {
+    event_category: 'Features',
+    event_label: 'Near Me location search'
+}
+
+// Geolocation success
+geolocation_success: {
+    event_category: 'Features',
+    event_label: 'Location acquired successfully'
+}
+
+// Venues sorted by distance
+near_me_success: {
+    event_category: 'Features',
+    event_label: 'Venues sorted by distance',
+    event_value: 'Number of venues'
+}
+```
+
+**Form Conversion Tracking**:
+```javascript
+// Form submission initiated
+form_submit_start: {
+    event_category: 'Forms',
+    event_label: 'Volunteer Application'
+}
+
+// Successful submission
+form_submit_success: {
+    event_category: 'Forms',
+    event_label: 'Volunteer Application',
+    custom_parameter_1: 'Location Preference'
+}
+
+// Form error
+form_submit_error: {
+    event_category: 'Forms',
+    event_label: 'Form submission failed',
+    custom_parameter_1: 'Error details'
+}
+```
+
+**Engagement Analytics**:
+```javascript
+// Scroll depth milestones
+scroll_depth: {
+    event_category: 'Engagement',
+    event_label: '75% of page',
+    event_value: 75
+}
+
+// Page engagement time
+page_engagement: {
+    event_category: 'Engagement',
+    event_label: 'Page Title',
+    event_value: 'Seconds on page'
+}
+```
+
+#### User Properties System
+
+**Dynamic User Classification**:
+```javascript
+// User type progression
+'user_type': 'visitor' | 'volunteer_applicant' | 'potential_donor' | 'service_user'
+
+// Location intelligence
+'location_preference': 'Bolton' | 'Manchester' | 'Liverpool' | etc.
+
+// PWA engagement
+'has_installed_pwa': 'yes' | 'no'
+'launch_mode': 'standalone' | 'browser'
+
+// Prompt interaction
+'prompt_shown': 'yes' | 'no'
+```
+
+#### Google Analytics Configuration
+**Enhanced GA4 Setup**:
 - **Consent Mode**: Analytics denied by default
 - **IP Anonymization**: Enabled for privacy compliance
-- **Event Tracking**: Custom events for user interactions
+- **Custom Events**: 15+ tracked events with rich parameters
+- **User Properties**: Dynamic classification system
 - **Cross-page Integration**: Deployed on all 7 HTML pages
 
 #### Cookie Consent System Architecture
@@ -815,21 +1131,30 @@ gtag('consent', 'update', {
 
 ---
 
-## 🎯 Deployment Summary (Version 6.1)
+## 🎯 Deployment Summary (Version 6.2)
 
-**Files Modified/Added**: 16 files updated with 1,172 lines of new functionality
+**Files Modified/Added**: 4 files updated with 978 lines of advanced analytics functionality
 **Key Additions**: 
-- Google Analytics integration across all pages
-- GDPR-compliant cookie consent system  
-- Professional privacy controls and user experience
-- Comprehensive cache-busting system
-- Updated documentation with technical findings
+- **Comprehensive Analytics Tracking**: PWA, Calendar, Location, Form tracking
+- **User Behavior Intelligence**: Dynamic classification and engagement monitoring
+- **Privacy-Compliant System**: All tracking respects cookie consent settings
+- **Testing Dashboard**: Real-time analytics validation and debugging tools
+- **Feature Adoption Analysis**: Monitor usage of key website features
 
 **Live Status**: ✅ Successfully deployed to **homelessaid.co.uk**
-**Analytics**: 📊 Google Analytics (G-8L51XD6M9J) active with consent management
-**Privacy**: 🛡️ GDPR-compliant with user-controlled tracking
-**Performance**: ⚡ Cache-busting eliminates stale content issues
+**Analytics**: 📊 Advanced tracking system with 15+ custom events
+**User Intelligence**: 🧠 Dynamic user classification and behavior analysis
+**Testing**: 🧪 Analytics testing dashboard at `/analytics-test.html`
+**Privacy**: 🛡️ GDPR-compliant with granular tracking controls
+
+### 📈 Analytics Intelligence Features
+- **PWA Monitoring**: Installation rates, app vs web usage patterns
+- **Calendar Analytics**: Location-based calendar integration usage
+- **Feature Adoption**: Near Me, search, filter usage statistics
+- **Form Conversions**: Complete volunteer/contact submission funnel
+- **Engagement Metrics**: Scroll depth, time on page, interaction patterns
+- **User Journey**: Automatic classification from visitor to volunteer/donor
 
 ---
 
-**This documentation represents a complete technical overview of the Homeless Aid UK website as of August 31, 2024. The system now includes Google Analytics integration, comprehensive cookie consent management, cache-busting implementation, and detailed code review findings. The platform effectively serves the organization's mission through modern web technologies, privacy-first design, and user-centered experience.**
+**This documentation represents a complete technical overview of the Homeless Aid UK website as of September 1, 2025. The system now includes advanced analytics tracking with user behavior intelligence, comprehensive cookie consent management, PWA installation monitoring, detailed feature usage analytics, and a comprehensive Greater Manchester Food Banks directory. The platform effectively serves the organization's mission through modern web technologies, privacy-first design, data-driven insights, and user-centered experience. The advanced analytics system provides comprehensive visibility into user engagement, feature adoption, and conversion funnels, enabling data-driven decisions for service optimization. The new GM Food Banks directory significantly expands the platform's reach with 348 food banks and community food services, advanced search capabilities, real-time status updates, and location-based services.**
