@@ -3,9 +3,6 @@
     "api/send-email.js": {
       "maxDuration": 10
     },
-    "api/send-email-backup.js": {
-      "maxDuration": 10
-    },
     "api/auth/login.js": {
       "maxDuration": 10
     },
@@ -13,12 +10,6 @@
       "maxDuration": 10
     },
     "api/auth/verify-invitation.js": {
-      "maxDuration": 10
-    },
-    "api/auth/reset-admin.js": {
-      "maxDuration": 10
-    },
-    "api/auth/login-test.js": {
       "maxDuration": 10
     }
   },
