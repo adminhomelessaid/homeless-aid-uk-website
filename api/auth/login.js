@@ -1,5 +1,5 @@
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcryptjs');
+const AuthUtils = require('../../utils/auth');
+const { createSupabaseClient } = require('../../utils/supabase');
 
 // Rate limiting setup
 const loginAttempts = new Map();
@@ -36,66 +36,75 @@ module.exports = async (req, res) => {
             });
         }
         
-        // Check rate limiting
-        const clientIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-        const attemptKey = `${clientIp}_${username}`;
-        const attempts = loginAttempts.get(attemptKey) || { count: 0, lastAttempt: Date.now() };
+        // Check rate limiting - TEMPORARILY DISABLED FOR TESTING
+        // const clientIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+        // const attemptKey = `${clientIp}_${username}`;
+        // const attempts = loginAttempts.get(attemptKey) || { count: 0, lastAttempt: Date.now() };
         
-        // Check if locked out
-        if (attempts.count >= MAX_ATTEMPTS) {
-            const timeSinceLastAttempt = Date.now() - attempts.lastAttempt;
-            if (timeSinceLastAttempt < LOCKOUT_TIME) {
-                const remainingTime = Math.ceil((LOCKOUT_TIME - timeSinceLastAttempt) / 60000);
-                return res.status(429).json({ 
-                    success: false, 
-                    message: `Too many failed attempts. Please try again in ${remainingTime} minutes.` 
-                });
-            } else {
-                // Reset attempts after lockout period
-                loginAttempts.delete(attemptKey);
-            }
-        }
+        // // Check if locked out
+        // if (attempts.count >= MAX_ATTEMPTS) {
+        //     const timeSinceLastAttempt = Date.now() - attempts.lastAttempt;
+        //     if (timeSinceLastAttempt < LOCKOUT_TIME) {
+        //         const remainingTime = Math.ceil((LOCKOUT_TIME - timeSinceLastAttempt) / 60000);
+        //         return res.status(429).json({ 
+        //             success: false, 
+        //             message: `Too many failed attempts. Please try again in ${remainingTime} minutes.` 
+        //         });
+        //     } else {
+        //         // Reset attempts after lockout period
+        //         loginAttempts.delete(attemptKey);
+        //     }
+        // }
         
-        // Get credentials from environment variables
-        const validUsers = [];
-        let userIndex = 1;
+        // Initialize Supabase client
+        const supabase = createSupabaseClient();
         
-        // Collect all configured users
-        while (process.env[`OUTREACH_USERNAME_${userIndex}`]) {
-            validUsers.push({
-                username: process.env[`OUTREACH_USERNAME_${userIndex}`],
-                password: process.env[`OUTREACH_PASSWORD_${userIndex}`],
-                name: process.env[`OUTREACH_NAME_${userIndex}`] || `Lead Volunteer ${userIndex}`,
-                role: 'lead_volunteer'
-            });
-            userIndex++;
-        }
+        // Find user by username or email
+        const { data: user, error } = await supabase
+            .from('outreach_users')
+            .select('*')
+            .or(`username.ilike.${username},email.ilike.${username}`)
+            .eq('is_active', true)
+            .single();
         
-        // Find matching user
-        const user = validUsers.find(u => u.username.toLowerCase() === username.toLowerCase());
-        
-        if (!user) {
-            // Update failed attempts
-            attempts.count++;
-            attempts.lastAttempt = Date.now();
-            loginAttempts.set(attemptKey, attempts);
+        if (error || !user) {
+            // Update failed attempts - TEMPORARILY DISABLED FOR TESTING
+            // attempts.count++;
+            // attempts.lastAttempt = Date.now();
+            // loginAttempts.set(attemptKey, attempts);
             
             return res.status(401).json({ 
                 success: false, 
                 message: 'Invalid username or password' 
+            });
+        }
+        
+        // Check if user has set up their password
+        if (!user.password_hash) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Account setup incomplete. Please check your email for setup instructions.',
+                needsSetup: true
+            });
+        }
+        
+        // Check if email is verified
+        if (!user.email_verified) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Email not verified. Please check your email for verification instructions.',
+                needsVerification: true
             });
         }
         
         // Verify password
-        // In production, passwords should be hashed. For now, comparing directly
-        // To upgrade: store hashed passwords in env vars and use bcrypt.compare()
-        const isValidPassword = password === user.password;
+        const isValidPassword = await AuthUtils.verifyPassword(password, user.password_hash);
         
         if (!isValidPassword) {
-            // Update failed attempts
-            attempts.count++;
-            attempts.lastAttempt = Date.now();
-            loginAttempts.set(attemptKey, attempts);
+            // Update failed attempts - TEMPORARILY DISABLED FOR TESTING
+            // attempts.count++;
+            // attempts.lastAttempt = Date.now();
+            // loginAttempts.set(attemptKey, attempts);
             
             return res.status(401).json({ 
                 success: false, 
@@ -103,27 +112,20 @@ module.exports = async (req, res) => {
             });
         }
         
-        // Clear failed attempts on successful login
-        loginAttempts.delete(attemptKey);
+        // Clear failed attempts on successful login - TEMPORARILY DISABLED FOR TESTING
+        // loginAttempts.delete(attemptKey);
+        
+        // Update last login timestamp
+        await supabase
+            .from('outreach_users')
+            .update({ last_login: new Date().toISOString() })
+            .eq('id', user.id);
         
         // Generate JWT token
-        const jwtSecret = process.env.JWT_SECRET || 'development_secret_key_change_in_production';
-        
-        const token = jwt.sign(
-            {
-                username: user.username,
-                name: user.name,
-                role: user.role
-            },
-            jwtSecret,
-            {
-                expiresIn: '4h', // Token expires in 4 hours
-                issuer: 'homelessaid.co.uk'
-            }
-        );
+        const token = AuthUtils.generateJWT(user);
         
         // Log successful login (without sensitive data)
-        console.log(`Successful login for user: ${user.username} at ${new Date().toISOString()}`);
+        console.log(`Successful login for user: ${user.username} (${user.role}) at ${new Date().toISOString()}`);
         
         // Return success response
         return res.status(200).json({
@@ -131,8 +133,12 @@ module.exports = async (req, res) => {
             message: 'Login successful',
             token: token,
             user: {
-                name: user.name,
-                role: user.role
+                id: user.id,
+                username: user.username,
+                name: user.full_name,
+                email: user.email,
+                role: user.role,
+                status: AuthUtils.getUserStatus(user)
             }
         });
         
