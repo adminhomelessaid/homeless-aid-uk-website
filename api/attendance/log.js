@@ -92,8 +92,26 @@ module.exports = async (req, res) => {
         const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
         const dayOfWeek = dayNames[eventDate.getDay()];
         
-        // Create a better event name format: "Location - Event Type" (e.g., "Bolton - Street Kitchen")
-        const formattedEventName = `${eventTown} - ${eventName}`;
+        // Create a smart event name format based on the data patterns
+        let formattedEventName;
+        
+        // Clean up the event name for better formatting
+        const cleanEventName = eventName.trim();
+        const cleanTownName = eventTown.trim();
+        
+        if (cleanEventName.toLowerCase() === cleanTownName.toLowerCase()) {
+            // For cases like "Oldham", "Bury", "Manchester" etc. - these are location-based events
+            formattedEventName = `${cleanTownName} Street Kitchen`;
+        } else if (cleanEventName.toLowerCase().includes('street kitchen')) {
+            // Already has "Street Kitchen" in the name
+            formattedEventName = cleanEventName;
+        } else if (cleanEventName.toLowerCase().includes(cleanTownName.toLowerCase())) {
+            // Town name is already in the event name (e.g., "Manchester City Centre")
+            formattedEventName = cleanEventName;
+        } else {
+            // For specific venues like "Grillsters", "Rice n Three", etc.
+            formattedEventName = `${cleanTownName} - ${cleanEventName}`;
+        }
         
         // Insert attendance log into database
         const { data: logEntry, error } = await supabase
