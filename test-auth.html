@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Auth Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/bcryptjs@2.4.3/dist/bcrypt.min.js"></script>
+</head>
+<body>
+    <h1>Direct Authentication Test</h1>
+    <button onclick="testAuth()">Test BenAdmin Authentication</button>
+    <pre id="output"></pre>
+
+    <script>
+        async function testAuth() {
+            const output = document.getElementById('output');
+            output.textContent = 'Testing...\n';
+            
+            // Test with your Supabase directly
+            const SUPABASE_URL = 'https://vnfdtgfjlwevrzbxhsub.supabase.co';
+            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZuZmR0Z2ZqbHdldnJ6Ynhoc3ViIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYyMzMwNzYsImV4cCI6MjA3MTgwOTA3Nn0.zNLozjU0DCyebYkJMKtNHtaUaehPpBKUvVx4QviaQLY';
+            
+            try {
+                // Query the user directly
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/outreach_users?username=eq.BenAdmin&select=*`, {
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                    }
+                });
+                
+                const users = await response.json();
+                
+                if (users && users.length > 0) {
+                    const user = users[0];
+                    output.textContent += 'User found: ' + user.username + '\n';
+                    output.textContent += 'Active: ' + user.is_active + '\n';
+                    output.textContent += 'Email verified: ' + user.email_verified + '\n';
+                    output.textContent += 'Has password: ' + (!!user.password_hash) + '\n';
+                    output.textContent += 'Hash: ' + user.password_hash + '\n\n';
+                    
+                    // Test password locally
+                    const testPassword = 'Password123!';
+                    output.textContent += 'Testing password: ' + testPassword + '\n';
+                    
+                    // Since bcrypt in browser is problematic, let's just show the hash
+                    output.textContent += '\nTo verify password, run this in Node.js:\n';
+                    output.textContent += "const bcrypt = require('bcryptjs');\n";
+                    output.textContent += `bcrypt.compare('${testPassword}', '${user.password_hash}').then(console.log);\n`;
+                    
+                    // Also test the API
+                    output.textContent += '\n\nTesting API login...\n';
+                    const apiResponse = await fetch('https://www.homelessaid.co.uk/api/auth/login', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            username: 'BenAdmin',
+                            password: 'Password123!'
+                        })
+                    });
+                    
+                    const apiResult = await apiResponse.json();
+                    output.textContent += 'API Response: ' + JSON.stringify(apiResult, null, 2) + '\n';
+                    
+                } else {
+                    output.textContent += 'User not found!\n';
+                }
+                
+            } catch (error) {
+                output.textContent += 'Error: ' + error.message + '\n';
+            }
+        }
+    </script>
+</body>
+</html>
