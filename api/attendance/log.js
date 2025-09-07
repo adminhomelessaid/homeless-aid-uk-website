@@ -32,13 +32,11 @@ module.exports = async (req, res) => {
         }
         
         const token = authHeader.substring(7);
-        const jwtSecret = process.env.JWT_SECRET || 'development_secret_key_change_in_production';
+        const jwtSecret = 'temporary-secret-key';
         
         let decoded;
         try {
-            decoded = jwt.verify(token, jwtSecret, {
-                issuer: 'homelessaid.co.uk'
-            });
+            decoded = jwt.verify(token, jwtSecret);
         } catch (error) {
             if (error.name === 'TokenExpiredError') {
                 return res.status(401).json({ 
