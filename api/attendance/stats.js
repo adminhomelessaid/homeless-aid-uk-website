@@ -83,7 +83,7 @@ module.exports = async (req, res) => {
             .select('people_served')
             .eq('event_date', today);
             
-        const todayTotal = todayError ? 0 : 
+        todayTotal = todayError || !todayData ? 0 : 
             todayData.reduce((sum, log) => sum + (log.people_served || 0), 0);
         
         // Get this week's total
@@ -92,7 +92,7 @@ module.exports = async (req, res) => {
             .select('people_served')
             .gte('event_date', weekStartStr);
             
-        const weekTotal = weekError ? 0 : 
+        weekTotal = weekError || !weekData ? 0 : 
             weekData.reduce((sum, log) => sum + (log.people_served || 0), 0);
         
         // Get this month's total
@@ -101,7 +101,7 @@ module.exports = async (req, res) => {
             .select('people_served')
             .gte('event_date', monthStartStr);
             
-        const monthTotal = monthError ? 0 : 
+        monthTotal = monthError || !monthData ? 0 : 
             monthData.reduce((sum, log) => sum + (log.people_served || 0), 0);
         
         // Get all-time total
@@ -109,7 +109,7 @@ module.exports = async (req, res) => {
             .from('attendance_logs')
             .select('people_served');
             
-        const allTimeTotal = allError ? 0 : 
+        allTimeTotal = allError || !allData ? 0 : 
             allData.reduce((sum, log) => sum + (log.people_served || 0), 0);
         
         // Get top locations
@@ -117,7 +117,7 @@ module.exports = async (req, res) => {
             .from('attendance_logs')
             .select('event_town, people_served');
             
-        const locationStats = {};
+        locationStats = {};
         if (!locationError && locationData) {
             locationData.forEach(log => {
                 const town = log.event_town;
@@ -133,7 +133,7 @@ module.exports = async (req, res) => {
             .from('attendance_logs')
             .select('outreach_name, people_served');
             
-        const topVolunteers = {};
+        topVolunteers = {};
         if (!volunteerError && volunteerData) {
             volunteerData.forEach(log => {
                 const name = log.outreach_name;

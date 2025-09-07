@@ -296,17 +296,10 @@ body {
     background-color: var(--accent-light);
 }
 
-.outreach-nav-link {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-    color: white !important;
-    border-radius: 6px !important;
-    font-weight: 600 !important;
-}
-
-.outreach-nav-link:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3) !important;
-    background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%) !important;
+.nav-links a:focus {
+    outline: none;
+    color: var(--accent-dark);
+    background-color: var(--accent-light);
 }
 
 .outreach-nav-link i {

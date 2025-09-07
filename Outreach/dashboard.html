@@ -318,6 +318,14 @@
                 </div>
             </div>
             <div class="header-right">
+                <div class="nav-links" style="display: flex; gap: 1rem; margin-right: 1rem;">
+                    <a href="dashboard.html" style="color: white; text-decoration: none; padding: 0.5rem 1rem; border-radius: 6px; background: rgba(255, 255, 255, 0.2);">
+                        <i class="fas fa-tachometer-alt"></i> Dashboard
+                    </a>
+                    <a href="events-overview.html" style="color: white; text-decoration: none; padding: 0.5rem 1rem; border-radius: 6px; transition: background-color 0.3s ease;">
+                        <i class="fas fa-chart-bar"></i> Overview
+                    </a>
+                </div>
                 <div class="user-info">
                     <div class="user-name" id="userName">Loading...</div>
                     <div class="user-role">Lead Volunteer</div>
@@ -687,76 +695,60 @@
         document.getElementById('dateInput').value = today;
         document.getElementById('dateInput').max = today;
         
-        // Load events from CSV
+        // Load events from AttendanceEvents CSV
         async function loadEvents() {
             try {
-                const response = await fetch('../feed-times.csv');
+                const response = await fetch('../AttendanceEvents.csv');
                 const text = await response.text();
                 const lines = text.split('\n');
-                const headers = lines[0].split(',');
                 
                 const events = [];
                 for (let i = 1; i < lines.length; i++) {
                     if (lines[i].trim()) {
-                        const values = lines[i].match(/(".*?"|[^,]+)(?=\s*,|\s*$)/g);
-                        if (values) {
-                            const event = {};
-                            headers.forEach((header, index) => {
-                                event[header.trim()] = values[index] ? values[index].replace(/"/g, '').trim() : '';
+                        const values = lines[i].split(',');
+                        if (values.length >= 3) {
+                            events.push({
+                                Type: values[0].trim(),
+                                EventName: values[1].trim(),
+                                EventTown: values[2].trim()
                             });
-                            events.push(event);
                         }
                     }
                 }
                 
                 // Populate event dropdown with intelligent sorting
                 const eventSelect = document.getElementById('eventSelect');
-                const uniqueEvents = new Map();
                 
-                events.forEach(event => {
-                    const key = `${event.Name} - ${event.Town}`;
-                    if (!uniqueEvents.has(key)) {
-                        uniqueEvents.set(key, {
-                            name: event.Name,
-                            town: event.Town,
-                            address: event['Address 1'],
-                            postcode: event.Postcode,
-                            type: event.Type
-                        });
-                    }
-                });
-                
-                // Convert to array and sort intelligently
-                const eventsArray = Array.from(uniqueEvents.entries()).map(([key, event]) => ({
-                    key,
-                    event
-                }));
-                
-                // Sort events: Street Kitchen first, then Others, then Takeaway
+                // Sort events: Street Kitchen first, then Outreach, then Others, then Takeaway
                 function sortEvents(events) {
-                    const streetKitchens = events.filter(e => e.event.type.includes('Street Kitchen'))
-                        .sort((a, b) => a.event.name.localeCompare(b.event.name));
+                    const streetKitchens = events.filter(e => e.Type.includes('Street Kitchen'))
+                        .sort((a, b) => a.EventTown.localeCompare(b.EventTown) || a.EventName.localeCompare(b.EventName));
                     
-                    const takeaways = events.filter(e => e.event.type.includes('Takeaway'))
-                        .sort((a, b) => a.event.name.localeCompare(b.event.name));
+                    const outreach = events.filter(e => e.Type.includes('Outreach'))
+                        .sort((a, b) => a.EventTown.localeCompare(b.EventTown) || a.EventName.localeCompare(b.EventName));
+                    
+                    const takeaways = events.filter(e => e.Type.includes('Takeaway'))
+                        .sort((a, b) => a.EventTown.localeCompare(b.EventTown) || a.EventName.localeCompare(b.EventName));
                     
                     const others = events.filter(e => 
-                        !e.event.type.includes('Street Kitchen') && 
-                        !e.event.type.includes('Takeaway'))
-                        .sort((a, b) => a.event.name.localeCompare(b.event.name));
+                        !e.Type.includes('Street Kitchen') && 
+                        !e.Type.includes('Takeaway') &&
+                        !e.Type.includes('Outreach'))
+                        .sort((a, b) => a.EventTown.localeCompare(b.EventTown) || a.EventName.localeCompare(b.EventName));
                     
-                    return [...streetKitchens, ...others, ...takeaways];
+                    return [...streetKitchens, ...outreach, ...others, ...takeaways];
                 }
                 
-                const sortedEvents = sortEvents(eventsArray);
+                const sortedEvents = sortEvents(events);
                 
                 // Add section headers for better UX
                 let currentSection = '';
                 
-                sortedEvents.forEach(({ key, event }) => {
+                sortedEvents.forEach((event) => {
                     // Add section headers
-                    const eventType = event.type.includes('Street Kitchen') ? 'Street Kitchen' :
-                                    event.type.includes('Takeaway') ? 'Takeaway' : 'Other Events';
+                    const eventType = event.Type.includes('Street Kitchen') ? 'Street Kitchen' :
+                                    event.Type.includes('Outreach') ? 'Outreach' :
+                                    event.Type.includes('Takeaway') ? 'Takeaway' : 'Other Events';
                     
                     if (currentSection !== eventType) {
                         currentSection = eventType;
@@ -764,19 +756,30 @@
                         header.disabled = true;
                         header.style.fontWeight = 'bold';
                         header.style.background = '#f0f0f0';
+                        header.style.color = '#666';
                         header.textContent = `── ${eventType} Events ──`;
                         eventSelect.appendChild(header);
                     }
                     
                     const option = document.createElement('option');
-                    option.value = key;
-                    option.textContent = `${key}`;
-                    option.style.paddingLeft = '10px';
+                    const displayName = event.EventName === event.EventTown ? 
+                        `${event.EventTown} ${eventType}` : 
+                        `${event.EventName} - ${event.EventTown}`;
+                    option.value = `${event.EventName} - ${event.EventTown}`;
+                    option.textContent = displayName;
+                    option.style.paddingLeft = '15px';
                     eventSelect.appendChild(option);
                 });
                 
             } catch (error) {
                 console.error('Error loading events:', error);
+                // Fallback to show a message if CSV cannot be loaded
+                const eventSelect = document.getElementById('eventSelect');
+                const option = document.createElement('option');
+                option.value = '';
+                option.textContent = 'Error loading events - please refresh';
+                option.disabled = true;
+                eventSelect.appendChild(option);
             }
         }
         
