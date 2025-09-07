@@ -1,6 +1,4 @@
 const jwt = require('jsonwebtoken');
-const fs = require('fs').promises;
-const path = require('path');
 
 module.exports = async (req, res) => {
     // Enable CORS
@@ -75,68 +73,9 @@ module.exports = async (req, res) => {
         let locationStats = {};
         let topVolunteers = {};
         
-        // Read CSV file
-        const csvPath = path.join(process.cwd(), 'attendance-logs.csv');
-        
-        try {
-            const csvData = await fs.readFile(csvPath, 'utf8');
-            const lines = csvData.split('\n');
-            
-            // Skip header and process data
-            for (let i = 1; i < lines.length; i++) {
-                const line = lines[i].trim();
-                if (line) {
-                    const values = line.match(/(".*?"|[^,]+)(?=\s*,|\s*$)/g);
-                    
-                    if (values && values.length >= 7) {
-                        const logDate = values[1].replace(/"/g, '');
-                        const location = values[4].replace(/"/g, '');
-                        const peopleServed = parseInt(values[5]);
-                        const volunteer = values[6].replace(/"/g, '');
-                        
-                        if (!isNaN(peopleServed)) {
-                            // All time total
-                            allTimeTotal += peopleServed;
-                            
-                            // Today's total
-                            if (logDate === today) {
-                                todayTotal += peopleServed;
-                            }
-                            
-                            // This week's total
-                            if (logDate >= weekStartStr) {
-                                weekTotal += peopleServed;
-                            }
-                            
-                            // This month's total
-                            if (logDate >= monthStartStr) {
-                                monthTotal += peopleServed;
-                            }
-                            
-                            // Location statistics
-                            if (!locationStats[location]) {
-                                locationStats[location] = 0;
-                            }
-                            locationStats[location] += peopleServed;
-                            
-                            // Top volunteers (by number of logs)
-                            if (!topVolunteers[volunteer]) {
-                                topVolunteers[volunteer] = {
-                                    name: volunteer,
-                                    logs: 0,
-                                    totalServed: 0
-                                };
-                            }
-                            topVolunteers[volunteer].logs++;
-                            topVolunteers[volunteer].totalServed += peopleServed;
-                        }
-                    }
-                }
-            }
-        } catch (error) {
-            // File doesn't exist yet
-            console.log('No attendance logs file found');
-        }
+        // For now, return zero stats since we don't have persistent storage
+        // In production, this should be replaced with a proper database query
+        console.log('Attendance stats requested - temporary implementation returns zero stats');
         
         // Sort locations by total served
         const sortedLocations = Object.entries(locationStats)

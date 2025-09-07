@@ -1,6 +1,4 @@
 const jwt = require('jsonwebtoken');
-const fs = require('fs').promises;
-const path = require('path');
 
 module.exports = async (req, res) => {
     // Enable CORS
@@ -60,49 +58,13 @@ module.exports = async (req, res) => {
         const endDate = url.searchParams.get('endDate');
         const location = url.searchParams.get('location');
         
-        // Read CSV file
-        const csvPath = path.join(process.cwd(), 'attendance-logs.csv');
+        // For now, return empty logs since we don't have persistent storage
+        // In production, this should be replaced with a proper database query
         let logs = [];
         
-        try {
-            const csvData = await fs.readFile(csvPath, 'utf8');
-            const lines = csvData.split('\n');
-            
-            // Skip header and process data
-            for (let i = 1; i < lines.length; i++) {
-                const line = lines[i].trim();
-                if (line) {
-                    const values = line.match(/(".*?"|[^,]+)(?=\s*,|\s*$)/g);
-                    
-                    if (values && values.length >= 8) {
-                        const log = {
-                            timestamp: values[0].replace(/"/g, ''),
-                            date: values[1].replace(/"/g, ''),
-                            eventName: values[2].replace(/"/g, ''),
-                            location: values[3].replace(/"/g, ''),
-                            town: values[4].replace(/"/g, ''),
-                            peopleServed: parseInt(values[5]),
-                            outreachName: values[6].replace(/"/g, ''),
-                            notes: values[7] ? values[7].replace(/"/g, '') : ''
-                        };
-                        
-                        // Apply filters
-                        let include = true;
-                        
-                        if (startDate && log.date < startDate) include = false;
-                        if (endDate && log.date > endDate) include = false;
-                        if (location && !log.town.toLowerCase().includes(location.toLowerCase())) include = false;
-                        
-                        if (include) {
-                            logs.push(log);
-                        }
-                    }
-                }
-            }
-        } catch (error) {
-            // File doesn't exist yet
-            console.log('No attendance logs file found');
-        }
+        // This is a temporary implementation - logs are not persisted between function calls
+        // We'll need to implement a proper database solution for production use
+        console.log('Attendance list requested - temporary implementation returns empty logs');
         
         // Sort by date (newest first)
         logs.sort((a, b) => {
