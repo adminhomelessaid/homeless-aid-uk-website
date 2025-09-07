@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const { createSupabaseClient } = require('../../utils/supabase');
 
 module.exports = async (req, res) => {
     // Enable CORS
@@ -73,9 +74,80 @@ module.exports = async (req, res) => {
         let locationStats = {};
         let topVolunteers = {};
         
-        // For now, return zero stats since we don't have persistent storage
-        // In production, this should be replaced with a proper database query
-        console.log('Attendance stats requested - temporary implementation returns zero stats');
+        // Initialize Supabase client
+        const supabase = createSupabaseClient();
+        
+        // Get today's total
+        const { data: todayData, error: todayError } = await supabase
+            .from('attendance_logs')
+            .select('people_served')
+            .eq('event_date', today);
+            
+        const todayTotal = todayError ? 0 : 
+            todayData.reduce((sum, log) => sum + (log.people_served || 0), 0);
+        
+        // Get this week's total
+        const { data: weekData, error: weekError } = await supabase
+            .from('attendance_logs')
+            .select('people_served')
+            .gte('event_date', weekStartStr);
+            
+        const weekTotal = weekError ? 0 : 
+            weekData.reduce((sum, log) => sum + (log.people_served || 0), 0);
+        
+        // Get this month's total
+        const { data: monthData, error: monthError } = await supabase
+            .from('attendance_logs')
+            .select('people_served')
+            .gte('event_date', monthStartStr);
+            
+        const monthTotal = monthError ? 0 : 
+            monthData.reduce((sum, log) => sum + (log.people_served || 0), 0);
+        
+        // Get all-time total
+        const { data: allData, error: allError } = await supabase
+            .from('attendance_logs')
+            .select('people_served');
+            
+        const allTimeTotal = allError ? 0 : 
+            allData.reduce((sum, log) => sum + (log.people_served || 0), 0);
+        
+        // Get top locations
+        const { data: locationData, error: locationError } = await supabase
+            .from('attendance_logs')
+            .select('event_town, people_served');
+            
+        const locationStats = {};
+        if (!locationError && locationData) {
+            locationData.forEach(log => {
+                const town = log.event_town;
+                if (!locationStats[town]) {
+                    locationStats[town] = 0;
+                }
+                locationStats[town] += log.people_served || 0;
+            });
+        }
+        
+        // Get top volunteers
+        const { data: volunteerData, error: volunteerError } = await supabase
+            .from('attendance_logs')
+            .select('outreach_name, people_served');
+            
+        const topVolunteers = {};
+        if (!volunteerError && volunteerData) {
+            volunteerData.forEach(log => {
+                const name = log.outreach_name;
+                if (!topVolunteers[name]) {
+                    topVolunteers[name] = {
+                        name: name,
+                        logs: 0,
+                        totalServed: 0
+                    };
+                }
+                topVolunteers[name].logs++;
+                topVolunteers[name].totalServed += log.people_served || 0;
+            });
+        }
         
         // Sort locations by total served
         const sortedLocations = Object.entries(locationStats)

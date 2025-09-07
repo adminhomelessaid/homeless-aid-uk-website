@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const { createSupabaseClient } = require('../../utils/supabase');
 
 module.exports = async (req, res) => {
     // Enable CORS
@@ -83,35 +84,60 @@ module.exports = async (req, res) => {
             });
         }
         
-        // For now, we'll use a simple approach to store data
-        // In production, this should be replaced with a proper database
-        const timestamp = new Date().toISOString();
+        // Initialize Supabase client
+        const supabase = createSupabaseClient();
         
-        // Create attendance log entry
-        const logEntry = {
-            timestamp,
-            date,
-            eventName,
-            location: eventTown,
-            town: eventTown,
-            peopleServed: peopleCount,
-            outreachName: decoded.name,
-            notes: notes || '',
-            id: `${date}_${eventName}_${eventTown}_${decoded.name}`.replace(/[^a-zA-Z0-9_]/g, '_')
-        };
+        // Insert attendance log into database
+        const { data: logEntry, error } = await supabase
+            .from('attendance_logs')
+            .insert([
+                {
+                    event_date: date,
+                    event_name: eventName,
+                    event_location: eventTown,
+                    event_town: eventTown,
+                    people_served: peopleCount,
+                    outreach_name: decoded.name,
+                    notes: notes || ''
+                }
+            ])
+            .select()
+            .single();
         
-        // Simple duplicate prevention using a basic check
-        // Note: In a serverless environment, we can't prevent all duplicates without a database
-        // This is a basic implementation that will be improved later
+        if (error) {
+            // Check if it's a duplicate entry error
+            if (error.code === '23505') { // PostgreSQL unique violation
+                return res.status(400).json({
+                    success: false,
+                    message: 'Attendance already logged for this event on this date by this volunteer'
+                });
+            }
+            
+            console.error('Database error:', error);
+            return res.status(500).json({
+                success: false,
+                message: 'Failed to save attendance log to database'
+            });
+        }
         
         // Log the successful entry (this will appear in Vercel function logs)
-        console.log(`Attendance logged: ${eventName} - ${eventTown} on ${date} by ${decoded.name} - People served: ${peopleCount}`);
+        console.log(`Attendance logged to database: ${eventName} - ${eventTown} on ${date} by ${decoded.name} - People served: ${peopleCount} - ID: ${logEntry.id}`);
         
         // Return success response
         return res.status(200).json({
             success: true,
             message: 'Attendance logged successfully',
-            data: logEntry
+            data: {
+                id: logEntry.id,
+                timestamp: logEntry.created_at,
+                date: logEntry.event_date,
+                eventName: logEntry.event_name,
+                location: logEntry.event_location,
+                town: logEntry.event_town,
+                peopleServed: logEntry.people_served,
+                outreachName: logEntry.outreach_name,
+                notes: logEntry.notes
+            }
         });
         
     } catch (error) {

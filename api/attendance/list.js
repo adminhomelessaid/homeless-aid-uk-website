@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const { createSupabaseClient } = require('../../utils/supabase');
 
 module.exports = async (req, res) => {
     // Enable CORS
@@ -58,24 +59,73 @@ module.exports = async (req, res) => {
         const endDate = url.searchParams.get('endDate');
         const location = url.searchParams.get('location');
         
-        // For now, return empty logs since we don't have persistent storage
-        // In production, this should be replaced with a proper database query
-        let logs = [];
+        // Initialize Supabase client
+        const supabase = createSupabaseClient();
         
-        // This is a temporary implementation - logs are not persisted between function calls
-        // We'll need to implement a proper database solution for production use
-        console.log('Attendance list requested - temporary implementation returns empty logs');
+        // Build query
+        let query = supabase
+            .from('attendance_logs')
+            .select(`
+                id,
+                created_at,
+                event_date,
+                event_name,
+                event_location,
+                event_town,
+                people_served,
+                outreach_name,
+                notes
+            `)
+            .order('created_at', { ascending: false });
         
-        // Sort by date (newest first)
-        logs.sort((a, b) => {
-            const dateA = new Date(a.timestamp);
-            const dateB = new Date(b.timestamp);
-            return dateB - dateA;
-        });
+        // Apply date filters
+        if (startDate) {
+            query = query.gte('event_date', startDate);
+        }
+        if (endDate) {
+            query = query.lte('event_date', endDate);
+        }
+        
+        // Apply location filter
+        if (location) {
+            query = query.ilike('event_town', `%${location}%`);
+        }
         
         // Apply pagination
-        const totalLogs = logs.length;
-        const paginatedLogs = logs.slice(offset, offset + limit);
+        query = query.range(offset, offset + limit - 1);
+        
+        // Execute query
+        const { data: logs, error, count } = await query;
+        
+        if (error) {
+            console.error('Database query error:', error);
+            return res.status(500).json({
+                success: false,
+                message: 'Failed to fetch attendance logs from database'
+            });
+        }
+        
+        // Get total count for pagination
+        const { count: totalCount, error: countError } = await supabase
+            .from('attendance_logs')
+            .select('*', { count: 'exact', head: true });
+        
+        const totalLogs = countError ? 0 : totalCount;
+        
+        // Transform data to match expected format
+        const transformedLogs = logs.map(log => ({
+            id: log.id,
+            timestamp: log.created_at,
+            date: log.event_date,
+            eventName: log.event_name,
+            location: log.event_location,
+            town: log.event_town,
+            peopleServed: log.people_served,
+            outreachName: log.outreach_name,
+            notes: log.notes
+        }));
+        
+        const paginatedLogs = transformedLogs;
         
         // Return response
         return res.status(200).json({
