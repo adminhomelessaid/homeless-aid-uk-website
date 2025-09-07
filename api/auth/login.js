@@ -36,7 +36,7 @@ module.exports = async (req, res) => {
             });
         }
         
-        // Check rate limiting - TEMPORARILY DISABLED FOR TESTING
+        // Check rate limiting - TEMPORARILY DISABLED FOR TESTING - v2
         // const clientIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
         // const attemptKey = `${clientIp}_${username}`;
         // const attempts = loginAttempts.get(attemptKey) || { count: 0, lastAttempt: Date.now() };
