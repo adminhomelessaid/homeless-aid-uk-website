@@ -1,8 +1,8 @@
--- Homeless Aid UK - Attendance Logs Table Schema
+-- Homeless Aid UK - Attendance Logs Table Schema (PostgreSQL Compatible)
 -- Execute this SQL in your Supabase SQL editor
 
 -- Create attendance_logs table
-CREATE TABLE IF NOT EXISTS attendance_logs (
+CREATE TABLE attendance_logs (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     
@@ -25,20 +25,14 @@ CREATE TABLE IF NOT EXISTS attendance_logs (
 );
 
 -- Create indexes for better query performance
-CREATE INDEX IF NOT EXISTS idx_attendance_logs_date ON attendance_logs (event_date DESC);
-CREATE INDEX IF NOT EXISTS idx_attendance_logs_town ON attendance_logs (event_town);
-CREATE INDEX IF NOT EXISTS idx_attendance_logs_volunteer ON attendance_logs (outreach_name);
-CREATE INDEX IF NOT EXISTS idx_attendance_logs_created_at ON attendance_logs (created_at DESC);
-
--- Create a composite index for common queries
-CREATE INDEX IF NOT EXISTS idx_attendance_logs_date_town ON attendance_logs (event_date DESC, event_town);
+CREATE INDEX idx_attendance_logs_date ON attendance_logs (event_date DESC);
+CREATE INDEX idx_attendance_logs_town ON attendance_logs (event_town);
+CREATE INDEX idx_attendance_logs_volunteer ON attendance_logs (outreach_name);
+CREATE INDEX idx_attendance_logs_created_at ON attendance_logs (created_at DESC);
+CREATE INDEX idx_attendance_logs_date_town ON attendance_logs (event_date DESC, event_town);
 
 -- Row Level Security (RLS) - Enable security
 ALTER TABLE attendance_logs ENABLE ROW LEVEL SECURITY;
-
--- Drop existing policies if they exist (ignore errors)
-DROP POLICY IF EXISTS "Allow authenticated read access" ON attendance_logs;
-DROP POLICY IF EXISTS "Allow authenticated insert access" ON attendance_logs;
 
 -- RLS Policy: Allow all authenticated users to read attendance logs
 CREATE POLICY "Allow authenticated read access" 
@@ -51,7 +45,7 @@ ON attendance_logs FOR INSERT
 WITH CHECK (true);
 
 -- Create a view for easy CSV export with all necessary columns
-CREATE OR REPLACE VIEW attendance_logs_export AS
+CREATE VIEW attendance_logs_export AS
 SELECT 
     created_at as timestamp,
     event_date as date,
@@ -69,7 +63,7 @@ ORDER BY created_at DESC;
 GRANT SELECT, INSERT ON attendance_logs TO anon;
 GRANT SELECT ON attendance_logs_export TO anon;
 
--- Sample data for testing (optional - remove after testing)
+-- Sample data for testing
 INSERT INTO attendance_logs (
     event_date, 
     event_name, 
@@ -79,8 +73,7 @@ INSERT INTO attendance_logs (
     outreach_name, 
     notes
 ) VALUES 
-    (CURRENT_DATE, 'Test Street Kitchen', 'Test Location', 'Bolton', 15, 'Test Volunteer', 'Database integration test')
-ON CONFLICT (event_date, event_name, event_town, outreach_name) DO NOTHING;
+    (CURRENT_DATE, 'Test Street Kitchen', 'Test Location', 'Bolton', 15, 'Test Volunteer', 'Database integration test');
 
 -- Verify table creation
 SELECT 
