@@ -115,11 +115,11 @@ module.exports = async (req, res) => {
         // Clear failed attempts on successful login - TEMPORARILY DISABLED FOR TESTING
         // loginAttempts.delete(attemptKey);
         
-        // Update last login timestamp
-        await supabase
-            .from('outreach_users')
-            .update({ last_login: new Date().toISOString() })
-            .eq('id', user.id);
+        // Update last login timestamp - DISABLED TO FIX 500 ERROR
+        // await supabase
+        //     .from('outreach_users')
+        //     .update({ last_login: new Date().toISOString() })
+        //     .eq('id', user.id);
         
         // Generate JWT token
         const token = AuthUtils.generateJWT(user);
