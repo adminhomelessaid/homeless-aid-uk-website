@@ -1,10 +1,10 @@
 const AuthUtils = require('../../utils/auth');
 const { createSupabaseClient } = require('../../utils/supabase');
 
-// Rate limiting setup
-const loginAttempts = new Map();
-const MAX_ATTEMPTS = 5;
-const LOCKOUT_TIME = 15 * 60 * 1000; // 15 minutes
+// Rate limiting setup - COMPLETELY DISABLED FOR TESTING
+// const loginAttempts = new Map();
+// const MAX_ATTEMPTS = 5;
+// const LOCKOUT_TIME = 15 * 60 * 1000; // 15 minutes
 
 module.exports = async (req, res) => {
     // Enable CORS
@@ -151,12 +151,12 @@ module.exports = async (req, res) => {
     }
 };
 
-// Clean up old login attempts periodically
-setInterval(() => {
-    const now = Date.now();
-    for (const [key, attempts] of loginAttempts.entries()) {
-        if (now - attempts.lastAttempt > LOCKOUT_TIME) {
-            loginAttempts.delete(key);
-        }
-    }
-}, 60 * 60 * 1000); // Clean up every hour
+// Clean up old login attempts periodically - DISABLED FOR TESTING
+// setInterval(() => {
+//     const now = Date.now();
+//     for (const [key, attempts] of loginAttempts.entries()) {
+//         if (now - attempts.lastAttempt > LOCKOUT_TIME) {
+//             loginAttempts.delete(key);
+//         }
+//     }
+// }, 60 * 60 * 1000); // Clean up every hour
