@@ -14,6 +14,12 @@
     },
     "api/auth/verify-invitation.js": {
       "maxDuration": 10
+    },
+    "api/auth/reset-admin.js": {
+      "maxDuration": 10
+    },
+    "api/auth/login-test.js": {
+      "maxDuration": 10
     }
   },
   "rewrites": [
