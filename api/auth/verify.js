@@ -32,12 +32,10 @@ module.exports = async (req, res) => {
         
         const token = authHeader.substring(7); // Remove 'Bearer ' prefix
         
-        // Verify token
-        const jwtSecret = process.env.JWT_SECRET || 'development_secret_key_change_in_production';
+        // Verify token - TEMPORARILY USING SAME KEY AS LOGIN
+        const jwtSecret = 'temporary-secret-key';
         
-        const decoded = jwt.verify(token, jwtSecret, {
-            issuer: 'homelessaid.co.uk'
-        });
+        const decoded = jwt.verify(token, jwtSecret);
         
         // Token is valid
         return res.status(200).json({
