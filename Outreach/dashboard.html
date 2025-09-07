@@ -431,6 +431,228 @@
         </div>
     </div>
     
+    <!-- WhatsApp Sharing Modal -->
+    <div id="whatsappModal" class="whatsapp-modal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fab fa-whatsapp"></i> Share Attendance Update</h3>
+                <button class="close-btn" id="closeWhatsAppModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p class="modal-description">Share this attendance update on WhatsApp:</p>
+                <div class="message-preview">
+                    <div class="message-bubble">
+                        <i class="fab fa-whatsapp whatsapp-icon"></i>
+                        <div class="message-content" id="whatsappMessagePreview">
+                            <!-- Message content will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-whatsapp" id="shareOnWhatsApp">
+                    <i class="fab fa-whatsapp"></i>
+                    Share on WhatsApp
+                </button>
+                <button class="btn-skip" id="skipSharing">
+                    Skip
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <style>
+        .whatsapp-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1000;
+        }
+        
+        .whatsapp-modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .modal-backdrop {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+        }
+        
+        .modal-content {
+            position: relative;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            width: 90%;
+            max-width: 420px;
+            margin: 1rem;
+            animation: slideUp 0.3s ease;
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .modal-header h3 {
+            margin: 0;
+            color: #25d366;
+            font-size: 1.25rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #6b7280;
+            cursor: pointer;
+            padding: 0.25rem;
+            border-radius: 4px;
+            line-height: 1;
+        }
+        
+        .close-btn:hover {
+            background: #f3f4f6;
+        }
+        
+        .modal-body {
+            padding: 1.5rem;
+        }
+        
+        .modal-description {
+            margin-bottom: 1rem;
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+        
+        .message-preview {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .message-bubble {
+            background: #dcf8c6;
+            border-radius: 12px 12px 4px 12px;
+            padding: 0.75rem 1rem;
+            position: relative;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+        
+        .whatsapp-icon {
+            color: #25d366;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+            margin-top: 0.125rem;
+        }
+        
+        .message-content {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            white-space: pre-line;
+            color: #1f2937;
+        }
+        
+        .modal-actions {
+            display: flex;
+            gap: 1rem;
+            padding: 1.5rem;
+            border-top: 1px solid #e5e7eb;
+        }
+        
+        .btn-whatsapp {
+            flex: 2;
+            background: linear-gradient(135deg, #25d366 0%, #128c7e 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 0.875rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-whatsapp:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(37, 211, 102, 0.3);
+        }
+        
+        .btn-skip {
+            flex: 1;
+            background: #f3f4f6;
+            color: #6b7280;
+            border: none;
+            border-radius: 10px;
+            padding: 0.875rem 1rem;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-skip:hover {
+            background: #e5e7eb;
+            color: #4b5563;
+        }
+        
+        @media (max-width: 480px) {
+            .modal-actions {
+                flex-direction: column;
+            }
+            
+            .btn-whatsapp, .btn-skip {
+                flex: none;
+            }
+            
+            .modal-content {
+                width: 95%;
+                margin: 0.5rem;
+            }
+            
+            .modal-header, .modal-body, .modal-actions {
+                padding: 1rem;
+            }
+        }
+    </style>
+    
     <script>
         // Check authentication on page load
         const token = localStorage.getItem('outreach_token');
@@ -487,7 +709,7 @@
                     }
                 }
                 
-                // Populate event dropdown
+                // Populate event dropdown with intelligent sorting
                 const eventSelect = document.getElementById('eventSelect');
                 const uniqueEvents = new Map();
                 
@@ -504,10 +726,52 @@
                     }
                 });
                 
-                uniqueEvents.forEach((event, key) => {
+                // Convert to array and sort intelligently
+                const eventsArray = Array.from(uniqueEvents.entries()).map(([key, event]) => ({
+                    key,
+                    event
+                }));
+                
+                // Sort events: Street Kitchen first, then Others, then Takeaway
+                function sortEvents(events) {
+                    const streetKitchens = events.filter(e => e.event.type.includes('Street Kitchen'))
+                        .sort((a, b) => a.event.name.localeCompare(b.event.name));
+                    
+                    const takeaways = events.filter(e => e.event.type.includes('Takeaway'))
+                        .sort((a, b) => a.event.name.localeCompare(b.event.name));
+                    
+                    const others = events.filter(e => 
+                        !e.event.type.includes('Street Kitchen') && 
+                        !e.event.type.includes('Takeaway'))
+                        .sort((a, b) => a.event.name.localeCompare(b.event.name));
+                    
+                    return [...streetKitchens, ...others, ...takeaways];
+                }
+                
+                const sortedEvents = sortEvents(eventsArray);
+                
+                // Add section headers for better UX
+                let currentSection = '';
+                
+                sortedEvents.forEach(({ key, event }) => {
+                    // Add section headers
+                    const eventType = event.type.includes('Street Kitchen') ? 'Street Kitchen' :
+                                    event.type.includes('Takeaway') ? 'Takeaway' : 'Other Events';
+                    
+                    if (currentSection !== eventType) {
+                        currentSection = eventType;
+                        const header = document.createElement('option');
+                        header.disabled = true;
+                        header.style.fontWeight = 'bold';
+                        header.style.background = '#f0f0f0';
+                        header.textContent = `── ${eventType} Events ──`;
+                        eventSelect.appendChild(header);
+                    }
+                    
                     const option = document.createElement('option');
                     option.value = key;
-                    option.textContent = `${key} (${event.type})`;
+                    option.textContent = `${key}`;
+                    option.style.paddingLeft = '10px';
                     eventSelect.appendChild(option);
                 });
                 
@@ -572,6 +836,15 @@
                 
                 if (response.ok && data.success) {
                     successMessage.classList.add('show');
+                    
+                    // Show WhatsApp sharing modal
+                    showWhatsAppSharingModal({
+                        eventName: eventValue,
+                        date: date,
+                        peopleServed: peopleServed,
+                        notes: notes,
+                        volunteer: user.name
+                    });
                     
                     // Clear form
                     document.getElementById('eventSelect').value = '';
@@ -691,6 +964,78 @@
             localStorage.removeItem('outreach_token');
             localStorage.removeItem('outreach_user');
             window.location.href = '/Outreach/login.html';
+        });
+        
+        // WhatsApp Sharing Functionality
+        let currentWhatsAppMessage = '';
+        
+        function showWhatsAppSharingModal(attendanceData) {
+            const modal = document.getElementById('whatsappModal');
+            const messagePreview = document.getElementById('whatsappMessagePreview');
+            
+            // Format the date nicely
+            const eventDate = new Date(attendanceData.date);
+            const formattedDate = eventDate.toLocaleDateString('en-GB', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            });
+            
+            // Create the WhatsApp message
+            let message = `${attendanceData.eventName} - ${formattedDate}\nPeople Served: ${attendanceData.peopleServed}`;
+            
+            if (attendanceData.notes && attendanceData.notes.trim()) {
+                message += `\nNotes: ${attendanceData.notes.trim()}`;
+            }
+            
+            // Store the message for sharing
+            currentWhatsAppMessage = message;
+            
+            // Update preview
+            messagePreview.textContent = message;
+            
+            // Show modal
+            modal.classList.add('show');
+            
+            // Focus management for accessibility
+            setTimeout(() => {
+                document.getElementById('shareOnWhatsApp').focus();
+            }, 100);
+        }
+        
+        function hideWhatsAppSharingModal() {
+            const modal = document.getElementById('whatsappModal');
+            modal.classList.remove('show');
+            currentWhatsAppMessage = '';
+        }
+        
+        function shareOnWhatsApp() {
+            if (currentWhatsAppMessage) {
+                // URL encode the message
+                const encodedMessage = encodeURIComponent(currentWhatsAppMessage);
+                const whatsappUrl = `https://wa.me/?text=${encodedMessage}`;
+                
+                // Open WhatsApp
+                window.open(whatsappUrl, '_blank');
+                
+                // Hide modal
+                hideWhatsAppSharingModal();
+            }
+        }
+        
+        // Modal event listeners
+        document.getElementById('closeWhatsAppModal').addEventListener('click', hideWhatsAppSharingModal);
+        document.getElementById('skipSharing').addEventListener('click', hideWhatsAppSharingModal);
+        document.getElementById('shareOnWhatsApp').addEventListener('click', shareOnWhatsApp);
+        
+        // Close modal when clicking backdrop
+        document.querySelector('.modal-backdrop').addEventListener('click', hideWhatsAppSharingModal);
+        
+        // Close modal with Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && document.getElementById('whatsappModal').classList.contains('show')) {
+                hideWhatsAppSharingModal();
+            }
         });
     </script>
 </body>
