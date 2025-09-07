@@ -87,15 +87,24 @@ module.exports = async (req, res) => {
         // Initialize Supabase client
         const supabase = createSupabaseClient();
         
+        // Calculate day of week from the date
+        const eventDate = new Date(date);
+        const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        const dayOfWeek = dayNames[eventDate.getDay()];
+        
+        // Create a better event name format: "Location - Event Type" (e.g., "Bolton - Street Kitchen")
+        const formattedEventName = `${eventTown} - ${eventName}`;
+        
         // Insert attendance log into database
         const { data: logEntry, error } = await supabase
             .from('attendance_logs')
             .insert([
                 {
                     event_date: date,
-                    event_name: eventName,
+                    event_name: formattedEventName,
                     event_location: eventTown,
                     event_town: eventTown,
+                    event_day: dayOfWeek,
                     people_served: peopleCount,
                     outreach_name: decoded.name,
                     notes: notes || ''
@@ -131,6 +140,7 @@ module.exports = async (req, res) => {
                 id: logEntry.id,
                 timestamp: logEntry.created_at,
                 date: logEntry.event_date,
+                day: logEntry.event_day,
                 eventName: logEntry.event_name,
                 location: logEntry.event_location,
                 town: logEntry.event_town,
