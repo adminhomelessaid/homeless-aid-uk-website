@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "description": "Homeless Aid UK Website",
   "dependencies": {
-    "nodemailer": "^6.9.7",
-    "jsonwebtoken": "^9.0.2",
+    "@supabase/supabase-js": "^2.39.0",
     "bcryptjs": "^2.4.3",
-    "@supabase/supabase-js": "^2.39.0"
+    "jsonwebtoken": "^9.0.2",
+    "nodemailer": "^6.9.7"
   },
   "engines": {
     "node": "20.x"
