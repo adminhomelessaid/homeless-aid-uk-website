@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "Homeless Aid UK Website",
   "dependencies": {
-    "nodemailer": "^6.9.7"
+    "nodemailer": "^6.9.7",
+    "jsonwebtoken": "^9.0.2",
+    "bcryptjs": "^2.4.3"
   },
   "engines": {
     "node": "20.x"
