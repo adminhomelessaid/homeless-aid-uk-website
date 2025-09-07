@@ -5,6 +5,15 @@
     },
     "api/send-email-backup.js": {
       "maxDuration": 10
+    },
+    "api/auth/login.js": {
+      "maxDuration": 10
+    },
+    "api/auth/setup-password.js": {
+      "maxDuration": 10
+    },
+    "api/auth/verify-invitation.js": {
+      "maxDuration": 10
     }
   },
   "rewrites": [
@@ -19,7 +28,10 @@
     { "source": "/gmfoodbanks", "destination": "/GMFoodBanks.html" },
     { "source": "/gm-food-banks", "destination": "/GMFoodBanks.html" },
     { "source": "/gm-foodbanks", "destination": "/GMFoodBanks.html" },
-    { "source": "/greater-manchester-food-banks", "destination": "/GMFoodBanks.html" }
+    { "source": "/greater-manchester-food-banks", "destination": "/GMFoodBanks.html" },
+    { "source": "/Outreach/setup-password", "destination": "/Outreach/setup-password.html" },
+    { "source": "/Outreach/login", "destination": "/Outreach/login.html" },
+    { "source": "/Outreach/dashboard", "destination": "/Outreach/dashboard.html" }
   ],
   "redirects": [
     { "source": "/index.html", "destination": "/", "permanent": true },
