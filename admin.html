@@ -260,6 +260,7 @@
                 <button class="admin-tab" data-tab="content">Content Management</button>
                 <button class="admin-tab" data-tab="theme">Theme Admin</button>
                 <button class="admin-tab" data-tab="analytics">Analytics</button>
+                <button class="admin-tab" data-tab="attendance">Attendance Data</button>
             </div>
 
             <div class="admin-content">
@@ -365,6 +366,64 @@
                             <h3>Daily Feeds</h3>
                             <div class="stat-number" id="dailyFeeds">0</div>
                         </div>
+                    </div>
+                </div>
+                
+                <!-- Attendance Data -->
+                <div id="attendance" class="admin-section">
+                    <h2>Attendance Data</h2>
+                    
+                    <div class="stats-grid" style="margin-bottom: 2rem;">
+                        <div class="stat-card">
+                            <h3>Today's Total</h3>
+                            <div class="stat-number" id="attendanceToday">0</div>
+                        </div>
+                        <div class="stat-card">
+                            <h3>This Week</h3>
+                            <div class="stat-number" id="attendanceWeek">0</div>
+                        </div>
+                        <div class="stat-card">
+                            <h3>This Month</h3>
+                            <div class="stat-number" id="attendanceMonth">0</div>
+                        </div>
+                        <div class="stat-card">
+                            <h3>All Time</h3>
+                            <div class="stat-number" id="attendanceTotal">0</div>
+                        </div>
+                    </div>
+                    
+                    <div class="section-header">
+                        <h3>Recent Attendance Logs</h3>
+                        <div style="display: flex; gap: 1rem;">
+                            <button class="btn btn-primary" id="exportAttendanceBtn">
+                                <i class="fas fa-download"></i> Export CSV
+                            </button>
+                            <button class="btn btn-secondary" id="refreshAttendanceBtn">
+                                <i class="fas fa-sync"></i> Refresh
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <table class="data-table" id="attendanceTable" style="margin-top: 1rem;">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Event</th>
+                                <th>Location</th>
+                                <th>People Served</th>
+                                <th>Logged By</th>
+                                <th>Notes</th>
+                                <th>Timestamp</th>
+                            </tr>
+                        </thead>
+                        <tbody id="attendanceTableBody">
+                            <!-- Data will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                    
+                    <div id="attendanceEmpty" style="text-align: center; padding: 3rem; display: none;">
+                        <i class="fas fa-clipboard-list" style="font-size: 3rem; color: #ddd; margin-bottom: 1rem;"></i>
+                        <p style="color: #999;">No attendance data available yet.</p>
                     </div>
                 </div>
             </div>

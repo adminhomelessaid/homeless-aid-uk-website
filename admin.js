@@ -296,6 +296,126 @@ editForm.addEventListener('click', function(e) {
     }
 });
 
+// Attendance Data Management
+async function loadAttendanceData() {
+    try {
+        // Load attendance statistics
+        const statsResponse = await fetch('/api/attendance/stats');
+        if (statsResponse.ok) {
+            const stats = await statsResponse.json();
+            document.getElementById('attendanceToday').textContent = stats.today || 0;
+            document.getElementById('attendanceWeek').textContent = stats.week || 0;
+            document.getElementById('attendanceMonth').textContent = stats.month || 0;
+            document.getElementById('attendanceTotal').textContent = stats.allTime || 0;
+        }
+        
+        // Load attendance logs
+        const logsResponse = await fetch('/api/attendance/list?limit=50');
+        if (logsResponse.ok) {
+            const data = await logsResponse.json();
+            renderAttendanceTable(data.logs || []);
+        }
+    } catch (error) {
+        console.error('Error loading attendance data:', error);
+        document.getElementById('attendanceEmpty').style.display = 'block';
+        document.getElementById('attendanceTable').style.display = 'none';
+    }
+}
+
+function renderAttendanceTable(logs) {
+    const tbody = document.getElementById('attendanceTableBody');
+    const emptyState = document.getElementById('attendanceEmpty');
+    const table = document.getElementById('attendanceTable');
+    
+    if (logs.length === 0) {
+        emptyState.style.display = 'block';
+        table.style.display = 'none';
+        return;
+    }
+    
+    emptyState.style.display = 'none';
+    table.style.display = 'table';
+    
+    tbody.innerHTML = logs.map(log => `
+        <tr>
+            <td>${new Date(log.date).toLocaleDateString()}</td>
+            <td>${log.eventName}</td>
+            <td>${log.town}</td>
+            <td>${log.peopleServed}</td>
+            <td>${log.outreachName}</td>
+            <td>${log.notes || '-'}</td>
+            <td>${new Date(log.timestamp).toLocaleString()}</td>
+        </tr>
+    `).join('');
+}
+
+// Export attendance data
+document.getElementById('exportAttendanceBtn')?.addEventListener('click', async function() {
+    try {
+        const response = await fetch('/api/attendance/list?limit=9999');
+        if (response.ok) {
+            const data = await response.json();
+            const csv = convertToCSV(data.logs);
+            downloadCSV(csv, `attendance_${new Date().toISOString().split('T')[0]}.csv`);
+        }
+    } catch (error) {
+        console.error('Error exporting attendance data:', error);
+        alert('Failed to export attendance data');
+    }
+});
+
+// Refresh attendance data
+document.getElementById('refreshAttendanceBtn')?.addEventListener('click', function() {
+    loadAttendanceData();
+});
+
+function convertToCSV(logs) {
+    const headers = ['Date', 'Event', 'Location', 'Town', 'People Served', 'Logged By', 'Notes', 'Timestamp'];
+    const rows = logs.map(log => [
+        log.date,
+        log.eventName,
+        log.location,
+        log.town,
+        log.peopleServed,
+        log.outreachName,
+        log.notes || '',
+        log.timestamp
+    ]);
+    
+    const csvContent = [
+        headers.join(','),
+        ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
+    ].join('\n');
+    
+    return csvContent;
+}
+
+function downloadCSV(content, filename) {
+    const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = filename;
+    link.click();
+}
+
+// Update tab switching to load attendance data
+const originalTabClickHandler = tabs.forEach;
+tabs.forEach(tab => {
+    tab.addEventListener('click', function() {
+        tabs.forEach(t => t.classList.remove('active'));
+        sections.forEach(s => s.classList.remove('active'));
+        
+        this.classList.add('active');
+        const targetTab = this.getAttribute('data-tab');
+        document.getElementById(targetTab).classList.add('active');
+        
+        // Load attendance data when attendance tab is clicked
+        if (targetTab === 'attendance') {
+            loadAttendanceData();
+        }
+    });
+});
+
 // Initialize
 document.addEventListener('DOMContentLoaded', function() {
     console.log('🚀 Admin panel initialized');
