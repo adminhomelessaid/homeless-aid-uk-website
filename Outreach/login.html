@@ -385,9 +385,9 @@
         }
         
         // Check if already logged in
-        const token = localStorage.getItem('outreach_token');
+        const token = localStorage.getItem('outreach_token') || localStorage.getItem('outreachToken');
         if (token) {
-            // Verify token is still valid
+            // Try to verify token is still valid
             fetch('/api/auth/verify', {
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -399,11 +399,29 @@
                 } else {
                     // Clear invalid token
                     localStorage.removeItem('outreach_token');
+                    localStorage.removeItem('outreachToken');
                     localStorage.removeItem('outreach_user');
                 }
-            }).catch(() => {
-                // Clear token on error
+            }).catch(error => {
+                // If verify endpoint doesn't exist or network error, try local token validation
+                try {
+                    const base64Url = token.split('.')[1];
+                    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                    const decoded = JSON.parse(window.atob(base64));
+                    
+                    // Check if token is not expired
+                    if (decoded.exp && decoded.exp > Math.floor(Date.now() / 1000)) {
+                        // Token seems valid locally, redirect to dashboard
+                        window.location.href = '/Outreach/dashboard.html';
+                        return;
+                    }
+                } catch (parseError) {
+                    console.log('Token validation failed:', parseError);
+                }
+                
+                // Clear invalid or expired token
                 localStorage.removeItem('outreach_token');
+                localStorage.removeItem('outreachToken');
                 localStorage.removeItem('outreach_user');
             });
         }

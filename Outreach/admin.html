@@ -593,6 +593,180 @@
                 flex-direction: column;
             }
         }
+        
+        /* Activity Log Styles */
+        .activity-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .activity-item {
+            display: flex;
+            align-items: flex-start;
+            padding: 1rem;
+            background: #f8fafc;
+            border-left: 4px solid #e2e8f0;
+            border-radius: 0 8px 8px 0;
+            transition: all 0.2s ease;
+        }
+        
+        .activity-item:hover {
+            background: #f1f5f9;
+            border-left-color: #667eea;
+        }
+        
+        .activity-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            color: white;
+            margin-right: 1rem;
+            flex-shrink: 0;
+        }
+        
+        .activity-icon.login {
+            background: #10b981;
+        }
+        
+        .activity-icon.logout {
+            background: #6b7280;
+        }
+        
+        .activity-icon.user_created {
+            background: #3b82f6;
+        }
+        
+        .activity-icon.user_updated {
+            background: #f59e0b;
+        }
+        
+        .activity-icon.password_change {
+            background: #8b5cf6;
+        }
+        
+        .activity-icon.default {
+            background: #64748b;
+        }
+        
+        .activity-content {
+            flex: 1;
+        }
+        
+        .activity-action {
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.25rem;
+        }
+        
+        .activity-details {
+            color: #6b7280;
+            font-size: 0.875rem;
+            line-height: 1.4;
+        }
+        
+        .activity-time {
+            color: #9ca3af;
+            font-size: 0.75rem;
+            margin-top: 0.5rem;
+        }
+        
+        .activity-user {
+            color: #667eea;
+            font-weight: 500;
+        }
+        
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 2rem;
+        }
+        
+        .modal-overlay.show {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: modalSlideIn 0.3s ease;
+            width: 100%;
+            max-width: 500px;
+        }
+        
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        .modal-header {
+            padding: 2rem 2rem 0 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #e5e7eb;
+            margin-bottom: 2rem;
+        }
+        
+        .modal-header h3 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1a2332;
+            flex-grow: 1;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #9ca3af;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+        
+        .modal-close:hover {
+            background: #f3f4f6;
+            color: #374151;
+        }
+        
+        .modal-body {
+            padding: 0 2rem;
+        }
+        
+        .modal-footer {
+            padding: 2rem;
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            border-top: 1px solid #e5e7eb;
+            margin-top: 2rem;
+        }
     </style>
 </head>
 <body>
@@ -813,47 +987,234 @@
             <div class="section-card">
                 <div class="section-header">
                     <h2 class="section-title">Recent Activity</h2>
+                    <p class="section-subtitle">Track user logins, admin actions, and system events</p>
                 </div>
                 
-                <div class="empty-state">
+                <div class="loading" id="activityLoading">
+                    <div class="spinner"></div>
+                    <p>Loading activity...</p>
+                </div>
+                
+                <div class="empty-state" id="noActivityMessage" style="display: none;">
                     <i class="fas fa-history"></i>
-                    <h3>Activity Log Coming Soon</h3>
-                    <p>Track all admin actions and user activities.</p>
+                    <h3>No Recent Activity</h3>
+                    <p>Activity logs will appear here as users interact with the system.</p>
+                </div>
+                
+                <div class="activity-list" id="activityList" style="display: none;">
+                    <!-- Activity items will be populated here -->
                 </div>
             </div>
         </div>
     </div>
     
+    <!-- Edit User Modal -->
+    <div class="modal-overlay" id="editUserModal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3>Edit User</h3>
+                <button class="modal-close" onclick="closeEditModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <form id="editUserForm">
+                    <input type="hidden" id="editUserId" />
+                    
+                    <div class="form-grid" style="grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="form-group">
+                            <label class="form-label" for="editUsername">Username</label>
+                            <input type="text" class="form-input" id="editUsername" readonly 
+                                   style="background-color: #f3f4f6; cursor: not-allowed;">
+                            <small style="color: #9ca3af;">Username cannot be changed</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="editEmail">Email Address *</label>
+                            <input type="email" class="form-input" id="editEmail" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="editFullName">Full Name *</label>
+                            <input type="text" class="form-input" id="editFullName" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="editRole">Role *</label>
+                            <select class="form-input" id="editRole" required>
+                                <option value="volunteer">Volunteer</option>
+                                <option value="team_lead">Team Lead</option>
+                                <option value="admin">Administrator</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="editDateOfBirth">Date of Birth</label>
+                            <input type="date" class="form-input" id="editDateOfBirth">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="editStatus">Status</label>
+                            <select class="form-input" id="editStatus">
+                                <option value="active">Active</option>
+                                <option value="inactive">Inactive</option>
+                                <option value="pending">Pending</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="editAddressLine1">Address Line 1</label>
+                        <input type="text" class="form-input" id="editAddressLine1">
+                    </div>
+                    
+                    <div class="form-grid" style="grid-template-columns: 2fr 1fr; gap: 1rem;">
+                        <div class="form-group">
+                            <label class="form-label" for="editAddressLine2">Address Line 2</label>
+                            <input type="text" class="form-input" id="editAddressLine2">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="editCity">City</label>
+                            <input type="text" class="form-input" id="editCity">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="editPostcode">Postcode</label>
+                        <input type="text" class="form-input" id="editPostcode" style="max-width: 150px;">
+                    </div>
+                    
+                    <h4 style="margin: 1.5rem 0 1rem 0; color: #374151;">Emergency Contact</h4>
+                    
+                    <div class="form-grid" style="grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="form-group">
+                            <label class="form-label" for="editEmergencyName">Contact Name</label>
+                            <input type="text" class="form-input" id="editEmergencyName">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="editEmergencyPhone">Contact Phone</label>
+                            <input type="tel" class="form-input" id="editEmergencyPhone">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="editEmergencyRelationship">Relationship</label>
+                        <input type="text" class="form-input" id="editEmergencyRelationship" 
+                               placeholder="e.g., Spouse, Parent, Friend">
+                    </div>
+                </form>
+            </div>
+            
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeEditModal()">Cancel</button>
+                <button type="submit" form="editUserForm" class="btn btn-primary" id="saveUserBtn">
+                    <i class="fas fa-save"></i> Save Changes
+                </button>
+            </div>
+        </div>
+    </div>
+    
     <script>
-        // Check authentication
-        const token = localStorage.getItem('outreachToken');
-        if (!token) {
-            window.location.href = 'login.html';
-        }
+        // Global variables
+        let currentUsers = [];
+        let userInfo = null;
         
         // Decode JWT to get user info
         function parseJWT(token) {
             try {
                 const base64Url = token.split('.')[1];
                 const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-                return JSON.parse(window.atob(base64));
+                const decoded = JSON.parse(window.atob(base64));
+                
+                // Check if token is expired
+                if (decoded.exp && decoded.exp < Math.floor(Date.now() / 1000)) {
+                    return null;
+                }
+                
+                return decoded;
             } catch (e) {
                 return null;
             }
         }
         
-        const userInfo = parseJWT(token);
-        
-        // Check if user is admin
-        if (!userInfo || userInfo.role !== 'admin') {
-            alert('Access denied. Admin privileges required.');
-            window.location.href = 'dashboard.html';
+        // Verify authentication on page load
+        async function verifyAuthentication() {
+            const token = localStorage.getItem('outreachToken') || localStorage.getItem('outreach_token');
+            
+            if (!token) {
+                window.location.href = 'login.html';
+                return false;
+            }
+            
+            // First try to parse the JWT locally
+            userInfo = parseJWT(token);
+            
+            if (!userInfo) {
+                // Token is invalid or expired locally
+                localStorage.removeItem('outreachToken');
+                localStorage.removeItem('outreach_token');
+                localStorage.removeItem('outreach_user');
+                window.location.href = 'login.html';
+                return false;
+            }
+            
+            // Verify token with server
+            try {
+                const response = await fetch('/api/auth/verify', {
+                    headers: {
+                        'Authorization': 'Bearer ' + token
+                    }
+                });
+                
+                if (!response.ok) {
+                    // Token is invalid on server side
+                    localStorage.removeItem('outreachToken');
+                    localStorage.removeItem('outreach_token');
+                    localStorage.removeItem('outreach_user');
+                    window.location.href = 'login.html';
+                    return false;
+                }
+                
+                // Check if user is admin
+                if (!userInfo || userInfo.role !== 'admin') {
+                    alert('Access denied. Admin privileges required.');
+                    window.location.href = 'dashboard.html';
+                    return false;
+                }
+                
+                return true;
+                
+            } catch (error) {
+                console.error('Authentication verification failed:', error);
+                // Don't redirect on network error, use local token validation
+                if (!userInfo || userInfo.role !== 'admin') {
+                    alert('Access denied. Admin privileges required.');
+                    window.location.href = 'dashboard.html';
+                    return false;
+                }
+                return true;
+            }
         }
         
-        // Update user info in header
-        document.getElementById('userName').textContent = userInfo.name || userInfo.username;
-        document.getElementById('userRole').textContent = userInfo.role === 'admin' ? 'Administrator' : 
-                                                          userInfo.role === 'team_lead' ? 'Team Lead' : 'Volunteer';
+        // Initialize the page after authentication
+        async function initializePage() {
+            const isAuthenticated = await verifyAuthentication();
+            
+            if (!isAuthenticated) {
+                return; // Authentication failed, user will be redirected
+            }
+            
+            // Update user info in header
+            document.getElementById('userName').textContent = userInfo.name || userInfo.username;
+            document.getElementById('userRole').textContent = userInfo.role === 'admin' ? 'Administrator' : 
+                                                              userInfo.role === 'team_lead' ? 'Team Lead' : 'Volunteer';
+            
+            // Load users data
+            loadUsers();
+        }
         
         // Tab switching
         document.querySelectorAll('.tab-button').forEach(button => {
@@ -886,6 +1247,12 @@
             const noUsers = document.getElementById('noUsersMessage');
             const tbody = document.getElementById('usersTableBody');
             
+            const token = localStorage.getItem('outreachToken') || localStorage.getItem('outreach_token');
+            if (!token) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
             loading.classList.add('show');
             table.style.display = 'none';
             noUsers.style.display = 'none';
@@ -903,6 +1270,12 @@
                 
                 const data = await response.json();
                 const users = data.users || [];
+                
+                // Store users globally for edit functionality
+                currentUsers = users;
+                
+                // Load activity logs
+                loadActivityLogs(data.activity_logs || []);
                 
                 // Update statistics
                 updateStatistics(users);
@@ -971,6 +1344,9 @@
                     last_login: new Date().toISOString()
                 }
             ];
+            
+            // Store users globally for edit functionality
+            currentUsers = demoUsers;
             
             updateStatistics(demoUsers);
             
@@ -1060,6 +1436,12 @@
         document.getElementById('createUserForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
+            const token = localStorage.getItem('outreachToken') || localStorage.getItem('outreach_token');
+            if (!token) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
             const button = document.getElementById('createUserBtn');
             const originalText = button.innerHTML;
             button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating...';
@@ -1122,9 +1504,204 @@
             document.querySelector('.tab-button[data-tab="users"]').click();
         }
         
-        // Placeholder functions
-        function editUser(userId) {
-            showError('Edit functionality coming soon');
+        // Edit user functionality
+        async function editUser(userId) {
+            try {
+                // Find user in current data
+                const user = currentUsers.find(u => u.id === userId);
+                if (!user) {
+                    showError('User not found');
+                    return;
+                }
+                
+                // Populate edit form
+                document.getElementById('editUserId').value = user.id;
+                document.getElementById('editUsername').value = user.username;
+                document.getElementById('editEmail').value = user.email;
+                document.getElementById('editFullName').value = user.full_name || '';
+                document.getElementById('editRole').value = user.role;
+                document.getElementById('editDateOfBirth').value = user.date_of_birth || '';
+                document.getElementById('editStatus').value = user.status || (user.is_active ? 'active' : 'inactive');
+                
+                // Address fields
+                document.getElementById('editAddressLine1').value = user.address?.line1 || '';
+                document.getElementById('editAddressLine2').value = user.address?.line2 || '';
+                document.getElementById('editCity').value = user.address?.city || '';
+                document.getElementById('editPostcode').value = user.address?.postcode || '';
+                
+                // Emergency contact fields
+                document.getElementById('editEmergencyName').value = user.emergency_contact?.name || '';
+                document.getElementById('editEmergencyPhone').value = user.emergency_contact?.phone || '';
+                document.getElementById('editEmergencyRelationship').value = user.emergency_contact?.relationship || '';
+                
+                // Show modal
+                document.getElementById('editUserModal').classList.add('show');
+                
+            } catch (error) {
+                console.error('Error opening edit modal:', error);
+                showError('Failed to load user data');
+            }
+        }
+        
+        // Close edit modal
+        function closeEditModal() {
+            document.getElementById('editUserModal').classList.remove('show');
+        }
+        
+        // Close modal when clicking outside
+        document.getElementById('editUserModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeEditModal();
+            }
+        });
+        
+        // Handle edit form submission
+        document.getElementById('editUserForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const token = localStorage.getItem('outreachToken') || localStorage.getItem('outreach_token');
+            if (!token) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            const button = document.getElementById('saveUserBtn');
+            const originalText = button.innerHTML;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            button.disabled = true;
+            
+            const userId = document.getElementById('editUserId').value;
+            
+            const userData = {
+                userId: userId,
+                email: document.getElementById('editEmail').value,
+                full_name: document.getElementById('editFullName').value,
+                role: document.getElementById('editRole').value,
+                date_of_birth: document.getElementById('editDateOfBirth').value || null,
+                status: document.getElementById('editStatus').value,
+                address_line1: document.getElementById('editAddressLine1').value || null,
+                address_line2: document.getElementById('editAddressLine2').value || null,
+                city: document.getElementById('editCity').value || null,
+                postcode: document.getElementById('editPostcode').value || null,
+                emergency_contact_name: document.getElementById('editEmergencyName').value || null,
+                emergency_contact_phone: document.getElementById('editEmergencyPhone').value || null,
+                emergency_contact_relationship: document.getElementById('editEmergencyRelationship').value || null
+            };
+            
+            try {
+                const response = await fetch('/api/admin/update-user', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
+                    body: JSON.stringify(userData)
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showSuccess('User updated successfully!');
+                    closeEditModal();
+                    // Reload users list
+                    loadUsers();
+                } else {
+                    showError(data.message || 'Failed to update user');
+                }
+            } catch (error) {
+                console.error('Error updating user:', error);
+                showError('An error occurred while updating the user');
+            } finally {
+                button.innerHTML = originalText;
+                button.disabled = false;
+            }
+        });
+        
+        // Activity log functionality
+        function loadActivityLogs(activityLogs) {
+            const loading = document.getElementById('activityLoading');
+            const noActivity = document.getElementById('noActivityMessage');
+            const activityList = document.getElementById('activityList');
+            
+            loading.style.display = 'none';
+            
+            if (!activityLogs || activityLogs.length === 0) {
+                noActivity.style.display = 'block';
+                activityList.style.display = 'none';
+                return;
+            }
+            
+            noActivity.style.display = 'none';
+            activityList.style.display = 'block';
+            
+            // Sort by timestamp, newest first
+            const sortedLogs = activityLogs.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            
+            activityList.innerHTML = sortedLogs.map(log => {
+                const icon = getActivityIcon(log.action);
+                const timeAgo = formatTimeAgo(log.timestamp);
+                const user = currentUsers.find(u => u.id === log.user_id);
+                const userName = user ? user.username : 'Unknown User';
+                
+                return `
+                    <div class="activity-item">
+                        <div class="activity-icon ${log.action}">
+                            <i class="fas ${icon}"></i>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-action">${formatActivityAction(log.action, userName)}</div>
+                            <div class="activity-details">${log.details || ''}</div>
+                            <div class="activity-time">${timeAgo}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function getActivityIcon(action) {
+            const icons = {
+                'login': 'fa-sign-in-alt',
+                'logout': 'fa-sign-out-alt',
+                'user_created': 'fa-user-plus',
+                'user_updated': 'fa-user-edit',
+                'password_change': 'fa-key',
+                'password_setup': 'fa-unlock-alt'
+            };
+            return icons[action] || 'fa-info-circle';
+        }
+        
+        function formatActivityAction(action, userName) {
+            const actions = {
+                'login': `<span class="activity-user">${userName}</span> logged in`,
+                'logout': `<span class="activity-user">${userName}</span> logged out`,
+                'user_created': `New user <span class="activity-user">${userName}</span> was created`,
+                'user_updated': `User <span class="activity-user">${userName}</span> was updated`,
+                'password_change': `<span class="activity-user">${userName}</span> changed their password`,
+                'password_setup': `<span class="activity-user">${userName}</span> completed initial password setup`
+            };
+            return actions[action] || `<span class="activity-user">${userName}</span> performed ${action}`;
+        }
+        
+        function formatTimeAgo(timestamp) {
+            const now = new Date();
+            const time = new Date(timestamp);
+            const diffMs = now - time;
+            const diffMins = Math.floor(diffMs / 60000);
+            const diffHours = Math.floor(diffMs / 3600000);
+            const diffDays = Math.floor(diffMs / 86400000);
+            
+            if (diffMins < 1) return 'Just now';
+            if (diffMins < 60) return `${diffMins} minute${diffMins > 1 ? 's' : ''} ago`;
+            if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+            if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+            
+            return time.toLocaleDateString('en-GB', {
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
         }
         
         function toggleUser(userId) {
@@ -1163,8 +1740,8 @@
             }
         });
         
-        // Load users on page load
-        loadUsers();
+        // Initialize page on load
+        initializePage();
     </script>
 </body>
 </html>

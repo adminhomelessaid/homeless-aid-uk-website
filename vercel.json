@@ -20,6 +20,15 @@
     },
     "api/auth/update-profile.js": {
       "maxDuration": 10
+    },
+    "api/admin/list-users.js": {
+      "maxDuration": 10
+    },
+    "api/admin/update-user.js": {
+      "maxDuration": 10
+    },
+    "api/auth/verify.js": {
+      "maxDuration": 10
     }
   },
   "rewrites": [
