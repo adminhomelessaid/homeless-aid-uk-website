@@ -89,7 +89,18 @@ module.exports = async (req, res) => {
         }
         
         // Initialize Supabase client
-        const supabase = createSupabaseClient();
+        let supabase;
+        try {
+            supabase = createSupabaseClient();
+            console.log('Supabase client created successfully');
+        } catch (supabaseError) {
+            console.error('Failed to create Supabase client:', supabaseError);
+            return res.status(500).json({ 
+                success: false, 
+                message: 'Database connection failed',
+                error: supabaseError.message
+            });
+        }
         
         // Check if username already exists
         const { data: existingUsername } = await supabase
@@ -133,6 +144,11 @@ module.exports = async (req, res) => {
             created_by: decoded.id
         };
         
+        console.log('Attempting to create user:', {
+            ...newUser,
+            invitation_token: '***hidden***' // Don't log sensitive token
+        });
+        
         const { data: createdUser, error } = await supabase
             .from('outreach_users')
             .insert([newUser])
@@ -143,7 +159,11 @@ module.exports = async (req, res) => {
             console.error('Database error:', error);
             return res.status(500).json({ 
                 success: false, 
-                message: 'Failed to create user' 
+                message: 'Failed to create user',
+                error: error.message,
+                details: error.details,
+                hint: error.hint,
+                code: error.code
             });
         }
         
