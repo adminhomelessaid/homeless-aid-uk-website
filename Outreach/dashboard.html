@@ -1458,32 +1458,72 @@
         const navBackdrop = document.getElementById('navBackdrop');
         const closeMenu = document.getElementById('closeMenu');
         
-        // Open menu
-        mobileMenuToggle.addEventListener('click', function(e) {
-            e.stopPropagation();
-            navLinks.classList.add('active');
-            navBackdrop.classList.add('active');
-            document.body.style.overflow = 'hidden'; // Prevent body scroll
-        });
-        
         // Close menu function
         function closeNavMenu() {
-            navLinks.classList.remove('active');
-            navBackdrop.classList.remove('active');
-            document.body.style.overflow = ''; // Restore body scroll
+            console.log('Closing nav menu'); // Debug log
+            if (navLinks) navLinks.classList.remove('active');
+            if (navBackdrop) navBackdrop.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+        
+        // Open menu
+        if (mobileMenuToggle) {
+            mobileMenuToggle.addEventListener('click', function(e) {
+                e.stopPropagation();
+                console.log('Opening nav menu'); // Debug log
+                if (navLinks) navLinks.classList.add('active');
+                if (navBackdrop) navBackdrop.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            });
         }
         
         // Close menu via close button
-        closeMenu.addEventListener('click', closeNavMenu);
+        if (closeMenu) {
+            closeMenu.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Close button clicked'); // Debug log
+                closeNavMenu();
+            });
+        }
         
         // Close menu when clicking backdrop
-        navBackdrop.addEventListener('click', closeNavMenu);
+        if (navBackdrop) {
+            navBackdrop.addEventListener('click', function(e) {
+                console.log('Backdrop clicked'); // Debug log
+                closeNavMenu();
+            });
+        }
         
         // Close menu when clicking on a nav link
-        const navLinkElements = navLinks.querySelectorAll('a');
-        navLinkElements.forEach(link => {
-            link.addEventListener('click', closeNavMenu);
+        if (navLinks) {
+            const navLinkElements = navLinks.querySelectorAll('a');
+            navLinkElements.forEach(link => {
+                link.addEventListener('click', function() {
+                    console.log('Nav link clicked'); // Debug log
+                    closeNavMenu();
+                });
+            });
+        }
+        
+        // Emergency close - ESC key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                console.log('ESC key pressed'); // Debug log
+                closeNavMenu();
+            }
         });
+        
+        // Global close function for debugging
+        window.forceCloseMenu = function() {
+            console.log('Force closing menu');
+            const nav = document.getElementById('navLinks');
+            const backdrop = document.getElementById('navBackdrop');
+            if (nav) nav.classList.remove('active');
+            if (backdrop) backdrop.classList.remove('active');
+            document.body.style.overflow = '';
+            console.log('Menu should be closed now');
+        };
         
         // Logout functionality
         document.getElementById('logoutButton').addEventListener('click', async () => {
