@@ -1,6 +1,8 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { createClient } = require('@supabase/supabase-js');
+const { createSupabaseClient } = require('../../utils/supabase');
+const AuthUtils = require('../../utils/auth');
 
 module.exports = async (req, res) => {
     // CORS
@@ -51,7 +53,69 @@ module.exports = async (req, res) => {
             });
         }
         
-        return res.status(401).json({ success: false, message: 'Invalid credentials' });
+        // Database authentication for other users
+        try {
+            const supabase = createSupabaseClient();
+            
+            // Find user in database
+            const { data: user, error } = await supabase
+                .from('outreach_users')
+                .select('id, username, email, full_name, password_hash, role, is_active')
+                .eq('username', username.toLowerCase())
+                .eq('is_active', true)
+                .single();
+            
+            if (error || !user || !user.password_hash) {
+                return res.status(401).json({ success: false, message: 'Invalid credentials' });
+            }
+            
+            // Verify password
+            const isValidPassword = await AuthUtils.verifyPassword(password, user.password_hash);
+            
+            if (!isValidPassword) {
+                return res.status(401).json({ success: false, message: 'Invalid credentials' });
+            }
+            
+            // Generate JWT for database user
+            const jwtSecret = process.env.JWT_SECRET || 'temporary-secret-key';
+            const token = jwt.sign(
+                { 
+                    id: user.id,
+                    username: user.username,
+                    name: user.full_name,
+                    role: user.role
+                },
+                jwtSecret,
+                { 
+                    expiresIn: '4h',
+                    issuer: 'homelessaid.co.uk'
+                }
+            );
+            
+            // Update last login time
+            await supabase
+                .from('outreach_users')
+                .update({ last_login: new Date().toISOString() })
+                .eq('id', user.id);
+            
+            return res.status(200).json({
+                success: true,
+                message: 'Login successful',
+                token: token,
+                user: {
+                    id: user.id,
+                    username: user.username,
+                    name: user.full_name,
+                    email: user.email,
+                    role: user.role,
+                    status: 'active'
+                }
+            });
+            
+        } catch (dbError) {
+            console.error('Database authentication error:', dbError);
+            return res.status(401).json({ success: false, message: 'Invalid credentials' });
+        }
         
     } catch (error) {
         // Return error details for debugging
