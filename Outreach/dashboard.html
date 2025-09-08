@@ -848,7 +848,7 @@
             submitButton.innerHTML = '<i class="fas fa-spinner"></i> Submitting...';
             
             try {
-                const response = await fetch('/api/attendance/log', {
+                const response = await fetch('/api/attendance/index', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -909,7 +909,7 @@
         // Load statistics
         async function loadStats() {
             try {
-                const response = await fetch('/api/attendance/stats', {
+                const response = await fetch('/api/attendance/index?action=stats', {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -929,7 +929,7 @@
         // Load recent logs
         async function loadRecentLogs() {
             try {
-                const response = await fetch('/api/attendance/list?limit=10', {
+                const response = await fetch('/api/attendance/index?limit=10', {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }

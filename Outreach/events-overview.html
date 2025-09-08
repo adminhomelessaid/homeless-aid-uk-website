@@ -638,7 +638,7 @@
         // Load all events from API
         async function loadAllEvents() {
             try {
-                const response = await fetch('/api/attendance/list?limit=1000', {
+                const response = await fetch('/api/attendance/index?limit=1000', {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }

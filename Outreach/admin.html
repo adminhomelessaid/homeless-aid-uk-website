@@ -1320,8 +1320,12 @@
                 }
             } catch (error) {
                 console.error('Error loading users:', error);
-                // For now, show demo data since API doesn't exist yet
-                showDemoData();
+                
+                // Show the actual error instead of falling back to demo data
+                showError(`Failed to load users from database: ${error.message}`);
+                
+                // Still show no users message so the table isn't empty
+                noUsers.style.display = 'block';
             } finally {
                 loading.classList.remove('show');
             }

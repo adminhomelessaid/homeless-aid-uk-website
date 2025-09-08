@@ -300,7 +300,7 @@ editForm.addEventListener('click', function(e) {
 async function loadAttendanceData() {
     try {
         // Load attendance statistics
-        const statsResponse = await fetch('/api/attendance/stats');
+        const statsResponse = await fetch('/api/attendance/index?action=stats');
         if (statsResponse.ok) {
             const stats = await statsResponse.json();
             document.getElementById('attendanceToday').textContent = stats.today || 0;
@@ -310,7 +310,7 @@ async function loadAttendanceData() {
         }
         
         // Load attendance logs
-        const logsResponse = await fetch('/api/attendance/list?limit=50');
+        const logsResponse = await fetch('/api/attendance/index?limit=50');
         if (logsResponse.ok) {
             const data = await logsResponse.json();
             renderAttendanceTable(data.logs || []);
@@ -352,7 +352,7 @@ function renderAttendanceTable(logs) {
 // Export attendance data
 document.getElementById('exportAttendanceBtn')?.addEventListener('click', async function() {
     try {
-        const response = await fetch('/api/attendance/list?limit=9999');
+        const response = await fetch('/api/attendance/index?limit=9999');
         if (response.ok) {
             const data = await response.json();
             const csv = convertToCSV(data.logs);
