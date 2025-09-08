@@ -98,6 +98,19 @@ module.exports = async (req, res) => {
                 .update({ last_login: new Date().toISOString() })
                 .eq('id', user.id);
             
+            // Log login activity
+            try {
+                await AuthUtils.logActivity(
+                    supabase,
+                    user.id,
+                    'user_login',
+                    { username: user.username, role: user.role },
+                    req
+                );
+            } catch (logError) {
+                console.log('Activity logging failed (non-critical):', logError.message);
+            }
+            
             return res.status(200).json({
                 success: true,
                 message: 'Login successful',

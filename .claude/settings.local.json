@@ -58,7 +58,9 @@
       "Bash(del nul)",
       "Bash(echo:*)",
       "Bash(del test-auth.js)",
-      "Bash(del \"C:\\Users\\Ben-Work\\Desktop\\Claude\\Website\\Homeless Aid UK\\test-auth.js\")"
+      "Bash(del \"C:\\Users\\Ben-Work\\Desktop\\Claude\\Website\\Homeless Aid UK\\test-auth.js\")",
+      "Bash(export:*)",
+      "Bash(export JWT_SECRET=\"-.]9KLLv:SpUf[P9-DNmpk%@F7nMSi!r\")"
     ],
     "deny": [],
     "ask": []

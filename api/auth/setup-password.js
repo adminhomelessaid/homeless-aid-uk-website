@@ -86,7 +86,8 @@ module.exports = async (req, res) => {
                 password_hash: passwordHash,
                 email_verified: true,
                 password_set_at: new Date().toISOString(),
-                invitation_token: null // Remove token after use
+                invitation_token: null, // Remove token after use
+                status: 'active' // Set status to active after password setup
             })
             .eq('id', user.id);
         

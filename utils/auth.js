@@ -167,6 +167,26 @@ class AuthUtils {
     return password.split('').sort(() => Math.random() - 0.5).join('');
   }
 
+  // Activity logging for user actions
+  static async logActivity(supabase, userId, action, details, req) {
+    try {
+      const activityEntry = {
+        user_id: userId,
+        action,
+        details,
+        ip_address: req.headers['x-forwarded-for'] || req.connection.remoteAddress,
+        user_agent: req.headers['user-agent'],
+        timestamp: new Date().toISOString()
+      };
+
+      await supabase
+        .from('user_activity_log')
+        .insert([activityEntry]);
+    } catch (error) {
+      console.error('Failed to log activity:', error);
+    }
+  }
+
   // Audit logging
   static async logAuditAction(supabase, adminUserId, targetUserId, action, details, req) {
     try {
