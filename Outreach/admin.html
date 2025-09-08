@@ -1265,7 +1265,16 @@
                 });
                 
                 if (!response.ok) {
-                    throw new Error('Failed to load users');
+                    // Try to get detailed error from server
+                    let errorDetail = 'Failed to load users';
+                    try {
+                        const errorData = await response.json();
+                        errorDetail = errorData.message || errorData.error || errorDetail;
+                        console.error('API Error Details:', errorData);
+                    } catch (parseError) {
+                        console.error('Could not parse error response:', parseError);
+                    }
+                    throw new Error(errorDetail);
                 }
                 
                 const data = await response.json();
