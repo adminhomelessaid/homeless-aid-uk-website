@@ -19,7 +19,7 @@ class AuthUtils {
   }
 
   static generateJWT(user) {
-    const jwtSecret = process.env.JWT_SECRET || 'development_secret_key_change_in_production';
+    const jwtSecret = process.env.JWT_SECRET || 'temporary-secret-key';
     
     const payload = {
       id: user.id,
@@ -37,7 +37,7 @@ class AuthUtils {
   }
 
   static verifyJWT(token) {
-    const jwtSecret = process.env.JWT_SECRET || 'development_secret_key_change_in_production';
+    const jwtSecret = process.env.JWT_SECRET || 'temporary-secret-key';
     
     return jwt.verify(token, jwtSecret, {
       issuer: 'homelessaid.co.uk'

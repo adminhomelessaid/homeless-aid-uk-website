@@ -30,7 +30,10 @@ module.exports = async (req, res) => {
                     role: 'admin'
                 },
                 jwtSecret,
-                { expiresIn: '4h' }
+                { 
+                    expiresIn: '4h',
+                    issuer: 'homelessaid.co.uk'
+                }
             );
             
             return res.status(200).json({
