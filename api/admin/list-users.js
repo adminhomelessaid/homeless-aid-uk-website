@@ -21,6 +21,14 @@ module.exports = async (req, res) => {
     }
     
     try {
+        // Log environment check for debugging
+        console.log('LIST USERS - Environment check:', {
+            SUPABASE_URL: !!process.env.SUPABASE_URL,
+            NEXT_PUBLIC_SUPABASE_URL: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
+            SUPABASE_ANON_KEY: !!process.env.SUPABASE_ANON_KEY,
+            NEXT_PUBLIC_SUPABASE_ANON_KEY: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+            JWT_SECRET: !!process.env.JWT_SECRET
+        });
         // Verify authentication
         const authHeader = req.headers.authorization;
         
@@ -52,7 +60,18 @@ module.exports = async (req, res) => {
         }
         
         // Initialize Supabase client
-        const supabase = createSupabaseClient();
+        let supabase;
+        try {
+            supabase = createSupabaseClient();
+            console.log('Supabase client created successfully');
+        } catch (supabaseError) {
+            console.error('Failed to create Supabase client:', supabaseError);
+            return res.status(500).json({ 
+                success: false, 
+                message: `Database connection failed: ${supabaseError.message}`,
+                error: supabaseError.message
+            });
+        }
         
         // Fetch all users from database
         const { data: users, error } = await supabase
@@ -81,11 +100,19 @@ module.exports = async (req, res) => {
             .order('created_at', { ascending: false });
         
         if (error) {
-            console.error('Database error:', error);
+            console.error('Database error details:', {
+                error: error,
+                message: error.message,
+                details: error.details,
+                code: error.code,
+                hint: error.hint
+            });
             return res.status(500).json({ 
                 success: false, 
-                message: 'Failed to fetch users',
-                error: error.message 
+                message: `Database error: ${error.message}`,
+                error: error.message,
+                code: error.code,
+                details: error.details
             });
         }
         
