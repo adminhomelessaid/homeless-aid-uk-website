@@ -20,6 +20,12 @@
     },
     "api/auth/change-password.js": {
       "maxDuration": 10
+    },
+    "api/auth/logout.js": {
+      "maxDuration": 10
+    },
+    "api/auth/update-profile.js": {
+      "maxDuration": 10
     }
   },
   "rewrites": [
