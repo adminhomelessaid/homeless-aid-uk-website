@@ -779,10 +779,7 @@
             button.disabled = true;
             
             try {
-                showInfo('Password change functionality coming soon...');
-                // TODO: Implement password change API
-                /*
-                const response = await fetch('/api/account/change-password', {
+                const response = await fetch('/api/auth/change-password', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -797,13 +794,12 @@
                 const data = await response.json();
                 
                 if (response.ok) {
-                    showSuccess('Password changed successfully');
+                    showSuccess('Password changed successfully!');
                     document.getElementById('passwordForm').reset();
                     document.getElementById('passwordStrength').style.display = 'none';
                 } else {
                     showError(data.message || 'Failed to change password');
                 }
-                */
             } catch (error) {
                 console.error('Error changing password:', error);
                 showError('An error occurred while changing password');
