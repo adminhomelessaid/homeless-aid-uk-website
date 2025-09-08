@@ -280,6 +280,43 @@
             margin-bottom: 1rem;
         }
         
+        /* Desktop Navigation - Hide mobile menu toggle */
+        .mobile-menu-toggle {
+            display: none;
+        }
+        
+        .nav-links {
+            display: flex !important;
+            position: static !important;
+            width: auto !important;
+            height: auto !important;
+            background: transparent !important;
+            flex-direction: row !important;
+            justify-content: flex-start !important;
+            align-items: center !important;
+            gap: 0.5rem !important;
+        }
+        
+        .nav-links .close-menu {
+            display: none;
+        }
+        
+        .nav-links a {
+            color: white !important;
+            text-decoration: none !important;
+            padding: 0.5rem 0.75rem !important;
+            border-radius: 6px !important;
+            transition: background-color 0.3s ease !important;
+            font-size: 0.9rem !important;
+            background: transparent !important;
+            min-width: auto !important;
+        }
+        
+        .nav-links a:hover,
+        .nav-links a.active {
+            background: rgba(255, 255, 255, 0.2) !important;
+        }
+        
         /* Mobile-First Responsive Design */
         @media (max-width: 768px) {
             body {
@@ -305,18 +342,59 @@
                 width: 100%;
                 gap: 0.75rem;
                 align-items: center;
-                order: -1; /* Move entire header-right to top */
+            }
+            
+            /* Hamburger Menu */
+            .mobile-menu-toggle {
+                display: block;
+                position: fixed;
+                top: 1rem;
+                right: 1rem;
+                z-index: 1000;
+                background: #3b82f6;
+                color: white;
+                border: none;
+                border-radius: 6px;
+                padding: 0.75rem;
+                cursor: pointer;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+                font-size: 1.2rem;
+            }
+            
+            .mobile-menu-toggle:hover {
+                background: #2563eb;
             }
             
             .nav-links {
-                display: flex;
-                flex-wrap: wrap;
-                justify-content: center;
-                gap: 0.4rem;
-                margin-right: 0 !important;
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
                 width: 100%;
-                order: 1; /* Nav links first */
-                margin-bottom: 0.75rem;
+                height: 100vh;
+                background: rgba(0, 0, 0, 0.95);
+                z-index: 999;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                gap: 2rem;
+                margin-right: 0;
+            }
+            
+            .nav-links.active {
+                display: flex;
+            }
+            
+            .nav-links .close-menu {
+                position: absolute;
+                top: 1rem;
+                right: 1rem;
+                background: none;
+                border: none;
+                color: white;
+                font-size: 2rem;
+                cursor: pointer;
+                padding: 0.5rem;
             }
             
             .header-left {
@@ -346,12 +424,25 @@
             }
             
             .nav-links a {
-                font-size: 0.8rem !important;
-                padding: 0.6rem 0.8rem !important;
-                border-radius: 6px !important;
-                min-width: 80px;
+                color: white !important;
+                font-size: 1.2rem !important;
+                padding: 1rem 2rem !important;
+                border-radius: 8px !important;
+                text-decoration: none !important;
+                background: rgba(255, 255, 255, 0.1) !important;
+                min-width: 200px;
                 text-align: center;
-                flex: 0 1 auto;
+                transition: all 0.3s ease !important;
+            }
+            
+            .nav-links a:hover {
+                background: rgba(255, 255, 255, 0.2) !important;
+                transform: translateY(-2px);
+            }
+            
+            /* Show hamburger menu on mobile */
+            .mobile-menu-toggle {
+                display: block;
             }
             
             .user-info {
@@ -529,23 +620,31 @@
                 </div>
             </div>
             <div class="header-right">
-                <div class="nav-links" style="display: flex; gap: 0.5rem; margin-right: 1rem; flex-wrap: wrap;">
-                    <a href="/" style="color: white; text-decoration: none; padding: 0.5rem 0.75rem; border-radius: 6px; transition: background-color 0.3s ease; font-size: 0.9rem;">
+                <!-- Mobile Menu Toggle -->
+                <button class="mobile-menu-toggle" id="mobileMenuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                
+                <!-- Navigation Menu -->
+                <div class="nav-links" id="navLinks" style="display: flex; gap: 0.5rem; margin-right: 1rem; flex-wrap: wrap;">
+                    <button class="close-menu" id="closeMenu">&times;</button>
+                    <a href="/">
                         <i class="fas fa-home"></i> Home
                     </a>
-                    <a href="dashboard.html" style="color: white; text-decoration: none; padding: 0.5rem 0.75rem; border-radius: 6px; background: rgba(255, 255, 255, 0.2); font-size: 0.9rem;">
+                    <a href="dashboard.html" class="active">
                         <i class="fas fa-tachometer-alt"></i> Dashboard
                     </a>
-                    <a href="events-overview.html" style="color: white; text-decoration: none; padding: 0.5rem 0.75rem; border-radius: 6px; transition: background-color 0.3s ease; font-size: 0.9rem;">
+                    <a href="events-overview.html">
                         <i class="fas fa-chart-bar"></i> Overview
                     </a>
-                    <a href="admin.html" id="adminLink" style="color: white; text-decoration: none; padding: 0.5rem 0.75rem; border-radius: 6px; transition: background-color 0.3s ease; display: none; font-size: 0.9rem;">
+                    <a href="admin.html" id="adminLink" style="display: none;">
                         <i class="fas fa-user-shield"></i> Admin
                     </a>
-                    <a href="account.html" style="color: white; text-decoration: none; padding: 0.5rem 0.75rem; border-radius: 6px; transition: background-color 0.3s ease; font-size: 0.9rem;">
+                    <a href="account.html">
                         <i class="fas fa-user-cog"></i> Account
                     </a>
                 </div>
+                
                 <div class="user-info">
                     <div class="user-name" id="userName">Loading...</div>
                     <div class="user-role" id="userRole">Loading...</div>
@@ -1256,6 +1355,34 @@
         // Load initial data
         loadStats();
         loadRecentLogs();
+        
+        // Mobile Menu Toggle
+        const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+        const navLinks = document.getElementById('navLinks');
+        const closeMenu = document.getElementById('closeMenu');
+        
+        mobileMenuToggle.addEventListener('click', function() {
+            navLinks.classList.add('active');
+        });
+        
+        closeMenu.addEventListener('click', function() {
+            navLinks.classList.remove('active');
+        });
+        
+        // Close menu when clicking on a nav link
+        const navLinkElements = navLinks.querySelectorAll('a');
+        navLinkElements.forEach(link => {
+            link.addEventListener('click', function() {
+                navLinks.classList.remove('active');
+            });
+        });
+        
+        // Close menu when clicking outside
+        document.addEventListener('click', function(event) {
+            if (!navLinks.contains(event.target) && !mobileMenuToggle.contains(event.target)) {
+                navLinks.classList.remove('active');
+            }
+        });
         
         // Logout functionality
         document.getElementById('logoutButton').addEventListener('click', async () => {
