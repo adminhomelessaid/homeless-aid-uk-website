@@ -73,7 +73,7 @@ module.exports = async (req, res) => {
             });
         }
         
-        // Fetch all users from database
+        // Fetch all users from database - now all columns exist
         const { data: users, error } = await supabase
             .from('outreach_users')
             .select(`
@@ -87,6 +87,7 @@ module.exports = async (req, res) => {
                 created_at,
                 updated_at,
                 last_login,
+                password_hash,
                 date_of_birth,
                 address_line1,
                 address_line2,
@@ -116,7 +117,7 @@ module.exports = async (req, res) => {
             });
         }
         
-        // Format users for frontend
+        // Format users for frontend - using all database columns
         const formattedUsers = users.map(user => ({
             id: user.id,
             username: user.username,
@@ -124,12 +125,13 @@ module.exports = async (req, res) => {
             full_name: user.full_name || 'No name set',
             role: user.role,
             is_active: user.is_active,
-            email_verified: user.email_verified,
+            email_verified: user.email_verified || false,
             status: user.status || (user.is_active ? 'active' : 'inactive'),
             created_at: user.created_at,
             updated_at: user.updated_at,
             last_login: user.last_login,
-            // Additional profile fields
+            password_hash: !!user.password_hash, // Boolean to show if password is set
+            // Additional profile fields from database
             date_of_birth: user.date_of_birth,
             address: {
                 line1: user.address_line1,
