@@ -325,10 +325,16 @@
                     <a href="events-overview.html" style="color: white; text-decoration: none; padding: 0.5rem 1rem; border-radius: 6px; transition: background-color 0.3s ease;">
                         <i class="fas fa-chart-bar"></i> Overview
                     </a>
+                    <a href="admin.html" id="adminLink" style="color: white; text-decoration: none; padding: 0.5rem 1rem; border-radius: 6px; transition: background-color 0.3s ease; display: none;">
+                        <i class="fas fa-user-shield"></i> Admin
+                    </a>
+                    <a href="account.html" style="color: white; text-decoration: none; padding: 0.5rem 1rem; border-radius: 6px; transition: background-color 0.3s ease;">
+                        <i class="fas fa-user-cog"></i> Account
+                    </a>
                 </div>
                 <div class="user-info">
                     <div class="user-name" id="userName">Loading...</div>
-                    <div class="user-role">Lead Volunteer</div>
+                    <div class="user-role" id="userRole">Loading...</div>
                 </div>
                 <button class="logout-button" id="logoutButton">
                     <i class="fas fa-sign-out-alt"></i> Logout
@@ -662,9 +668,20 @@
     </style>
     
     <script>
-        // Check authentication on page load
-        const token = localStorage.getItem('outreach_token');
-        const user = JSON.parse(localStorage.getItem('outreach_user') || '{}');
+        // Check authentication on page load - support both token formats for compatibility
+        let token = localStorage.getItem('outreachToken') || localStorage.getItem('outreach_token');
+        let user = JSON.parse(localStorage.getItem('outreach_user') || '{}');
+        
+        // If using new format, parse JWT to get user info
+        if (localStorage.getItem('outreachToken') && !user.name) {
+            try {
+                const base64Url = token.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                user = JSON.parse(window.atob(base64));
+            } catch (e) {
+                console.error('Error parsing JWT:', e);
+            }
+        }
         
         if (!token) {
             window.location.href = '/Outreach/login.html';
@@ -678,17 +695,29 @@
                 if (!response.ok) {
                     localStorage.removeItem('outreach_token');
                     localStorage.removeItem('outreach_user');
+                    localStorage.removeItem('outreachToken');
                     window.location.href = '/Outreach/login.html';
                 }
             }).catch(() => {
                 localStorage.removeItem('outreach_token');
                 localStorage.removeItem('outreach_user');
+                localStorage.removeItem('outreachToken');
                 window.location.href = '/Outreach/login.html';
             });
         }
         
-        // Set user name
-        document.getElementById('userName').textContent = user.name || 'Lead Volunteer';
+        // Set user name and role
+        document.getElementById('userName').textContent = user.name || user.username || 'Lead Volunteer';
+        
+        // Update user role and show admin link if user is admin
+        const roleText = user.role === 'admin' ? 'Administrator' : 
+                        user.role === 'team_lead' ? 'Team Lead' : 'Volunteer';
+        document.getElementById('userRole').textContent = roleText;
+        
+        // Show admin link if user is admin
+        if (user.role === 'admin') {
+            document.getElementById('adminLink').style.display = 'inline-block';
+        }
         
         // Set today's date
         const today = new Date().toISOString().split('T')[0];

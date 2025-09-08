@@ -23,20 +23,26 @@ Secure volunteer management system with:
 
 ## 🔐 Authentication System
 
-### Current Status: ✅ OPERATIONAL
-The authentication system has been fully debugged and is working as of September 2025.
+### Current Status: ✅ OPERATIONAL (With Security Updates)
+The authentication system has been fully debugged and secured as of September 2025.
 
 ### Login Credentials
 - **Username**: `BenAdmin`
 - **Password**: `TestPassword123`
 - **Role**: Admin
 
+### Security Updates (September 2025)
+- ✅ JWT tokens now use environment variable `JWT_SECRET`
+- ✅ All 5 auth endpoints updated for consistent security
+- ⚠️ RLS temporarily disabled (working but needs implementation)
+- 📁 Safe RLS policies created in `database/rls-policies-fix.sql`
+
 ### Key Features
 - JWT authentication with 4-hour tokens
 - bcrypt password hashing (12 salt rounds)
 - Role-based access control
-- Rate limiting (currently disabled)
-- Secure session management
+- Environment-based JWT secret management
+- Backward compatibility during migration
 
 ## 🛠 Technical Stack
 

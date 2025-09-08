@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Settings - Homeless Aid UK</title>
+    <meta name="description" content="Manage your account settings and profile information">
+    <link rel="stylesheet" href="../styles.css?v=2024.12.19.1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="../Branding/HomelessAidUKLogo.png" type="image/png">
+    
+    <style>
+        .dashboard-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .header-logo {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: white;
+            padding: 2px;
+        }
+        
+        .header-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        
+        .header-subtitle {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-top: 0.25rem;
+        }
+        
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+            margin-right: 1rem;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            transition: background-color 0.3s ease;
+        }
+        
+        .nav-links a:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .nav-links a.active {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .user-info {
+            text-align: right;
+        }
+        
+        .user-name {
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        
+        .user-role {
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+        
+        .logout-button {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .logout-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-1px);
+        }
+        
+        .account-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        
+        .section-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            margin-bottom: 2rem;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+            padding-bottom: 1rem;
+        }
+        
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #111827;
+        }
+        
+        .profile-section {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+            font-weight: 700;
+        }
+        
+        .profile-info {
+            flex: 1;
+        }
+        
+        .profile-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 0.25rem;
+        }
+        
+        .profile-email {
+            color: #6b7280;
+            margin-bottom: 0.25rem;
+        }
+        
+        .profile-role {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            background: #dbeafe;
+            color: #2563eb;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+        
+        .form-label {
+            font-weight: 500;
+            color: #374151;
+            font-size: 0.95rem;
+        }
+        
+        .form-input {
+            padding: 0.75rem 1rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 0.95rem;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .form-input:disabled {
+            background: #f9fafb;
+            color: #6b7280;
+            cursor: not-allowed;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover:not(:disabled) {
+            background: #5a67d8;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-primary:disabled {
+            background: #d1d5db;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: #6b7280;
+            border: 1px solid #e5e7eb;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-left: 1rem;
+        }
+        
+        .btn-secondary:hover {
+            background: #f9fafb;
+        }
+        
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: none;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .alert.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .alert.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        .alert.show {
+            display: flex;
+        }
+        
+        .password-strength {
+            margin-top: 0.5rem;
+            padding: 0.5rem;
+            border-radius: 6px;
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .strength-indicator {
+            height: 4px;
+            border-radius: 2px;
+            background: #e5e7eb;
+            margin-bottom: 0.5rem;
+            overflow: hidden;
+        }
+        
+        .strength-bar {
+            height: 100%;
+            transition: all 0.3s ease;
+            border-radius: 2px;
+        }
+        
+        .strength-bar.weak {
+            width: 33%;
+            background: #ef4444;
+        }
+        
+        .strength-bar.medium {
+            width: 66%;
+            background: #f59e0b;
+        }
+        
+        .strength-bar.strong {
+            width: 100%;
+            background: #10b981;
+        }
+        
+        .strength-text {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+        
+        .security-info {
+            background: #fef3c7;
+            border: 1px solid #fbbf24;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .security-info h4 {
+            margin: 0 0 0.5rem 0;
+            color: #d97706;
+            font-size: 0.95rem;
+        }
+        
+        .security-info p {
+            margin: 0;
+            color: #92400e;
+            font-size: 0.875rem;
+        }
+        
+        .last-login {
+            background: #f9fafb;
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+            color: #6b7280;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header-container {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+            
+            .header-right {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            .nav-links {
+                flex-direction: column;
+                width: 100%;
+                margin-right: 0;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .profile-section {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .account-container {
+                padding: 0 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Dashboard Header -->
+    <header class="dashboard-header">
+        <div class="header-container">
+            <div class="header-left">
+                <img src="../Branding/HomelessAidUKLogo.png" alt="Homeless Aid UK" class="header-logo">
+                <div>
+                    <h1 class="header-title">Account Settings</h1>
+                    <p class="header-subtitle">Manage Your Profile</p>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="nav-links">
+                    <a href="dashboard.html">
+                        <i class="fas fa-tachometer-alt"></i> Dashboard
+                    </a>
+                    <a href="events-overview.html">
+                        <i class="fas fa-chart-bar"></i> Overview
+                    </a>
+                    <a href="admin.html" id="adminLink" style="display: none;">
+                        <i class="fas fa-user-shield"></i> Admin
+                    </a>
+                    <a href="account.html" class="active">
+                        <i class="fas fa-user-cog"></i> Account
+                    </a>
+                </div>
+                <div class="user-info">
+                    <div class="user-name" id="userName">Loading...</div>
+                    <div class="user-role" id="userRole">Loading...</div>
+                </div>
+                <button class="logout-button" id="logoutButton">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Account Content -->
+    <div class="account-container">
+        <!-- Alert Messages -->
+        <div class="alert success" id="successAlert">
+            <i class="fas fa-check-circle"></i>
+            <span id="successMessage"></span>
+        </div>
+        <div class="alert error" id="errorAlert">
+            <i class="fas fa-exclamation-circle"></i>
+            <span id="errorMessage"></span>
+        </div>
+        <div class="alert info" id="infoAlert">
+            <i class="fas fa-info-circle"></i>
+            <span id="infoMessage"></span>
+        </div>
+        
+        <!-- Profile Information -->
+        <div class="section-card">
+            <div class="section-header">
+                <h2 class="section-title">Profile Information</h2>
+            </div>
+            
+            <div class="profile-section">
+                <div class="profile-avatar" id="profileAvatar">BA</div>
+                <div class="profile-info">
+                    <div class="profile-name" id="profileName">Loading...</div>
+                    <div class="profile-email" id="profileEmail">loading@example.com</div>
+                    <span class="profile-role" id="profileRole">Loading...</span>
+                </div>
+            </div>
+            
+            <form id="profileForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label" for="username">Username</label>
+                        <input type="text" class="form-input" id="username" disabled>
+                        <small style="color: #6b7280;">Username cannot be changed</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="email">Email Address</label>
+                        <input type="email" class="form-input" id="email" disabled>
+                        <small style="color: #6b7280;">Contact admin to change email</small>
+                    </div>
+                    
+                    <div class="form-group full-width">
+                        <label class="form-label" for="fullName">Full Name</label>
+                        <input type="text" class="form-input" id="fullName" disabled>
+                        <small style="color: #6b7280;">Contact admin to change name</small>
+                    </div>
+                </div>
+                
+                <div class="security-info">
+                    <h4><i class="fas fa-shield-alt"></i> Profile Updates</h4>
+                    <p>For security reasons, profile information updates must be requested through an administrator. Contact your admin to change your username, email, or full name.</p>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Change Password -->
+        <div class="section-card">
+            <div class="section-header">
+                <h2 class="section-title">Change Password</h2>
+            </div>
+            
+            <form id="passwordForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label" for="currentPassword">Current Password</label>
+                        <input type="password" class="form-input" id="currentPassword" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="newPassword">New Password</label>
+                        <input type="password" class="form-input" id="newPassword" required>
+                        <div class="password-strength" id="passwordStrength" style="display: none;">
+                            <div class="strength-indicator">
+                                <div class="strength-bar" id="strengthBar"></div>
+                            </div>
+                            <div class="strength-text" id="strengthText"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="confirmPassword">Confirm New Password</label>
+                        <input type="password" class="form-input" id="confirmPassword" required>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 1.5rem;">
+                    <button type="submit" class="btn-primary" id="changePasswordBtn">
+                        <i class="fas fa-lock"></i> Change Password
+                    </button>
+                    <button type="button" class="btn-secondary" onclick="resetPasswordForm()">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                </div>
+                
+                <div style="margin-top: 1rem; padding: 1rem; background: #f9fafb; border-radius: 8px;">
+                    <h4 style="margin-bottom: 0.5rem; color: #374151;">Password Requirements:</h4>
+                    <ul style="color: #6b7280; line-height: 1.6; margin: 0;">
+                        <li>At least 8 characters long</li>
+                        <li>Include uppercase and lowercase letters</li>
+                        <li>Include at least one number</li>
+                        <li>Include at least one special character (!@#$%^&*)</li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Account Security -->
+        <div class="section-card">
+            <div class="section-header">
+                <h2 class="section-title">Account Security</h2>
+            </div>
+            
+            <div class="last-login">
+                <i class="fas fa-clock" style="color: #667eea; margin-right: 0.5rem;"></i>
+                <strong>Last Login:</strong> <span id="lastLogin">Loading...</span>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Check authentication - support both token formats for compatibility
+        let token = localStorage.getItem('outreachToken') || localStorage.getItem('outreach_token');
+        let user = JSON.parse(localStorage.getItem('outreach_user') || '{}');
+        
+        // If using new format, parse JWT to get user info
+        if (localStorage.getItem('outreachToken') && !user.name) {
+            try {
+                const base64Url = token.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                user = JSON.parse(window.atob(base64));
+            } catch (e) {
+                console.error('Error parsing JWT:', e);
+            }
+        }
+        
+        if (!token) {
+            window.location.href = 'login.html';
+        }
+        
+        // Update user info in header and profile
+        function updateProfileDisplay() {
+            const name = user.name || user.username || 'Unknown User';
+            const email = user.email || 'unknown@example.com';
+            const role = user.role || 'volunteer';
+            
+            // Header
+            document.getElementById('userName').textContent = name;
+            const roleText = role === 'admin' ? 'Administrator' : 
+                            role === 'team_lead' ? 'Team Lead' : 'Volunteer';
+            document.getElementById('userRole').textContent = roleText;
+            
+            // Show admin link if user is admin
+            if (role === 'admin') {
+                document.getElementById('adminLink').style.display = 'inline-block';
+            }
+            
+            // Profile section
+            document.getElementById('profileName').textContent = name;
+            document.getElementById('profileEmail').textContent = email;
+            document.getElementById('profileRole').textContent = roleText;
+            
+            // Avatar initials
+            const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+            document.getElementById('profileAvatar').textContent = initials;
+            
+            // Form fields
+            document.getElementById('username').value = user.username || '';
+            document.getElementById('email').value = email;
+            document.getElementById('fullName').value = name;
+            
+            // Last login
+            const lastLoginText = user.last_login ? 
+                new Date(user.last_login).toLocaleString() : 'Never recorded';
+            document.getElementById('lastLogin').textContent = lastLoginText;
+        }
+        
+        updateProfileDisplay();
+        
+        // Password strength checker
+        document.getElementById('newPassword').addEventListener('input', function() {
+            const password = this.value;
+            const strengthEl = document.getElementById('passwordStrength');
+            const barEl = document.getElementById('strengthBar');
+            const textEl = document.getElementById('strengthText');
+            
+            if (!password) {
+                strengthEl.style.display = 'none';
+                return;
+            }
+            
+            strengthEl.style.display = 'block';
+            
+            let score = 0;
+            let feedback = [];
+            
+            if (password.length >= 8) score++;
+            else feedback.push('At least 8 characters');
+            
+            if (/[A-Z]/.test(password)) score++;
+            else feedback.push('Uppercase letter');
+            
+            if (/[a-z]/.test(password)) score++;
+            else feedback.push('Lowercase letter');
+            
+            if (/[0-9]/.test(password)) score++;
+            else feedback.push('Number');
+            
+            if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) score++;
+            else feedback.push('Special character');
+            
+            barEl.className = 'strength-bar';
+            if (score < 3) {
+                barEl.classList.add('weak');
+                textEl.textContent = 'Weak - Missing: ' + feedback.join(', ');
+            } else if (score < 5) {
+                barEl.classList.add('medium');
+                textEl.textContent = 'Medium - Missing: ' + feedback.join(', ');
+            } else {
+                barEl.classList.add('strong');
+                textEl.textContent = 'Strong password';
+            }
+        });
+        
+        // Password form submission
+        document.getElementById('passwordForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (newPassword !== confirmPassword) {
+                showError('New passwords do not match');
+                return;
+            }
+            
+            if (newPassword.length < 8) {
+                showError('Password must be at least 8 characters long');
+                return;
+            }
+            
+            const button = document.getElementById('changePasswordBtn');
+            const originalText = button.innerHTML;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Changing...';
+            button.disabled = true;
+            
+            try {
+                showInfo('Password change functionality coming soon...');
+                // TODO: Implement password change API
+                /*
+                const response = await fetch('/api/account/change-password', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
+                    body: JSON.stringify({
+                        currentPassword,
+                        newPassword
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showSuccess('Password changed successfully');
+                    document.getElementById('passwordForm').reset();
+                    document.getElementById('passwordStrength').style.display = 'none';
+                } else {
+                    showError(data.message || 'Failed to change password');
+                }
+                */
+            } catch (error) {
+                console.error('Error changing password:', error);
+                showError('An error occurred while changing password');
+            } finally {
+                button.innerHTML = originalText;
+                button.disabled = false;
+            }
+        });
+        
+        // Show alert messages
+        function showSuccess(message) {
+            const alert = document.getElementById('successAlert');
+            document.getElementById('successMessage').textContent = message;
+            alert.classList.add('show');
+            setTimeout(() => alert.classList.remove('show'), 5000);
+        }
+        
+        function showError(message) {
+            const alert = document.getElementById('errorAlert');
+            document.getElementById('errorMessage').textContent = message;
+            alert.classList.add('show');
+            setTimeout(() => alert.classList.remove('show'), 5000);
+        }
+        
+        function showInfo(message) {
+            const alert = document.getElementById('infoAlert');
+            document.getElementById('infoMessage').textContent = message;
+            alert.classList.add('show');
+            setTimeout(() => alert.classList.remove('show'), 5000);
+        }
+        
+        // Reset password form
+        function resetPasswordForm() {
+            document.getElementById('passwordForm').reset();
+            document.getElementById('passwordStrength').style.display = 'none';
+        }
+        
+        // Logout
+        document.getElementById('logoutButton').addEventListener('click', function() {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('outreachToken');
+                localStorage.removeItem('outreach_token');
+                localStorage.removeItem('outreach_user');
+                window.location.href = 'login.html';
+            }
+        });
+    </script>
+</body>
+</html>

@@ -56,7 +56,9 @@
       "Bash(set NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZuZmR0Z2ZqbHdldnJ6Ynhoc3ViIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYyMzMwNzYsImV4cCI6MjA3MTgwOTA3Nn0.zNLozjU0DCyebYkJMKtNHtaUaehPpBKUvVx4QviaQLY)",
       "Bash(git ls-tree:*)",
       "Bash(del nul)",
-      "Bash(echo:*)"
+      "Bash(echo:*)",
+      "Bash(del test-auth.js)",
+      "Bash(del \"C:\\Users\\Ben-Work\\Desktop\\Claude\\Website\\Homeless Aid UK\\test-auth.js\")"
     ],
     "deny": [],
     "ask": []

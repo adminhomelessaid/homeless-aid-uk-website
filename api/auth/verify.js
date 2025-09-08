@@ -32,8 +32,8 @@ module.exports = async (req, res) => {
         
         const token = authHeader.substring(7); // Remove 'Bearer ' prefix
         
-        // Verify token - TEMPORARILY USING SAME KEY AS LOGIN
-        const jwtSecret = 'temporary-secret-key';
+        // Verify token using environment variable or fallback
+        const jwtSecret = process.env.JWT_SECRET || 'temporary-secret-key';
         
         const decoded = jwt.verify(token, jwtSecret);
         

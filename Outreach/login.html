@@ -348,11 +348,14 @@
                 const data = await response.json();
                 
                 if (response.ok && data.success) {
-                    // Store JWT token
+                    // Store JWT token in both formats for compatibility
                     localStorage.setItem('outreach_token', data.token);
+                    localStorage.setItem('outreachToken', data.token);
                     localStorage.setItem('outreach_user', JSON.stringify({
                         name: data.user.name,
-                        role: data.user.role
+                        role: data.user.role,
+                        username: data.user.username,
+                        email: data.user.email
                     }));
                     
                     // Redirect to dashboard

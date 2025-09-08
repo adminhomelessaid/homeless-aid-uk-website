@@ -32,7 +32,7 @@ module.exports = async (req, res) => {
         }
         
         const token = authHeader.substring(7);
-        const jwtSecret = 'temporary-secret-key';
+        const jwtSecret = process.env.JWT_SECRET || 'temporary-secret-key';
         
         let decoded;
         try {

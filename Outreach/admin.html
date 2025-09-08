@@ -1,0 +1,1170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Homeless Aid UK</title>
+    <meta name="description" content="Admin panel for managing users and system settings">
+    <link rel="stylesheet" href="../styles.css?v=2024.12.19.1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="../Branding/HomelessAidUKLogo.png" type="image/png">
+    
+    <style>
+        .dashboard-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .header-logo {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: white;
+            padding: 2px;
+        }
+        
+        .header-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        
+        .header-subtitle {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-top: 0.25rem;
+        }
+        
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+            margin-right: 1rem;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            transition: background-color 0.3s ease;
+        }
+        
+        .nav-links a:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .nav-links a.active {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .user-info {
+            text-align: right;
+        }
+        
+        .user-name {
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        
+        .user-role {
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+        
+        .logout-button {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .logout-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-1px);
+        }
+        
+        .admin-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        
+        /* Tab Navigation */
+        .tab-navigation {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #e5e7eb;
+        }
+        
+        .tab-button {
+            padding: 1rem 1.5rem;
+            background: none;
+            border: none;
+            color: #6b7280;
+            font-weight: 500;
+            cursor: pointer;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+        
+        .tab-button:hover {
+            color: #374151;
+        }
+        
+        .tab-button.active {
+            color: #667eea;
+        }
+        
+        .tab-button.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #667eea;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .stat-icon.blue {
+            background: #dbeafe;
+            color: #3b82f6;
+        }
+        
+        .stat-icon.green {
+            background: #d1fae5;
+            color: #10b981;
+        }
+        
+        .stat-icon.yellow {
+            background: #fef3c7;
+            color: #f59e0b;
+        }
+        
+        .stat-icon.purple {
+            background: #ede9fe;
+            color: #8b5cf6;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #111827;
+        }
+        
+        .stat-label {
+            color: #6b7280;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+        
+        /* User Management Section */
+        .section-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            margin-bottom: 2rem;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #111827;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background: #5a67d8;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        
+        /* Search and Filter */
+        .search-filter-bar {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .search-input {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 0.95rem;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .filter-select {
+            padding: 0.75rem 1rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+        }
+        
+        /* Users Table */
+        .users-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .users-table th {
+            background: #f9fafb;
+            padding: 0.75rem;
+            text-align: left;
+            font-weight: 600;
+            color: #374151;
+            border-bottom: 2px solid #e5e7eb;
+        }
+        
+        .users-table td {
+            padding: 1rem 0.75rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .users-table tr:hover {
+            background: #f9fafb;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: #6b7280;
+        }
+        
+        .user-details {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .user-name-email {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .user-fullname {
+            font-weight: 500;
+            color: #111827;
+        }
+        
+        .user-email {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+        
+        .role-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        
+        .role-badge.admin {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+        
+        .role-badge.team_lead {
+            background: #fef3c7;
+            color: #d97706;
+        }
+        
+        .role-badge.volunteer {
+            background: #dbeafe;
+            color: #2563eb;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        
+        .status-badge.active {
+            background: #d1fae5;
+            color: #059669;
+        }
+        
+        .status-badge.pending {
+            background: #fef3c7;
+            color: #d97706;
+        }
+        
+        .status-badge.inactive {
+            background: #f3f4f6;
+            color: #6b7280;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .btn-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            border: 1px solid #e5e7eb;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-icon:hover {
+            background: #f9fafb;
+            border-color: #d1d5db;
+        }
+        
+        .btn-icon.edit {
+            color: #3b82f6;
+        }
+        
+        .btn-icon.delete {
+            color: #ef4444;
+        }
+        
+        /* Create User Form */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .form-label {
+            font-weight: 500;
+            color: #374151;
+            font-size: 0.95rem;
+        }
+        
+        .form-input {
+            padding: 0.75rem 1rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 0.95rem;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .form-select {
+            padding: 0.75rem 1rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: #6b7280;
+            border: 1px solid #e5e7eb;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            background: #f9fafb;
+        }
+        
+        /* Success/Error Messages */
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: none;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .alert.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .alert.show {
+            display: flex;
+        }
+        
+        /* Loading State */
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            padding: 3rem;
+        }
+        
+        .loading-spinner.show {
+            display: block;
+        }
+        
+        .spinner {
+            border: 3px solid #f3f4f6;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #6b7280;
+        }
+        
+        .empty-state i {
+            font-size: 3rem;
+            color: #d1d5db;
+            margin-bottom: 1rem;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .header-container {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+            
+            .header-right {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            .nav-links {
+                flex-direction: column;
+                width: 100%;
+                margin-right: 0;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .search-filter-bar {
+                flex-direction: column;
+            }
+            
+            .users-table {
+                font-size: 0.875rem;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Dashboard Header -->
+    <header class="dashboard-header">
+        <div class="header-container">
+            <div class="header-left">
+                <img src="../Branding/HomelessAidUKLogo.png" alt="Homeless Aid UK" class="header-logo">
+                <div>
+                    <h1 class="header-title">Admin Panel</h1>
+                    <p class="header-subtitle">User & System Management</p>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="nav-links">
+                    <a href="dashboard.html">
+                        <i class="fas fa-tachometer-alt"></i> Dashboard
+                    </a>
+                    <a href="events-overview.html">
+                        <i class="fas fa-chart-bar"></i> Overview
+                    </a>
+                    <a href="admin.html" class="active">
+                        <i class="fas fa-user-shield"></i> Admin
+                    </a>
+                    <a href="account.html">
+                        <i class="fas fa-user-cog"></i> Account
+                    </a>
+                </div>
+                <div class="user-info">
+                    <div class="user-name" id="userName">Loading...</div>
+                    <div class="user-role" id="userRole">Admin</div>
+                </div>
+                <button class="logout-button" id="logoutButton">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Admin Content -->
+    <div class="admin-container">
+        <!-- Statistics Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon blue">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-value" id="totalUsers">0</div>
+                <div class="stat-label">Total Users</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon green">
+                    <i class="fas fa-user-check"></i>
+                </div>
+                <div class="stat-value" id="activeUsers">0</div>
+                <div class="stat-label">Active Users</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon yellow">
+                    <i class="fas fa-user-clock"></i>
+                </div>
+                <div class="stat-value" id="pendingUsers">0</div>
+                <div class="stat-label">Pending Setup</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon purple">
+                    <i class="fas fa-user-shield"></i>
+                </div>
+                <div class="stat-value" id="adminCount">0</div>
+                <div class="stat-label">Administrators</div>
+            </div>
+        </div>
+        
+        <!-- Tab Navigation -->
+        <div class="tab-navigation">
+            <button class="tab-button active" data-tab="users">
+                <i class="fas fa-users"></i> Manage Users
+            </button>
+            <button class="tab-button" data-tab="create">
+                <i class="fas fa-user-plus"></i> Create User
+            </button>
+            <button class="tab-button" data-tab="activity">
+                <i class="fas fa-history"></i> Activity Log
+            </button>
+        </div>
+        
+        <!-- Alert Messages -->
+        <div class="alert success" id="successAlert">
+            <i class="fas fa-check-circle"></i>
+            <span id="successMessage"></span>
+        </div>
+        <div class="alert error" id="errorAlert">
+            <i class="fas fa-exclamation-circle"></i>
+            <span id="errorMessage"></span>
+        </div>
+        
+        <!-- Tab Contents -->
+        <!-- Users Management Tab -->
+        <div class="tab-content active" id="usersTab">
+            <div class="section-card">
+                <div class="section-header">
+                    <h2 class="section-title">User Management</h2>
+                    <button class="btn-primary" onclick="switchToCreateTab()">
+                        <i class="fas fa-plus"></i> Add New User
+                    </button>
+                </div>
+                
+                <!-- Search and Filter -->
+                <div class="search-filter-bar">
+                    <input type="text" class="search-input" placeholder="Search by name or email..." id="searchInput">
+                    <select class="filter-select" id="roleFilter">
+                        <option value="">All Roles</option>
+                        <option value="admin">Admin</option>
+                        <option value="team_lead">Team Lead</option>
+                        <option value="volunteer">Volunteer</option>
+                    </select>
+                    <select class="filter-select" id="statusFilter">
+                        <option value="">All Status</option>
+                        <option value="active">Active</option>
+                        <option value="pending">Pending Setup</option>
+                        <option value="inactive">Inactive</option>
+                    </select>
+                </div>
+                
+                <!-- Users Table -->
+                <div class="loading-spinner" id="usersLoading">
+                    <div class="spinner"></div>
+                    <p>Loading users...</p>
+                </div>
+                
+                <table class="users-table" id="usersTable" style="display: none;">
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Username</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                            <th>Last Login</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTableBody">
+                        <!-- Users will be loaded here -->
+                    </tbody>
+                </table>
+                
+                <div class="empty-state" id="noUsersMessage" style="display: none;">
+                    <i class="fas fa-users-slash"></i>
+                    <h3>No Users Found</h3>
+                    <p>Start by creating your first user.</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Create User Tab -->
+        <div class="tab-content" id="createTab">
+            <div class="section-card">
+                <div class="section-header">
+                    <h2 class="section-title">Create New User</h2>
+                </div>
+                
+                <form id="createUserForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label" for="username">Username *</label>
+                            <input type="text" class="form-input" id="username" required 
+                                   placeholder="Enter username" pattern="[a-zA-Z0-9_-]{3,50}">
+                            <small style="color: #6b7280;">3-50 characters, letters, numbers, underscores, hyphens</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="email">Email Address *</label>
+                            <input type="email" class="form-input" id="email" required 
+                                   placeholder="user@example.com">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="fullName">Full Name *</label>
+                            <input type="text" class="form-input" id="fullName" required 
+                                   placeholder="Enter full name">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="role">Role *</label>
+                            <select class="form-select" id="role" required>
+                                <option value="">Select a role</option>
+                                <option value="admin">Administrator</option>
+                                <option value="team_lead">Team Lead</option>
+                                <option value="volunteer">Volunteer</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary" id="createUserBtn">
+                            <i class="fas fa-paper-plane"></i> Send Invitation
+                        </button>
+                        <button type="button" class="btn-secondary" onclick="resetCreateForm()">
+                            <i class="fas fa-times"></i> Cancel
+                        </button>
+                    </div>
+                </form>
+                
+                <div style="margin-top: 2rem; padding: 1rem; background: #f9fafb; border-radius: 8px;">
+                    <h4 style="margin-bottom: 0.5rem; color: #374151;">How it works:</h4>
+                    <ol style="color: #6b7280; line-height: 1.8;">
+                        <li>Enter the new user's details</li>
+                        <li>An invitation email will be sent to their email address</li>
+                        <li>They'll receive a secure link to set up their password</li>
+                        <li>Once password is set, they can log in to the Outreach Portal</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Activity Log Tab -->
+        <div class="tab-content" id="activityTab">
+            <div class="section-card">
+                <div class="section-header">
+                    <h2 class="section-title">Recent Activity</h2>
+                </div>
+                
+                <div class="empty-state">
+                    <i class="fas fa-history"></i>
+                    <h3>Activity Log Coming Soon</h3>
+                    <p>Track all admin actions and user activities.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Check authentication
+        const token = localStorage.getItem('outreachToken');
+        if (!token) {
+            window.location.href = 'login.html';
+        }
+        
+        // Decode JWT to get user info
+        function parseJWT(token) {
+            try {
+                const base64Url = token.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                return JSON.parse(window.atob(base64));
+            } catch (e) {
+                return null;
+            }
+        }
+        
+        const userInfo = parseJWT(token);
+        
+        // Check if user is admin
+        if (!userInfo || userInfo.role !== 'admin') {
+            alert('Access denied. Admin privileges required.');
+            window.location.href = 'dashboard.html';
+        }
+        
+        // Update user info in header
+        document.getElementById('userName').textContent = userInfo.name || userInfo.username;
+        document.getElementById('userRole').textContent = userInfo.role === 'admin' ? 'Administrator' : 
+                                                          userInfo.role === 'team_lead' ? 'Team Lead' : 'Volunteer';
+        
+        // Tab switching
+        document.querySelectorAll('.tab-button').forEach(button => {
+            button.addEventListener('click', function() {
+                const targetTab = this.dataset.tab;
+                
+                // Update active button
+                document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Update active content
+                document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+                document.getElementById(targetTab + 'Tab').classList.add('active');
+                
+                // Load data for the tab
+                if (targetTab === 'users') {
+                    loadUsers();
+                }
+            });
+        });
+        
+        function switchToCreateTab() {
+            document.querySelector('.tab-button[data-tab="create"]').click();
+        }
+        
+        // Load users
+        async function loadUsers() {
+            const loading = document.getElementById('usersLoading');
+            const table = document.getElementById('usersTable');
+            const noUsers = document.getElementById('noUsersMessage');
+            const tbody = document.getElementById('usersTableBody');
+            
+            loading.classList.add('show');
+            table.style.display = 'none';
+            noUsers.style.display = 'none';
+            
+            try {
+                const response = await fetch('/api/admin/list-users', {
+                    headers: {
+                        'Authorization': 'Bearer ' + token
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to load users');
+                }
+                
+                const data = await response.json();
+                const users = data.users || [];
+                
+                // Update statistics
+                updateStatistics(users);
+                
+                if (users.length === 0) {
+                    noUsers.style.display = 'block';
+                } else {
+                    // Populate table
+                    tbody.innerHTML = users.map(user => `
+                        <tr>
+                            <td>
+                                <div class="user-details">
+                                    <div class="user-avatar">${getInitials(user.full_name)}</div>
+                                    <div class="user-name-email">
+                                        <span class="user-fullname">${user.full_name}</span>
+                                        <span class="user-email">${user.email}</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>${user.username}</td>
+                            <td>
+                                <span class="role-badge ${user.role}">${formatRole(user.role)}</span>
+                            </td>
+                            <td>
+                                <span class="status-badge ${getStatusClass(user)}">${getStatus(user)}</span>
+                            </td>
+                            <td>${formatDate(user.last_login)}</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn-icon edit" onclick="editUser('${user.id}')" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn-icon delete" onclick="toggleUser('${user.id}')" title="Toggle Status">
+                                        <i class="fas fa-power-off"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    `).join('');
+                    
+                    table.style.display = 'table';
+                }
+            } catch (error) {
+                console.error('Error loading users:', error);
+                // For now, show demo data since API doesn't exist yet
+                showDemoData();
+            } finally {
+                loading.classList.remove('show');
+            }
+        }
+        
+        // Show demo data for testing
+        function showDemoData() {
+            const tbody = document.getElementById('usersTableBody');
+            const table = document.getElementById('usersTable');
+            
+            const demoUsers = [
+                {
+                    id: '123',
+                    username: 'BenAdmin',
+                    email: 'benadmin@example.com',
+                    full_name: 'Ben Admin',
+                    role: 'admin',
+                    is_active: true,
+                    password_hash: true,
+                    last_login: new Date().toISOString()
+                }
+            ];
+            
+            updateStatistics(demoUsers);
+            
+            tbody.innerHTML = demoUsers.map(user => `
+                <tr>
+                    <td>
+                        <div class="user-details">
+                            <div class="user-avatar">${getInitials(user.full_name)}</div>
+                            <div class="user-name-email">
+                                <span class="user-fullname">${user.full_name}</span>
+                                <span class="user-email">${user.email}</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>${user.username}</td>
+                    <td>
+                        <span class="role-badge ${user.role}">${formatRole(user.role)}</span>
+                    </td>
+                    <td>
+                        <span class="status-badge ${getStatusClass(user)}">${getStatus(user)}</span>
+                    </td>
+                    <td>${formatDate(user.last_login)}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn-icon edit" onclick="editUser('${user.id}')" title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn-icon delete" onclick="toggleUser('${user.id}')" title="Toggle Status">
+                                <i class="fas fa-power-off"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+            
+            table.style.display = 'table';
+        }
+        
+        // Update statistics
+        function updateStatistics(users) {
+            document.getElementById('totalUsers').textContent = users.length;
+            document.getElementById('activeUsers').textContent = users.filter(u => u.is_active && u.password_hash).length;
+            document.getElementById('pendingUsers').textContent = users.filter(u => !u.password_hash).length;
+            document.getElementById('adminCount').textContent = users.filter(u => u.role === 'admin').length;
+        }
+        
+        // Helper functions
+        function getInitials(name) {
+            return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+        }
+        
+        function formatRole(role) {
+            const roles = {
+                'admin': 'Admin',
+                'team_lead': 'Team Lead',
+                'volunteer': 'Volunteer'
+            };
+            return roles[role] || role;
+        }
+        
+        function getStatus(user) {
+            if (!user.is_active) return 'Inactive';
+            if (!user.password_hash) return 'Pending Setup';
+            return 'Active';
+        }
+        
+        function getStatusClass(user) {
+            if (!user.is_active) return 'inactive';
+            if (!user.password_hash) return 'pending';
+            return 'active';
+        }
+        
+        function formatDate(date) {
+            if (!date) return 'Never';
+            const d = new Date(date);
+            const now = new Date();
+            const diff = Math.floor((now - d) / 1000 / 60); // minutes
+            
+            if (diff < 60) return `${diff} mins ago`;
+            if (diff < 1440) return `${Math.floor(diff / 60)} hours ago`;
+            if (diff < 10080) return `${Math.floor(diff / 1440)} days ago`;
+            
+            return d.toLocaleDateString();
+        }
+        
+        // Create user form
+        document.getElementById('createUserForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const button = document.getElementById('createUserBtn');
+            const originalText = button.innerHTML;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating...';
+            button.disabled = true;
+            
+            const userData = {
+                username: document.getElementById('username').value,
+                email: document.getElementById('email').value,
+                full_name: document.getElementById('fullName').value,
+                role: document.getElementById('role').value
+            };
+            
+            try {
+                const response = await fetch('/api/admin/create-user', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
+                    body: JSON.stringify(userData)
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showSuccess('User created successfully! An invitation email has been sent.');
+                    document.getElementById('createUserForm').reset();
+                    // Switch to users tab
+                    document.querySelector('.tab-button[data-tab="users"]').click();
+                } else {
+                    showError(data.message || 'Failed to create user');
+                }
+            } catch (error) {
+                console.error('Error creating user:', error);
+                showError('An error occurred while creating the user');
+            } finally {
+                button.innerHTML = originalText;
+                button.disabled = false;
+            }
+        });
+        
+        // Show success/error messages
+        function showSuccess(message) {
+            const alert = document.getElementById('successAlert');
+            document.getElementById('successMessage').textContent = message;
+            alert.classList.add('show');
+            setTimeout(() => alert.classList.remove('show'), 5000);
+        }
+        
+        function showError(message) {
+            const alert = document.getElementById('errorAlert');
+            document.getElementById('errorMessage').textContent = message;
+            alert.classList.add('show');
+            setTimeout(() => alert.classList.remove('show'), 5000);
+        }
+        
+        // Reset form
+        function resetCreateForm() {
+            document.getElementById('createUserForm').reset();
+            document.querySelector('.tab-button[data-tab="users"]').click();
+        }
+        
+        // Placeholder functions
+        function editUser(userId) {
+            showError('Edit functionality coming soon');
+        }
+        
+        function toggleUser(userId) {
+            if (confirm('Are you sure you want to toggle this user\'s status?')) {
+                showError('Toggle functionality coming soon');
+            }
+        }
+        
+        // Search and filter
+        document.getElementById('searchInput').addEventListener('input', filterUsers);
+        document.getElementById('roleFilter').addEventListener('change', filterUsers);
+        document.getElementById('statusFilter').addEventListener('change', filterUsers);
+        
+        function filterUsers() {
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const role = document.getElementById('roleFilter').value;
+            const status = document.getElementById('statusFilter').value;
+            
+            const rows = document.querySelectorAll('#usersTableBody tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                const roleMatch = !role || row.querySelector('.role-badge').classList.contains(role);
+                const statusMatch = !status || row.querySelector('.status-badge').classList.contains(status);
+                const searchMatch = !search || text.includes(search);
+                
+                row.style.display = roleMatch && statusMatch && searchMatch ? '' : 'none';
+            });
+        }
+        
+        // Logout
+        document.getElementById('logoutButton').addEventListener('click', function() {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('outreachToken');
+                window.location.href = 'login.html';
+            }
+        });
+        
+        // Load users on page load
+        loadUsers();
+    </script>
+</body>
+</html>

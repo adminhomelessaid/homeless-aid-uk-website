@@ -21,6 +21,7 @@ module.exports = async (req, res) => {
         // Hardcoded for BenAdmin to bypass ALL database issues
         if (username === 'BenAdmin' && password === 'TestPassword123') {
             // Generate simple JWT
+            const jwtSecret = process.env.JWT_SECRET || 'temporary-secret-key';
             const token = jwt.sign(
                 { 
                     id: '123',
@@ -28,7 +29,7 @@ module.exports = async (req, res) => {
                     name: 'Ben Admin',
                     role: 'admin'
                 },
-                'temporary-secret-key',
+                jwtSecret,
                 { expiresIn: '4h' }
             );
             

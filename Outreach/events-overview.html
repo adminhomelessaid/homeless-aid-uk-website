@@ -482,6 +482,12 @@
                     <a href="events-overview.html" class="nav-link active">
                         <i class="fas fa-chart-bar"></i> Overview
                     </a>
+                    <a href="admin.html" class="nav-link" id="adminLink" style="display: none;">
+                        <i class="fas fa-user-shield"></i> Admin
+                    </a>
+                    <a href="account.html" class="nav-link">
+                        <i class="fas fa-user-cog"></i> Account
+                    </a>
                 </div>
                 <button class="logout-button" id="logoutButton">
                     <i class="fas fa-sign-out-alt"></i> Logout
@@ -591,9 +597,25 @@
     </div>
     
     <script>
-        // Check authentication on page load
-        const token = localStorage.getItem('outreach_token');
-        const user = JSON.parse(localStorage.getItem('outreach_user') || '{}');
+        // Check authentication on page load - support both token formats for compatibility
+        let token = localStorage.getItem('outreachToken') || localStorage.getItem('outreach_token');
+        let user = JSON.parse(localStorage.getItem('outreach_user') || '{}');
+        
+        // If using new format, parse JWT to get user info
+        if (localStorage.getItem('outreachToken') && !user.name) {
+            try {
+                const base64Url = token.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                user = JSON.parse(window.atob(base64));
+            } catch (e) {
+                console.error('Error parsing JWT:', e);
+            }
+        }
+        
+        // Show admin link if user is admin
+        if (user.role === 'admin') {
+            document.getElementById('adminLink').style.display = 'inline-block';
+        }
         
         if (!token) {
             window.location.href = '/Outreach/login.html';
