@@ -280,41 +280,37 @@
             margin-bottom: 1rem;
         }
         
-        /* Desktop Navigation - Hide mobile menu toggle */
+        /* Desktop Navigation */
         .mobile-menu-toggle {
             display: none;
         }
         
-        .nav-links {
-            display: flex !important;
-            position: static !important;
-            width: auto !important;
-            height: auto !important;
-            background: transparent !important;
-            flex-direction: row !important;
-            justify-content: flex-start !important;
-            align-items: center !important;
-            gap: 0.5rem !important;
+        .nav-backdrop {
+            display: none;
         }
         
-        .nav-links .close-menu {
+        .nav-links {
+            display: flex;
+            gap: 0.5rem;
+            margin-right: 1rem;
+        }
+        
+        .nav-links .nav-close {
             display: none;
         }
         
         .nav-links a {
-            color: white !important;
-            text-decoration: none !important;
-            padding: 0.5rem 0.75rem !important;
-            border-radius: 6px !important;
-            transition: background-color 0.3s ease !important;
-            font-size: 0.9rem !important;
-            background: transparent !important;
-            min-width: auto !important;
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            transition: background-color 0.3s ease;
+            font-size: 0.9rem;
         }
         
         .nav-links a:hover,
         .nav-links a.active {
-            background: rgba(255, 255, 255, 0.2) !important;
+            background: rgba(255, 255, 255, 0.2);
         }
         
         /* Mobile-First Responsive Design */
@@ -330,120 +326,183 @@
             }
             
             .header-container {
-                flex-direction: column;
-                gap: 0.75rem;
-                text-align: center;
-                padding: 1rem 1rem 0.5rem;
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+                padding: 0.75rem 1rem;
                 min-height: auto;
             }
             
-            .header-right {
-                flex-direction: column;
-                width: 100%;
-                gap: 0.75rem;
+            .header-left {
+                display: flex;
                 align-items: center;
+                gap: 0.75rem;
+                flex: 1;
             }
             
-            /* Hamburger Menu */
+            .header-logo {
+                width: 40px;
+                height: 40px;
+            }
+            
+            .header-left h1 {
+                font-size: 1.25rem;
+                margin: 0;
+                line-height: 1.2;
+            }
+            
+            .header-subtitle {
+                display: none;
+            }
+            
+            .header-right {
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+            }
+            
+            /* Mobile Menu Toggle */
             .mobile-menu-toggle {
-                display: block;
-                position: fixed;
-                top: 1rem;
-                right: 1rem;
-                z-index: 1000;
-                background: #3b82f6;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 44px;
+                height: 44px;
+                background: rgba(255, 255, 255, 0.1);
+                border: 2px solid rgba(255, 255, 255, 0.2);
+                border-radius: 8px;
                 color: white;
-                border: none;
-                border-radius: 6px;
-                padding: 0.75rem;
                 cursor: pointer;
-                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-                font-size: 1.2rem;
+                font-size: 1.1rem;
+                transition: all 0.3s ease;
             }
             
             .mobile-menu-toggle:hover {
-                background: #2563eb;
+                background: rgba(255, 255, 255, 0.2);
+                border-color: rgba(255, 255, 255, 0.3);
             }
             
-            .nav-links {
+            /* Navigation Backdrop */
+            .nav-backdrop {
                 display: none;
                 position: fixed;
                 top: 0;
                 left: 0;
                 width: 100%;
-                height: 100vh;
-                background: rgba(0, 0, 0, 0.95);
+                height: 100%;
+                background: rgba(0, 0, 0, 0.5);
+                backdrop-filter: blur(2px);
+                z-index: 998;
+                opacity: 0;
+                transition: opacity 0.3s ease;
+            }
+            
+            .nav-backdrop.active {
+                display: block;
+                opacity: 1;
+            }
+            
+            /* Navigation Drawer */
+            .nav-links {
+                position: fixed;
+                top: 0;
+                right: -300px;
+                width: 300px;
+                height: 100%;
+                background: white;
+                box-shadow: -2px 0 20px rgba(0, 0, 0, 0.15);
                 z-index: 999;
+                display: flex;
                 flex-direction: column;
-                justify-content: center;
-                align-items: center;
-                gap: 2rem;
-                margin-right: 0;
+                padding: 2rem 0;
+                transition: right 0.3s ease;
+                overflow-y: auto;
             }
             
             .nav-links.active {
-                display: flex;
+                right: 0;
             }
             
-            .nav-links .close-menu {
+            /* Navigation Close Button */
+            .nav-links .nav-close {
+                display: block;
                 position: absolute;
                 top: 1rem;
                 right: 1rem;
+                width: 44px;
+                height: 44px;
                 background: none;
                 border: none;
-                color: white;
-                font-size: 2rem;
+                color: #6b7280;
+                font-size: 1.5rem;
                 cursor: pointer;
-                padding: 0.5rem;
+                border-radius: 8px;
+                transition: all 0.3s ease;
             }
             
-            .header-left {
-                order: 1; /* Title section after nav */
+            .nav-links .nav-close:hover {
+                background: #f3f4f6;
+                color: #374151;
             }
             
-            .header-left h1 {
-                font-size: 1.6rem;
-                margin-bottom: 0.25rem;
-            }
-            
-            .header-subtitle {
-                font-size: 0.85rem;
-                opacity: 0.8;
-                margin-bottom: 0.5rem;
-            }
-            
-            .user-info {
-                order: 2; /* User info after title */
-                text-align: center;
-                margin-bottom: 0.5rem;
-            }
-            
-            .logout-button {
-                order: 3; /* Logout last */
-                align-self: center;
-            }
+            /* Navigation Links */
             
             .nav-links a {
-                color: white !important;
-                font-size: 1.2rem !important;
-                padding: 1rem 2rem !important;
-                border-radius: 8px !important;
-                text-decoration: none !important;
-                background: rgba(255, 255, 255, 0.1) !important;
-                min-width: 200px;
-                text-align: center;
-                transition: all 0.3s ease !important;
+                display: flex;
+                align-items: center;
+                gap: 1rem;
+                padding: 1rem 1.5rem;
+                color: #374151;
+                text-decoration: none;
+                font-size: 1rem;
+                font-weight: 500;
+                border-left: 4px solid transparent;
+                transition: all 0.3s ease;
+                min-height: 44px;
             }
             
             .nav-links a:hover {
-                background: rgba(255, 255, 255, 0.2) !important;
-                transform: translateY(-2px);
+                background: #f8fafc;
+                border-left-color: #3b82f6;
+                color: #1f2937;
             }
             
-            /* Show hamburger menu on mobile */
-            .mobile-menu-toggle {
-                display: block;
+            .nav-links a.active {
+                background: #eff6ff;
+                border-left-color: #3b82f6;
+                color: #1e40af;
             }
+            
+            .nav-links a i {
+                font-size: 1.1rem;
+                width: 20px;
+                text-align: center;
+            }
+            
+            /* User Info - Compact */
+            .user-info {
+                text-align: right;
+            }
+            
+            .user-name {
+                font-size: 0.9rem;
+                font-weight: 600;
+                color: white;
+                line-height: 1.2;
+            }
+            
+            .user-role {
+                font-size: 0.75rem;
+                opacity: 0.8;
+                color: white;
+                line-height: 1.2;
+            }
+            
+            /* Hide logout button in header on mobile */
+            .logout-button {
+                display: none;
+            }
+            
             
             .user-info {
                 text-align: center;
@@ -643,6 +702,9 @@
     </style>
 </head>
 <body>
+    <!-- Navigation Backdrop -->
+    <div class="nav-backdrop" id="navBackdrop"></div>
+    
     <!-- Dashboard Header -->
     <header class="dashboard-header">
         <div class="header-container">
@@ -661,7 +723,7 @@
                 
                 <!-- Navigation Menu -->
                 <div class="nav-links" id="navLinks">
-                    <button class="close-menu" id="closeMenu">&times;</button>
+                    <button class="nav-close" id="closeMenu">&times;</button>
                     <a href="/">
                         <i class="fas fa-home"></i> Home
                     </a>
@@ -1390,32 +1452,37 @@
         loadStats();
         loadRecentLogs();
         
-        // Mobile Menu Toggle
+        // Mobile Navigation Menu
         const mobileMenuToggle = document.getElementById('mobileMenuToggle');
         const navLinks = document.getElementById('navLinks');
+        const navBackdrop = document.getElementById('navBackdrop');
         const closeMenu = document.getElementById('closeMenu');
         
-        mobileMenuToggle.addEventListener('click', function() {
+        // Open menu
+        mobileMenuToggle.addEventListener('click', function(e) {
+            e.stopPropagation();
             navLinks.classList.add('active');
+            navBackdrop.classList.add('active');
+            document.body.style.overflow = 'hidden'; // Prevent body scroll
         });
         
-        closeMenu.addEventListener('click', function() {
+        // Close menu function
+        function closeNavMenu() {
             navLinks.classList.remove('active');
-        });
+            navBackdrop.classList.remove('active');
+            document.body.style.overflow = ''; // Restore body scroll
+        }
+        
+        // Close menu via close button
+        closeMenu.addEventListener('click', closeNavMenu);
+        
+        // Close menu when clicking backdrop
+        navBackdrop.addEventListener('click', closeNavMenu);
         
         // Close menu when clicking on a nav link
         const navLinkElements = navLinks.querySelectorAll('a');
         navLinkElements.forEach(link => {
-            link.addEventListener('click', function() {
-                navLinks.classList.remove('active');
-            });
-        });
-        
-        // Close menu when clicking outside
-        document.addEventListener('click', function(event) {
-            if (!navLinks.contains(event.target) && !mobileMenuToggle.contains(event.target)) {
-                navLinks.classList.remove('active');
-            }
+            link.addEventListener('click', closeNavMenu);
         });
         
         // Logout functionality
