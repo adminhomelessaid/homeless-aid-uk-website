@@ -4,7 +4,7 @@ const { createSupabaseClient } = require('../../utils/supabase');
 module.exports = async (req, res) => {
     // Enable CORS
     res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'PUT, OPTIONS');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, PUT, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     
     // Handle preflight
@@ -12,8 +12,8 @@ module.exports = async (req, res) => {
         return res.status(200).end();
     }
     
-    // Only allow PUT
-    if (req.method !== 'PUT') {
+    // Allow GET and PUT
+    if (req.method !== 'GET' && req.method !== 'PUT') {
         return res.status(405).json({ 
             success: false, 
             message: 'Method not allowed' 
@@ -43,6 +43,76 @@ module.exports = async (req, res) => {
             });
         }
         
+        // Initialize Supabase client
+        const supabase = createSupabaseClient();
+        
+        // Handle GET request - return current profile
+        if (req.method === 'GET') {
+            try {
+                const { data: user, error } = await supabase
+                    .from('outreach_users')
+                    .select(`
+                        id,
+                        username,
+                        email,
+                        full_name,
+                        date_of_birth,
+                        address_line1,
+                        address_line2,
+                        city,
+                        postcode,
+                        emergency_contact_name,
+                        emergency_contact_phone,
+                        emergency_contact_relationship,
+                        updated_at
+                    `)
+                    .eq('id', decoded.id)
+                    .single();
+                
+                if (error) {
+                    console.error('Profile fetch error:', error);
+                    return res.status(500).json({ 
+                        success: false, 
+                        message: 'Failed to fetch profile'
+                    });
+                }
+                
+                // Format for frontend
+                const profile = {
+                    id: user.id,
+                    username: user.username,
+                    email: user.email,
+                    full_name: user.full_name,
+                    date_of_birth: user.date_of_birth,
+                    address: {
+                        line1: user.address_line1,
+                        line2: user.address_line2,
+                        city: user.city,
+                        postcode: user.postcode
+                    },
+                    emergency_contact: {
+                        name: user.emergency_contact_name,
+                        phone: user.emergency_contact_phone,
+                        relationship: user.emergency_contact_relationship
+                    },
+                    updated_at: user.updated_at
+                };
+                
+                return res.status(200).json({
+                    success: true,
+                    profile: profile
+                });
+                
+            } catch (error) {
+                console.error('Get profile error:', error);
+                return res.status(500).json({ 
+                    success: false, 
+                    message: 'An error occurred while fetching profile' 
+                });
+            }
+        }
+        
+        // Handle PUT request - update profile
         // Extract profile data from request
         const { 
             full_name, 
@@ -57,33 +127,22 @@ module.exports = async (req, res) => {
             emergency_contact_relationship 
         } = req.body;
         
-        // Validate required fields
-        if (!full_name || !email) {
-            return res.status(400).json({ 
-                success: false, 
-                message: 'Full name and email are required' 
-            });
-        }
-        
-        // Validate email format
-        if (!AuthUtils.validateEmail(email)) {
+        // Validate email format if provided
+        if (email && !AuthUtils.validateEmail(email)) {
             return res.status(400).json({ 
                 success: false, 
                 message: 'Invalid email format' 
             });
         }
         
-        // Initialize Supabase client
-        const supabase = createSupabaseClient();
-        
-        // Prepare update object
+        // Prepare update object with only updated_at initially
         const updateData = {
-            full_name: full_name.trim(),
-            email: email.toLowerCase().trim(),
             updated_at: new Date().toISOString()
         };
         
         // Add optional fields if provided
+        if (full_name) updateData.full_name = full_name.trim();
+        if (email) updateData.email = email.toLowerCase().trim();
         if (date_of_birth) updateData.date_of_birth = date_of_birth;
         if (address_line1) updateData.address_line1 = address_line1.trim();
         if (address_line2) updateData.address_line2 = address_line2.trim();

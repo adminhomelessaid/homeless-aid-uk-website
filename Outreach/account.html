@@ -499,6 +499,94 @@
             </form>
         </div>
         
+        <!-- Personal Details -->
+        <div class="section-card">
+            <div class="section-header">
+                <h2 class="section-title">Personal Details</h2>
+            </div>
+            
+            <form id="personalDetailsForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label" for="dateOfBirth">Date of Birth</label>
+                        <input type="date" class="form-input" id="dateOfBirth">
+                    </div>
+                    
+                    <div class="form-group">
+                        <!-- Spacer for grid layout -->
+                    </div>
+                </div>
+                
+                <h4 style="margin: 1.5rem 0 1rem 0; color: #374151; font-size: 1.1rem;">
+                    <i class="fas fa-home" style="margin-right: 0.5rem; color: #667eea;"></i> 
+                    Address Information
+                </h4>
+                
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label class="form-label" for="addressLine1">Address Line 1</label>
+                        <input type="text" class="form-input" id="addressLine1" placeholder="Street address">
+                    </div>
+                    
+                    <div class="form-group full-width">
+                        <label class="form-label" for="addressLine2">Address Line 2</label>
+                        <input type="text" class="form-input" id="addressLine2" placeholder="Apartment, suite, etc. (optional)">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="city">City</label>
+                        <input type="text" class="form-input" id="city" placeholder="City">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="postcode">Postcode</label>
+                        <input type="text" class="form-input" id="postcode" placeholder="Postcode" style="text-transform: uppercase;">
+                    </div>
+                </div>
+                
+                <h4 style="margin: 1.5rem 0 1rem 0; color: #374151; font-size: 1.1rem;">
+                    <i class="fas fa-phone" style="margin-right: 0.5rem; color: #667eea;"></i> 
+                    Emergency Contact
+                </h4>
+                
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label" for="emergencyContactName">Contact Name</label>
+                        <input type="text" class="form-input" id="emergencyContactName" placeholder="Full name">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="emergencyContactPhone">Contact Phone</label>
+                        <input type="tel" class="form-input" id="emergencyContactPhone" placeholder="Phone number">
+                    </div>
+                    
+                    <div class="form-group full-width">
+                        <label class="form-label" for="emergencyContactRelationship">Relationship</label>
+                        <input type="text" class="form-input" id="emergencyContactRelationship" placeholder="e.g., Spouse, Parent, Friend, etc.">
+                    </div>
+                </div>
+                
+                <div style="margin-top: 2rem;">
+                    <button type="submit" class="btn-primary" id="updatePersonalDetailsBtn">
+                        <i class="fas fa-save"></i> Update Personal Details
+                    </button>
+                    <button type="button" class="btn-secondary" onclick="resetPersonalDetailsForm()">
+                        <i class="fas fa-undo"></i> Reset
+                    </button>
+                </div>
+                
+                <div style="margin-top: 1rem; padding: 1rem; background: #f0f9ff; border-radius: 8px; border-left: 4px solid #0ea5e9;">
+                    <h4 style="margin-bottom: 0.5rem; color: #374151;">
+                        <i class="fas fa-info-circle" style="color: #0ea5e9; margin-right: 0.5rem;"></i>
+                        About Personal Details
+                    </h4>
+                    <p style="color: #6b7280; margin: 0; line-height: 1.5;">
+                        This information is optional but helps us provide better support. Your emergency contact may be used in case we need to reach someone on your behalf during volunteer activities.
+                    </p>
+                </div>
+            </form>
+        </div>
+        
         <!-- Change Password -->
         <div class="section-card">
             <div class="section-header">
@@ -752,6 +840,89 @@
             document.getElementById('passwordForm').reset();
             document.getElementById('passwordStrength').style.display = 'none';
         }
+        
+        // Load personal details from server
+        async function loadPersonalDetails() {
+            try {
+                const response = await fetch('/api/auth/update-profile', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Bearer ' + token
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    const profile = data.profile || {};
+                    
+                    // Populate form with existing data
+                    document.getElementById('dateOfBirth').value = profile.date_of_birth || '';
+                    document.getElementById('addressLine1').value = profile.address?.line1 || '';
+                    document.getElementById('addressLine2').value = profile.address?.line2 || '';
+                    document.getElementById('city').value = profile.address?.city || '';
+                    document.getElementById('postcode').value = profile.address?.postcode || '';
+                    document.getElementById('emergencyContactName').value = profile.emergency_contact?.name || '';
+                    document.getElementById('emergencyContactPhone').value = profile.emergency_contact?.phone || '';
+                    document.getElementById('emergencyContactRelationship').value = profile.emergency_contact?.relationship || '';
+                }
+            } catch (error) {
+                console.error('Error loading personal details:', error);
+            }
+        }
+        
+        // Personal details form submission
+        document.getElementById('personalDetailsForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const button = document.getElementById('updatePersonalDetailsBtn');
+            const originalText = button.innerHTML;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
+            button.disabled = true;
+            
+            const personalData = {
+                date_of_birth: document.getElementById('dateOfBirth').value || null,
+                address_line1: document.getElementById('addressLine1').value || null,
+                address_line2: document.getElementById('addressLine2').value || null,
+                city: document.getElementById('city').value || null,
+                postcode: document.getElementById('postcode').value?.toUpperCase() || null,
+                emergency_contact_name: document.getElementById('emergencyContactName').value || null,
+                emergency_contact_phone: document.getElementById('emergencyContactPhone').value || null,
+                emergency_contact_relationship: document.getElementById('emergencyContactRelationship').value || null
+            };
+            
+            try {
+                const response = await fetch('/api/auth/update-profile', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
+                    body: JSON.stringify(personalData)
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showSuccess('Personal details updated successfully!');
+                } else {
+                    showError(data.message || 'Failed to update personal details');
+                }
+            } catch (error) {
+                console.error('Error updating personal details:', error);
+                showError('An error occurred while updating personal details');
+            } finally {
+                button.innerHTML = originalText;
+                button.disabled = false;
+            }
+        });
+        
+        // Reset personal details form
+        function resetPersonalDetailsForm() {
+            loadPersonalDetails(); // Reload from server
+        }
+        
+        // Load personal details on page load
+        loadPersonalDetails();
         
         // Logout
         document.getElementById('logoutButton').addEventListener('click', function() {
