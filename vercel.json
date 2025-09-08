@@ -11,6 +11,9 @@
     },
     "api/auth/verify-invitation.js": {
       "maxDuration": 10
+    },
+    "api/admin/create-user.js": {
+      "maxDuration": 10
     }
   },
   "rewrites": [
