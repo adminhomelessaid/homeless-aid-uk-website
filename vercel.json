@@ -1,8 +1,5 @@
 {
   "functions": {
-    "api/send-email.js": {
-      "maxDuration": 10
-    },
     "api/auth/login.js": {
       "maxDuration": 10
     },
@@ -13,9 +10,6 @@
       "maxDuration": 10
     },
     "api/admin/create-user.js": {
-      "maxDuration": 10
-    },
-    "api/admin/delete-user.js": {
       "maxDuration": 10
     },
     "api/auth/change-password.js": {
