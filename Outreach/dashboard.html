@@ -289,19 +289,44 @@
                 flex-direction: column;
                 gap: 1rem;
                 text-align: center;
+                padding: 0 1rem;
             }
             
             .header-right {
                 flex-direction: column;
                 width: 100%;
+                gap: 1rem;
+            }
+            
+            .nav-links {
+                justify-content: center;
+                margin-right: 0 !important;
+                order: -1; /* Put nav links at top */
+            }
+            
+            .nav-links a {
+                font-size: 0.85rem !important;
+                padding: 0.4rem 0.6rem !important;
             }
             
             .user-info {
                 text-align: center;
+                order: 1;
+            }
+            
+            .logout-button {
+                order: 2;
+                align-self: center;
             }
             
             .dashboard-container {
                 padding: 0 1rem;
+                margin-top: 1rem;
+            }
+            
+            /* Ensure form buttons are not covered */
+            .dashboard-card {
+                margin-bottom: 2rem;
             }
         }
     </style>
@@ -318,17 +343,20 @@
                 </div>
             </div>
             <div class="header-right">
-                <div class="nav-links" style="display: flex; gap: 1rem; margin-right: 1rem;">
-                    <a href="dashboard.html" style="color: white; text-decoration: none; padding: 0.5rem 1rem; border-radius: 6px; background: rgba(255, 255, 255, 0.2);">
+                <div class="nav-links" style="display: flex; gap: 0.5rem; margin-right: 1rem; flex-wrap: wrap;">
+                    <a href="/" style="color: white; text-decoration: none; padding: 0.5rem 0.75rem; border-radius: 6px; transition: background-color 0.3s ease; font-size: 0.9rem;">
+                        <i class="fas fa-home"></i> Home
+                    </a>
+                    <a href="dashboard.html" style="color: white; text-decoration: none; padding: 0.5rem 0.75rem; border-radius: 6px; background: rgba(255, 255, 255, 0.2); font-size: 0.9rem;">
                         <i class="fas fa-tachometer-alt"></i> Dashboard
                     </a>
-                    <a href="events-overview.html" style="color: white; text-decoration: none; padding: 0.5rem 1rem; border-radius: 6px; transition: background-color 0.3s ease;">
+                    <a href="events-overview.html" style="color: white; text-decoration: none; padding: 0.5rem 0.75rem; border-radius: 6px; transition: background-color 0.3s ease; font-size: 0.9rem;">
                         <i class="fas fa-chart-bar"></i> Overview
                     </a>
-                    <a href="admin.html" id="adminLink" style="color: white; text-decoration: none; padding: 0.5rem 1rem; border-radius: 6px; transition: background-color 0.3s ease; display: none;">
+                    <a href="admin.html" id="adminLink" style="color: white; text-decoration: none; padding: 0.5rem 0.75rem; border-radius: 6px; transition: background-color 0.3s ease; display: none; font-size: 0.9rem;">
                         <i class="fas fa-user-shield"></i> Admin
                     </a>
-                    <a href="account.html" style="color: white; text-decoration: none; padding: 0.5rem 1rem; border-radius: 6px; transition: background-color 0.3s ease;">
+                    <a href="account.html" style="color: white; text-decoration: none; padding: 0.5rem 0.75rem; border-radius: 6px; transition: background-color 0.3s ease; font-size: 0.9rem;">
                         <i class="fas fa-user-cog"></i> Account
                     </a>
                 </div>
@@ -986,16 +1014,28 @@
         
         // Logout functionality
         document.getElementById('logoutButton').addEventListener('click', async () => {
-            await fetch('/api/auth/logout', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${token}`
+            if (confirm('Are you sure you want to logout?')) {
+                // Clear all authentication data
+                localStorage.removeItem('outreachToken');
+                localStorage.removeItem('outreach_token');
+                localStorage.removeItem('outreach_user');
+                sessionStorage.clear();
+                
+                // Call logout API
+                try {
+                    await fetch('/api/auth/logout', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                } catch (error) {
+                    // Ignore logout API errors since we're logging out anyway
                 }
-            });
-            
-            localStorage.removeItem('outreach_token');
-            localStorage.removeItem('outreach_user');
-            window.location.href = '/Outreach/login.html';
+                
+                // Redirect to main site
+                window.location.href = '/';
+            }
         });
         
         // WhatsApp Sharing Functionality

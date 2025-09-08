@@ -416,6 +416,9 @@
             </div>
             <div class="header-right">
                 <div class="nav-links">
+                    <a href="/">
+                        <i class="fas fa-home"></i> Home
+                    </a>
                     <a href="dashboard.html">
                         <i class="fas fa-tachometer-alt"></i> Dashboard
                     </a>
@@ -505,6 +508,18 @@
                 <h2 class="section-title">Personal Details</h2>
             </div>
             
+            <!-- Personal Details Section Alerts -->
+            <div class="alert success" id="personalSuccessAlert" style="display: none;">
+                <i class="fas fa-check-circle"></i>
+                <span id="personalSuccessMessage"></span>
+                <button onclick="this.parentElement.style.display='none'">×</button>
+            </div>
+            <div class="alert error" id="personalErrorAlert" style="display: none;">
+                <i class="fas fa-exclamation-circle"></i>
+                <span id="personalErrorMessage"></span>
+                <button onclick="this.parentElement.style.display='none'">×</button>
+            </div>
+            
             <form id="personalDetailsForm">
                 <div class="form-grid">
                     <div class="form-group">
@@ -591,6 +606,18 @@
         <div class="section-card">
             <div class="section-header">
                 <h2 class="section-title">Change Password</h2>
+            </div>
+            
+            <!-- Password Section Alerts -->
+            <div class="alert success" id="passwordSuccessAlert" style="display: none;">
+                <i class="fas fa-check-circle"></i>
+                <span id="passwordSuccessMessage"></span>
+                <button onclick="this.parentElement.style.display='none'">×</button>
+            </div>
+            <div class="alert error" id="passwordErrorAlert" style="display: none;">
+                <i class="fas fa-exclamation-circle"></i>
+                <span id="passwordErrorMessage"></span>
+                <button onclick="this.parentElement.style.display='none'">×</button>
             </div>
             
             <form id="passwordForm">
@@ -764,12 +791,12 @@
             const confirmPassword = document.getElementById('confirmPassword').value;
             
             if (newPassword !== confirmPassword) {
-                showError('New passwords do not match');
+                showPasswordError('New passwords do not match');
                 return;
             }
             
             if (newPassword.length < 8) {
-                showError('Password must be at least 8 characters long');
+                showPasswordError('Password must be at least 8 characters long');
                 return;
             }
             
@@ -794,15 +821,15 @@
                 const data = await response.json();
                 
                 if (response.ok) {
-                    showSuccess('Password changed successfully!');
+                    showPasswordSuccess('Password changed successfully!');
                     document.getElementById('passwordForm').reset();
                     document.getElementById('passwordStrength').style.display = 'none';
                 } else {
-                    showError(data.message || 'Failed to change password');
+                    showPasswordError(data.message || 'Failed to change password');
                 }
             } catch (error) {
                 console.error('Error changing password:', error);
-                showError('An error occurred while changing password');
+                showPasswordError('An error occurred while changing password');
             } finally {
                 button.innerHTML = originalText;
                 button.disabled = false;
@@ -829,6 +856,35 @@
             document.getElementById('infoMessage').textContent = message;
             alert.classList.add('show');
             setTimeout(() => alert.classList.remove('show'), 5000);
+        }
+        
+        // Section-specific alert functions
+        function showPasswordSuccess(message) {
+            const alert = document.getElementById('passwordSuccessAlert');
+            document.getElementById('passwordSuccessMessage').textContent = message;
+            alert.style.display = 'block';
+            setTimeout(() => alert.style.display = 'none', 5000);
+        }
+        
+        function showPasswordError(message) {
+            const alert = document.getElementById('passwordErrorAlert');
+            document.getElementById('passwordErrorMessage').textContent = message;
+            alert.style.display = 'block';
+            setTimeout(() => alert.style.display = 'none', 5000);
+        }
+        
+        function showPersonalSuccess(message) {
+            const alert = document.getElementById('personalSuccessAlert');
+            document.getElementById('personalSuccessMessage').textContent = message;
+            alert.style.display = 'block';
+            setTimeout(() => alert.style.display = 'none', 5000);
+        }
+        
+        function showPersonalError(message) {
+            const alert = document.getElementById('personalErrorAlert');
+            document.getElementById('personalErrorMessage').textContent = message;
+            alert.style.display = 'block';
+            setTimeout(() => alert.style.display = 'none', 5000);
         }
         
         // Reset password form
@@ -899,13 +955,13 @@
                 const data = await response.json();
                 
                 if (response.ok) {
-                    showSuccess('Personal details updated successfully!');
+                    showPersonalSuccess('Personal details updated successfully!');
                 } else {
-                    showError(data.message || 'Failed to update personal details');
+                    showPersonalError(data.message || 'Failed to update personal details');
                 }
             } catch (error) {
                 console.error('Error updating personal details:', error);
-                showError('An error occurred while updating personal details');
+                showPersonalError('An error occurred while updating personal details');
             } finally {
                 button.innerHTML = originalText;
                 button.disabled = false;
@@ -923,10 +979,22 @@
         // Logout
         document.getElementById('logoutButton').addEventListener('click', function() {
             if (confirm('Are you sure you want to logout?')) {
+                // Clear all authentication data
                 localStorage.removeItem('outreachToken');
                 localStorage.removeItem('outreach_token');
                 localStorage.removeItem('outreach_user');
-                window.location.href = 'login.html';
+                sessionStorage.clear(); // Clear any session data
+                
+                // Make sure we're fully logged out by calling logout API
+                fetch('/api/auth/logout', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + (localStorage.getItem('outreachToken') || localStorage.getItem('outreach_token') || '')
+                    }
+                }).catch(() => {}); // Ignore errors since we're logging out anyway
+                
+                // Redirect to main site instead of login page
+                window.location.href = '/';
             }
         });
     </script>
