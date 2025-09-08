@@ -539,6 +539,40 @@
             .stat-label {
                 font-size: 0.85rem;
             }
+            
+            /* Recent Logs Mobile Optimization */
+            .logs-table {
+                font-size: 0.85rem;
+            }
+            
+            /* Hide less important columns on mobile */
+            .logs-table th:nth-child(3), /* Location */
+            .logs-table td:nth-child(3),
+            .logs-table th:nth-child(5) { /* Logged By */
+                display: none;
+            }
+            .logs-table td:nth-child(5) {
+                display: none;
+            }
+            
+            .logs-table th:nth-child(1),
+            .logs-table td:nth-child(1) {
+                width: 30%; /* Date */
+                font-size: 0.8rem;
+            }
+            
+            .logs-table th:nth-child(2),
+            .logs-table td:nth-child(2) {
+                width: 50%; /* Event */
+                font-size: 0.8rem;
+            }
+            
+            .logs-table th:nth-child(4),
+            .logs-table td:nth-child(4) {
+                width: 20%; /* People Served */
+                text-align: center;
+                font-weight: 600;
+            }
         }
         
         /* Small mobile (480px and below) */
@@ -626,7 +660,7 @@
                 </button>
                 
                 <!-- Navigation Menu -->
-                <div class="nav-links" id="navLinks" style="display: flex; gap: 0.5rem; margin-right: 1rem; flex-wrap: wrap;">
+                <div class="nav-links" id="navLinks">
                     <button class="close-menu" id="closeMenu">&times;</button>
                     <a href="/">
                         <i class="fas fa-home"></i> Home
@@ -637,7 +671,7 @@
                     <a href="events-overview.html">
                         <i class="fas fa-chart-bar"></i> Overview
                     </a>
-                    <a href="admin.html" id="adminLink" style="display: none;">
+                    <a href="admin.html" id="adminLink">
                         <i class="fas fa-user-shield"></i> Admin
                     </a>
                     <a href="account.html">
