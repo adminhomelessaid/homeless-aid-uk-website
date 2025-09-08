@@ -24,7 +24,7 @@ module.exports = async (req, res) => {
             const jwtSecret = process.env.JWT_SECRET || 'temporary-secret-key';
             const token = jwt.sign(
                 { 
-                    id: '123',
+                    id: '550e8400-e29b-41d4-a716-446655440000',
                     username: 'BenAdmin',
                     name: 'Ben Admin',
                     role: 'admin'
@@ -41,7 +41,7 @@ module.exports = async (req, res) => {
                 message: 'Login successful',
                 token: token,
                 user: {
-                    id: '123',
+                    id: '550e8400-e29b-41d4-a716-446655440000',
                     username: 'BenAdmin',
                     name: 'Ben Admin',
                     email: 'benadmin@example.com',
