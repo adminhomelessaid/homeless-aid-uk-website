@@ -1164,11 +1164,14 @@
         const navLinks = document.getElementById('navLinks');
         const closeMenu = document.getElementById('closeMenu');
         
-        mobileMenuToggle.addEventListener('click', function() {
-            navLinks.classList.add('active');
+        mobileMenuToggle.addEventListener('click', function(e) {
+            e.stopPropagation();
+            navLinks.classList.toggle('active');
         });
         
-        closeMenu.addEventListener('click', function() {
+        closeMenu.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
             navLinks.classList.remove('active');
         });
         
@@ -1182,7 +1185,14 @@
         
         // Close menu when clicking outside
         document.addEventListener('click', function(event) {
-            if (!navLinks.contains(event.target) && !mobileMenuToggle.contains(event.target)) {
+            if (navLinks.classList.contains('active') && !navLinks.contains(event.target) && !mobileMenuToggle.contains(event.target)) {
+                navLinks.classList.remove('active');
+            }
+        });
+        
+        // Close menu with ESC key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && navLinks.classList.contains('active')) {
                 navLinks.classList.remove('active');
             }
         });

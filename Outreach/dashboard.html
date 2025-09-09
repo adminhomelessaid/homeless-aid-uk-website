@@ -1466,14 +1466,19 @@
             document.body.style.overflow = '';
         }
         
-        // Open menu
+        // Toggle menu
         if (mobileMenuToggle) {
             mobileMenuToggle.addEventListener('click', function(e) {
                 e.stopPropagation();
-                console.log('Opening nav menu'); // Debug log
-                if (navLinks) navLinks.classList.add('active');
-                if (navBackdrop) navBackdrop.classList.add('active');
-                document.body.style.overflow = 'hidden';
+                if (navLinks && navLinks.classList.contains('active')) {
+                    console.log('Closing nav menu via toggle'); // Debug log
+                    closeNavMenu();
+                } else {
+                    console.log('Opening nav menu'); // Debug log
+                    if (navLinks) navLinks.classList.add('active');
+                    if (navBackdrop) navBackdrop.classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                }
             });
         }
         
@@ -1490,6 +1495,7 @@
         // Close menu when clicking backdrop
         if (navBackdrop) {
             navBackdrop.addEventListener('click', function(e) {
+                e.stopPropagation();
                 console.log('Backdrop clicked'); // Debug log
                 closeNavMenu();
             });
@@ -1508,7 +1514,7 @@
         
         // Emergency close - ESC key
         document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
+            if (e.key === 'Escape' && navLinks && navLinks.classList.contains('active')) {
                 console.log('ESC key pressed'); // Debug log
                 closeNavMenu();
             }
