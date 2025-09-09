@@ -361,122 +361,90 @@
                 gap: 0.75rem;
             }
             
-            /* Mobile Menu Toggle */
+            /* Hide mobile menu toggle on all screen sizes */
             .mobile-menu-toggle {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                width: 44px;
-                height: 44px;
-                background: rgba(255, 255, 255, 0.1);
-                border: 2px solid rgba(255, 255, 255, 0.2);
-                border-radius: 8px;
-                color: white;
-                cursor: pointer;
-                font-size: 1.1rem;
-                transition: all 0.3s ease;
+                display: none !important;
             }
             
-            .mobile-menu-toggle:hover {
-                background: rgba(255, 255, 255, 0.2);
-                border-color: rgba(255, 255, 255, 0.3);
-            }
-            
-            /* Navigation Backdrop */
+            /* Remove backdrop - not needed */
             .nav-backdrop {
-                display: none;
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: rgba(0, 0, 0, 0.5);
-                backdrop-filter: blur(2px);
-                z-index: 998;
-                opacity: 0;
-                transition: opacity 0.3s ease;
+                display: none !important;
             }
             
-            .nav-backdrop.active {
-                display: block;
-                opacity: 1;
-            }
-            
-            /* Navigation Drawer */
+            /* Mobile Navigation - Simplified horizontal scroll */
             .nav-links {
-                position: fixed;
-                top: 0;
-                right: -300px;
-                width: 300px;
-                height: 100%;
-                background: white;
-                box-shadow: -2px 0 20px rgba(0, 0, 0, 0.15);
-                z-index: 999;
-                display: flex;
-                flex-direction: column;
-                padding: 2rem 0;
-                transition: right 0.3s ease;
-                overflow-y: auto;
+                display: flex !important;
+                flex-direction: row !important;
+                gap: 0.5rem;
+                padding: 0.5rem 0;
+                overflow-x: auto;
+                overflow-y: hidden;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+                -ms-overflow-style: none;
+                width: 100%;
+                justify-content: flex-start;
+                margin: 0;
+                position: static !important;
+                background: transparent !important;
+                height: auto !important;
+                box-shadow: none !important;
+                z-index: auto !important;
+                right: auto !important;
+                top: auto !important;
+            }
+            
+            .nav-links::-webkit-scrollbar {
+                display: none;
             }
             
             .nav-links.active {
-                right: 0;
+                /* Remove slide animation */
+                right: auto !important;
             }
             
-            /* Navigation Close Button */
+            /* Remove close button - not needed */
             .nav-links .nav-close {
-                display: block;
-                position: absolute;
-                top: 1rem;
-                right: 1rem;
-                width: 44px;
-                height: 44px;
-                background: none;
-                border: none;
-                color: #6b7280;
-                font-size: 1.5rem;
-                cursor: pointer;
-                border-radius: 8px;
-                transition: all 0.3s ease;
-            }
-            
-            .nav-links .nav-close:hover {
-                background: #f3f4f6;
-                color: #374151;
+                display: none !important;
             }
             
             /* Navigation Links */
             
             .nav-links a {
-                display: flex;
+                display: inline-flex !important;
                 align-items: center;
-                gap: 1rem;
-                padding: 1rem 1.5rem;
-                color: #374151;
+                gap: 0.5rem;
+                padding: 0.5rem 1rem !important;
+                border-radius: 20px;
+                background: rgba(255, 255, 255, 0.2) !important;
+                color: white !important;
                 text-decoration: none;
-                font-size: 1rem;
-                font-weight: 500;
-                border-left: 4px solid transparent;
+                font-size: 0.9rem !important;
+                white-space: nowrap;
                 transition: all 0.3s ease;
-                min-height: 44px;
+                flex-shrink: 0;
+                border: none !important;
+                font-weight: 500;
+                min-height: auto !important;
             }
             
             .nav-links a:hover {
-                background: #f8fafc;
-                border-left-color: #3b82f6;
-                color: #1f2937;
+                background: rgba(255, 255, 255, 0.3) !important;
+                transform: scale(1.05);
+                color: white !important;
             }
             
             .nav-links a.active {
-                background: #eff6ff;
-                border-left-color: #3b82f6;
-                color: #1e40af;
+                background: rgba(255, 255, 255, 0.35) !important;
+                font-weight: 600;
+                color: white !important;
             }
             
             .nav-links a i {
-                font-size: 1.1rem;
-                width: 20px;
+                width: auto;
                 text-align: center;
+                color: white !important;
+                font-size: 0.9rem !important;
             }
             
             /* User Info - Compact */
@@ -703,7 +671,7 @@
 </head>
 <body>
     <!-- Navigation Backdrop -->
-    <div class="nav-backdrop" id="navBackdrop"></div>
+    <!-- Backdrop removed - not needed for simplified navigation -->
     
     <!-- Dashboard Header -->
     <header class="dashboard-header">
@@ -716,14 +684,8 @@
                 </div>
             </div>
             <div class="header-right">
-                <!-- Mobile Menu Toggle -->
-                <button class="mobile-menu-toggle" id="mobileMenuToggle">
-                    <i class="fas fa-bars"></i>
-                </button>
-                
                 <!-- Navigation Menu -->
                 <div class="nav-links" id="navLinks">
-                    <button class="nav-close" id="closeMenu">&times;</button>
                     <a href="/">
                         <i class="fas fa-home"></i> Home
                     </a>
@@ -1452,84 +1414,7 @@
         loadStats();
         loadRecentLogs();
         
-        // Mobile Navigation Menu
-        const mobileMenuToggle = document.getElementById('mobileMenuToggle');
-        const navLinks = document.getElementById('navLinks');
-        const navBackdrop = document.getElementById('navBackdrop');
-        const closeMenu = document.getElementById('closeMenu');
-        
-        // Close menu function
-        function closeNavMenu() {
-            console.log('Closing nav menu'); // Debug log
-            if (navLinks) navLinks.classList.remove('active');
-            if (navBackdrop) navBackdrop.classList.remove('active');
-            document.body.style.overflow = '';
-        }
-        
-        // Toggle menu
-        if (mobileMenuToggle) {
-            mobileMenuToggle.addEventListener('click', function(e) {
-                e.stopPropagation();
-                if (navLinks && navLinks.classList.contains('active')) {
-                    console.log('Closing nav menu via toggle'); // Debug log
-                    closeNavMenu();
-                } else {
-                    console.log('Opening nav menu'); // Debug log
-                    if (navLinks) navLinks.classList.add('active');
-                    if (navBackdrop) navBackdrop.classList.add('active');
-                    document.body.style.overflow = 'hidden';
-                }
-            });
-        }
-        
-        // Close menu via close button
-        if (closeMenu) {
-            closeMenu.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                console.log('Close button clicked'); // Debug log
-                closeNavMenu();
-            });
-        }
-        
-        // Close menu when clicking backdrop
-        if (navBackdrop) {
-            navBackdrop.addEventListener('click', function(e) {
-                e.stopPropagation();
-                console.log('Backdrop clicked'); // Debug log
-                closeNavMenu();
-            });
-        }
-        
-        // Close menu when clicking on a nav link
-        if (navLinks) {
-            const navLinkElements = navLinks.querySelectorAll('a');
-            navLinkElements.forEach(link => {
-                link.addEventListener('click', function() {
-                    console.log('Nav link clicked'); // Debug log
-                    closeNavMenu();
-                });
-            });
-        }
-        
-        // Emergency close - ESC key
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape' && navLinks && navLinks.classList.contains('active')) {
-                console.log('ESC key pressed'); // Debug log
-                closeNavMenu();
-            }
-        });
-        
-        // Global close function for debugging
-        window.forceCloseMenu = function() {
-            console.log('Force closing menu');
-            const nav = document.getElementById('navLinks');
-            const backdrop = document.getElementById('navBackdrop');
-            if (nav) nav.classList.remove('active');
-            if (backdrop) backdrop.classList.remove('active');
-            document.body.style.overflow = '';
-            console.log('Menu should be closed now');
-        };
+        // Navigation menu is now always visible on mobile - no toggle needed
         
         // Logout functionality
         document.getElementById('logoutButton').addEventListener('click', async () => {
