@@ -1243,27 +1243,30 @@
                 let currentSection = '';
                 
                 sortedEvents.forEach((event) => {
-                    // Add section headers
-                    const eventType = event.Type.includes('Street Kitchen') ? 'Street Kitchen' :
-                                    event.Type.includes('Outreach') ? 'Outreach' :
-                                    event.Type.includes('Takeaway') ? 'Takeaway' : 'Other Events';
+                    // Use specific event type from CSV for better display
+                    const eventType = event.Type; // Use exact Type from CSV (e.g., "Breakfast Outreach", "Evening Outreach")
+                    const sectionType = event.Type.includes('Street Kitchen') ? 'Street Kitchen' :
+                                       event.Type.includes('Outreach') ? 'Outreach' :
+                                       event.Type.includes('Takeaway') ? 'Takeaway' : 'Other Events';
                     
-                    if (currentSection !== eventType) {
-                        currentSection = eventType;
+                    if (currentSection !== sectionType) {
+                        currentSection = sectionType;
                         const header = document.createElement('option');
                         header.disabled = true;
                         header.style.fontWeight = 'bold';
                         header.style.background = '#f0f0f0';
                         header.style.color = '#666';
-                        header.textContent = `── ${eventType} Events ──`;
+                        header.textContent = `── ${sectionType} Events ──`;
                         eventSelect.appendChild(header);
                     }
                     
                     const option = document.createElement('option');
+                    // Create better display names that differentiate between event types
                     const displayName = event.EventName === event.EventTown ? 
                         `${event.EventTown} ${eventType}` : 
                         `${event.EventName} - ${event.EventTown}`;
-                    option.value = `${event.EventName} - ${event.EventTown}`;
+                    // Store full event info including Type for WhatsApp sharing
+                    option.value = `${event.Type}|${event.EventName}|${event.EventTown}`;
                     option.textContent = displayName;
                     option.style.paddingLeft = '15px';
                     eventSelect.appendChild(option);
@@ -1308,8 +1311,8 @@
                 return;
             }
             
-            // Parse event data
-            const [eventName, eventTown] = eventValue.split(' - ');
+            // Parse event data - now includes Type|EventName|EventTown
+            const [eventType, eventName, eventTown] = eventValue.split('|');
             
             // Show loading state
             submitButton.disabled = true;
@@ -1327,6 +1330,7 @@
                         date,
                         eventName,
                         eventTown,
+                        eventType, // Add event type for better data tracking
                         peopleServed: parseInt(peopleServed),
                         notes,
                         outreachName: user.name
@@ -1338,9 +1342,11 @@
                 if (response.ok && data.success) {
                     successMessage.classList.add('show');
                     
-                    // Show WhatsApp sharing modal
+                    // Show WhatsApp sharing modal with proper event formatting
                     showWhatsAppSharingModal({
-                        eventName: eventValue,
+                        eventType: eventType,
+                        eventName: eventName,
+                        eventTown: eventTown,
                         date: date,
                         peopleServed: peopleServed,
                         notes: notes,
@@ -1496,8 +1502,11 @@
                 year: 'numeric'
             });
             
-            // Create the WhatsApp message
-            let message = `${attendanceData.eventName} - ${formattedDate}\nPeople Served: ${attendanceData.peopleServed}`;
+            // Create the WhatsApp message with proper event formatting
+            const eventLocation = attendanceData.eventName === attendanceData.eventTown ? 
+                `${attendanceData.eventTown} ${attendanceData.eventType}` : 
+                `${attendanceData.eventName} - ${attendanceData.eventType}`;
+            let message = `${eventLocation} - ${formattedDate}\nPeople Served: ${attendanceData.peopleServed}`;
             
             if (attendanceData.notes && attendanceData.notes.trim()) {
                 message += `\nNotes: ${attendanceData.notes.trim()}`;

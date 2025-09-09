@@ -788,20 +788,50 @@
             }
             
             .users-table-container {
-                overflow-x: auto;
                 margin: -1rem;
                 padding: 1rem;
             }
             
             .users-table {
-                font-size: 0.8rem;
-                min-width: 600px; /* Maintain table structure but allow horizontal scroll */
+                font-size: 0.85rem;
             }
             
-            .users-table th,
+            /* Hide less important columns on mobile */
+            .users-table th:nth-child(2), /* Username */
+            .users-table td:nth-child(2),
+            .users-table th:nth-child(5), /* Last Login */  
+            .users-table td:nth-child(5),
+            .users-table th:nth-child(6), /* Last Activity */
+            .users-table td:nth-child(6) {
+                display: none;
+            }
+            
+            .users-table th:nth-child(1),
+            .users-table td:nth-child(1) {
+                width: 40%; /* User */
+            }
+            
+            .users-table th:nth-child(3),
+            .users-table td:nth-child(3) {
+                width: 20%; /* Role */
+                text-align: center;
+            }
+            
+            .users-table th:nth-child(4),
+            .users-table td:nth-child(4) {
+                width: 20%; /* Status */
+                text-align: center;
+            }
+            
+            .users-table th:nth-child(7),
+            .users-table td:nth-child(7) {
+                width: 20%; /* Actions */
+                text-align: center;
+            }
+            
             .users-table td {
                 padding: 0.75rem 0.5rem;
-                white-space: nowrap;
+                vertical-align: middle;
             }
             
             .action-buttons {
@@ -877,12 +907,22 @@
             }
             
             .users-table {
-                font-size: 0.75rem;
+                font-size: 0.8rem;
             }
             
             .users-table th,
             .users-table td {
-                padding: 0.5rem 0.25rem;
+                padding: 0.6rem 0.4rem;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+                gap: 0.25rem;
+            }
+            
+            .action-buttons .btn {
+                font-size: 0.75rem;
+                padding: 0.4rem 0.6rem;
             }
             
             .search-filter-bar {
@@ -1251,6 +1291,7 @@
                             <th>Role</th>
                             <th>Status</th>
                             <th>Last Login</th>
+                            <th>Last Activity</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -1658,6 +1699,7 @@
                                 <span class="status-badge ${getStatusClass(user)}">${getStatus(user)}</span>
                             </td>
                             <td>${formatDate(user.last_login)}</td>
+                            <td>${formatDate(user.last_activity)}</td>
                             <td>
                                 <div class="action-buttons">
                                     <button class="btn-icon edit" onclick="editUser('${user.id}')" title="Edit">
