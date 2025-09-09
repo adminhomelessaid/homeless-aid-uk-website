@@ -699,27 +699,24 @@
                 padding: 0.5rem;
             }
             
-            /* Extreme small screens (320px) special handling */
-            @media (max-width: 320px) {
-                .nav-links a span {
-                    /* Hide text labels on extremely small screens, keep icons */
-                    display: none;
-                }
-                
-                .nav-links a {
-                    padding: 0.4rem !important;
-                    min-width: auto !important;
-                }
-                
-                .nav-links a i {
-                    margin: 0 !important;
-                    font-size: 0.9rem !important;
-                }
-            }
-            
             .dashboard-card {
                 padding: 1rem;
                 margin-bottom: 1rem;
+            }
+        }
+        
+        /* Extreme small screens (320px) */
+        @media (max-width: 320px) {
+            .nav-links a span {
+                font-size: 0.5rem;
+            }
+            
+            .nav-links a {
+                padding: 0.4rem 0.1rem !important;
+            }
+            
+            .nav-links a i {
+                font-size: 0.9rem !important;
             }
         }
     </style>
@@ -745,10 +742,10 @@
                         <i class="fas fa-home"></i> <span>Home</span>
                     </a>
                     <a href="dashboard.html" class="active" title="Dashboard">
-                        <i class="fas fa-tachometer-alt"></i> <span>Dashboard</span>
+                        <i class="fas fa-tachometer-alt"></i> <span>Dash</span>
                     </a>
                     <a href="events-overview.html" title="Overview">
-                        <i class="fas fa-chart-bar"></i> <span>Overview</span>
+                        <i class="fas fa-chart-bar"></i> <span>Stats</span>
                     </a>
                     <a href="admin.html" id="adminLink" title="Admin">
                         <i class="fas fa-user-shield"></i> <span>Admin</span>
@@ -758,13 +755,16 @@
                     </a>
                 </div>
                 
-                <div class="user-info">
-                    <div class="user-name" id="userName">Loading...</div>
-                    <div class="user-role" id="userRole">Loading...</div>
+                <!-- User Info Row -->
+                <div class="user-info-row">
+                    <div class="user-info">
+                        <div class="user-name" id="userName">Loading...</div>
+                        <div class="user-role" id="userRole">Loading...</div>
+                    </div>
+                    <button class="logout-button" id="logoutButton">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
                 </div>
-                <button class="logout-button" id="logoutButton">
-                    <i class="fas fa-sign-out-alt"></i> Logout
-                </button>
             </div>
         </div>
     </header>
