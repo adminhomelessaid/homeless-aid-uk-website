@@ -12,24 +12,10 @@
     <link rel="icon" href="../Branding/HomelessAidUKLogo.png" type="image/png">
     
     <style>
-        /* Base Styles */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Inter', sans-serif;
-            background: #f3f4f6;
-            min-height: 100vh;
-        }
-        
-        /* Header Styles */
         .dashboard-header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 1rem 0;
+            padding: 1.5rem 0;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
         
@@ -37,83 +23,40 @@
             max-width: 1200px;
             margin: 0 auto;
             padding: 0 2rem;
-        }
-        
-        .header-top {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 1rem;
         }
         
-        .header-brand {
+        .header-left {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
+            gap: 1rem;
         }
         
         .header-logo {
-            width: 45px;
-            height: 45px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
             background: white;
             padding: 2px;
         }
         
         .header-title {
-            font-size: 1.4rem;
+            font-size: 1.5rem;
             font-weight: 700;
-            line-height: 1.2;
         }
         
         .header-subtitle {
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             opacity: 0.9;
             margin-top: 0.25rem;
         }
         
-        /* Navigation - Desktop */
-        .nav-container {
+        .header-right {
             display: flex;
-            justify-content: space-between;
             align-items: center;
             gap: 1.5rem;
-        }
-        
-        .nav-links {
-            display: flex;
-            gap: 0.5rem;
-            flex: 1;
-        }
-        
-        .nav-links a {
-            color: white;
-            text-decoration: none;
-            padding: 0.5rem 0.75rem;
-            border-radius: 6px;
-            background: rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
-            font-size: 0.9rem;
-            white-space: nowrap;
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
-        }
-        
-        .nav-links a:hover,
-        .nav-links a.active {
-            background: rgba(255, 255, 255, 0.25);
-        }
-        
-        .nav-links a i {
-            font-size: 0.9rem;
-        }
-        
-        /* User Section */
-        .user-section {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
         }
         
         .user-info {
@@ -122,26 +65,23 @@
         
         .user-name {
             font-weight: 600;
-            font-size: 0.95rem;
-            line-height: 1.2;
+            font-size: 1rem;
         }
         
         .user-role {
-            font-size: 0.8rem;
-            opacity: 0.85;
-            line-height: 1.2;
+            font-size: 0.85rem;
+            opacity: 0.9;
         }
         
         .logout-button {
             background: rgba(255, 255, 255, 0.2);
             border: 1px solid rgba(255, 255, 255, 0.3);
             color: white;
-            padding: 0.45rem 0.9rem;
-            border-radius: 6px;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
             cursor: pointer;
             transition: all 0.3s ease;
             font-weight: 500;
-            font-size: 0.85rem;
         }
         
         .logout-button:hover {
@@ -149,7 +89,6 @@
             transform: translateY(-1px);
         }
         
-        /* Main Content */
         .dashboard-container {
             max-width: 1200px;
             margin: 2rem auto;
@@ -184,7 +123,6 @@
             color: #667eea;
         }
         
-        /* Form Styles */
         .form-group {
             margin-bottom: 1.5rem;
         }
@@ -262,6 +200,10 @@
             transform: none;
         }
         
+        .submit-button.loading {
+            position: relative;
+        }
+        
         .submit-button.loading i {
             animation: spin 1s linear infinite;
         }
@@ -270,7 +212,6 @@
             to { transform: rotate(360deg); }
         }
         
-        /* Messages */
         .success-message, .error-message {
             padding: 1rem;
             border-radius: 8px;
@@ -296,7 +237,6 @@
             display: flex;
         }
         
-        /* Recent Logs */
         .recent-logs {
             background: white;
             border-radius: 12px;
@@ -338,10 +278,614 @@
             font-size: 3rem;
             color: #d1d5db;
             margin-bottom: 1rem;
-            display: block;
         }
         
-        /* WhatsApp Modal */
+        /* Desktop Navigation */
+        .mobile-menu-toggle {
+            display: none;
+        }
+        
+        .nav-backdrop {
+            display: none;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 0.5rem;
+            margin-right: 1rem;
+            align-items: center;
+        }
+        
+        .nav-links .nav-close {
+            display: none;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            transition: background-color 0.3s ease;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+        
+        .nav-links a:hover,
+        .nav-links a.active {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .nav-links a i {
+            margin-right: 0.3rem;
+        }
+        
+        /* Mobile-First Responsive Design */
+        @media (max-width: 768px) {
+            body {
+                font-size: clamp(14px, 3.5vw, 16px);
+            }
+            
+            .dashboard-header {
+                position: relative;
+                z-index: 10;
+                margin-bottom: 1rem;
+                overflow: visible;
+            }
+            
+            .header-container {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 0.75rem 1rem;
+                gap: 1rem;
+            }
+            
+            .header-left {
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+                flex: 1;
+            }
+            
+            .header-logo {
+                width: 40px;
+                height: 40px;
+            }
+            
+            .header-left h1 {
+                font-size: 1.25rem;
+                margin: 0;
+                line-height: 1.2;
+            }
+            
+            .header-subtitle {
+                display: none;
+            }
+            
+            .header-right {
+                display: flex;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 1rem;
+            }
+            
+            /* Hide mobile menu toggle on all screen sizes */
+            .mobile-menu-toggle {
+                display: none !important;
+            }
+            
+            /* Remove backdrop - not needed */
+            .nav-backdrop {
+                display: none !important;
+            }
+            
+            /* Mobile Navigation - Responsive wrapping layout */
+            .nav-links {
+                display: flex;
+                flex-wrap: wrap;          /* KEY CHANGE: Allows buttons to wrap to the next line */
+                gap: 0.5rem;              /* Maintains spacing between all buttons */
+                padding: 0.5rem;
+                background: rgba(0, 0, 0, 0.1);
+                border-radius: 8px;
+                width: 100%;
+                margin: 0;
+                justify-content: center;  /* KEY CHANGE: Centers the buttons for a clean, aligned look */
+            }
+            
+            
+            .nav-links.active {
+                /* Remove slide animation */
+                right: auto !important;
+            }
+            
+            /* Remove close button - not needed */
+            .nav-links .nav-close {
+                display: none !important;
+            }
+            
+            /* Navigation Links - Mobile optimized */
+            .nav-links a {
+                display: inline-flex !important;
+                align-items: center;
+                gap: 0.3rem;
+                padding: 0.5rem 0.75rem !important;
+                border-radius: 6px;
+                background: rgba(255, 255, 255, 0.15) !important;
+                color: white !important;
+                text-decoration: none;
+                font-size: 0.85rem !important;
+                white-space: nowrap;
+                transition: all 0.2s ease;
+                flex-shrink: 0;
+                border: 1px solid rgba(255, 255, 255, 0.2) !important;
+                font-weight: 500;
+                min-width: fit-content;
+            }
+            
+            .nav-links a:hover {
+                background: rgba(255, 255, 255, 0.25) !important;
+                border-color: rgba(255, 255, 255, 0.3) !important;
+                transform: none;
+            }
+            
+            .nav-links a.active {
+                background: rgba(255, 255, 255, 0.3) !important;
+                border-color: rgba(255, 255, 255, 0.4) !important;
+                font-weight: 600;
+            }
+            
+            .nav-links a i {
+                font-size: 0.85rem !important;
+            }
+            
+            /* User Info and Logout - Row layout */
+            .user-info {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 0.5rem;
+                background: rgba(0, 0, 0, 0.1);
+                border-radius: 8px;
+            }
+            
+            .user-name {
+                font-size: 0.9rem;
+                font-weight: 600;
+                color: white;
+                line-height: 1.2;
+            }
+            
+            .user-role {
+                font-size: 0.75rem;
+                opacity: 0.8;
+                color: white;
+                line-height: 1.2;
+            }
+            
+            /* Show logout button inline with user info */
+            .logout-button {
+                display: inline-block !important;
+                padding: 0.4rem 0.8rem !important;
+                font-size: 0.85rem !important;
+                background: rgba(255, 255, 255, 0.15) !important;
+                border: 1px solid rgba(255, 255, 255, 0.3) !important;
+            }
+            
+            .dashboard-container {
+                padding: 1rem;
+                margin-top: 1rem;
+                position: relative;
+                z-index: 1;
+            }
+            
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .dashboard-card {
+                margin-bottom: 1.5rem;
+                padding: 1.5rem;
+                border-radius: 12px;
+            }
+            
+            .card-header h2 {
+                font-size: 1.3rem;
+                margin-bottom: 0.75rem;
+            }
+            
+            .form-group {
+                margin-bottom: 1.25rem;
+            }
+            
+            .form-group label {
+                font-size: 0.9rem;
+                margin-bottom: 0.5rem;
+            }
+            
+            .form-group input,
+            .form-group select,
+            .form-group textarea {
+                font-size: 16px; /* Prevents zoom on iOS */
+                padding: 0.75rem;
+                border-radius: 8px;
+                border: 2px solid #e2e8f0;
+            }
+            
+            .btn {
+                font-size: 0.9rem;
+                padding: 0.75rem 1.5rem;
+                border-radius: 8px;
+                min-height: 44px; /* Touch target minimum */
+            }
+            
+            .btn-primary {
+                width: 100%;
+                margin-top: 1rem;
+            }
+            
+            .statistics-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .stat-card {
+                padding: 1.25rem;
+                text-align: center;
+                border-radius: 10px;
+            }
+            
+            .stat-number {
+                font-size: 1.8rem;
+                margin-bottom: 0.25rem;
+            }
+            
+            .stat-label {
+                font-size: 0.85rem;
+            }
+            
+            /* Recent Logs Mobile Optimization */
+            .logs-table {
+                font-size: 0.85rem;
+            }
+            
+            /* Hide less important columns on mobile */
+            .logs-table th:nth-child(3), /* Location */
+            .logs-table td:nth-child(3),
+            .logs-table th:nth-child(5) { /* Logged By */
+                display: none;
+            }
+            .logs-table td:nth-child(5) {
+                display: none;
+            }
+            
+            .logs-table th:nth-child(1),
+            .logs-table td:nth-child(1) {
+                width: 30%; /* Date */
+                font-size: 0.8rem;
+            }
+            
+            .logs-table th:nth-child(2),
+            .logs-table td:nth-child(2) {
+                width: 50%; /* Event */
+                font-size: 0.8rem;
+            }
+            
+            .logs-table th:nth-child(4),
+            .logs-table td:nth-child(4) {
+                width: 20%; /* People Served */
+                text-align: center;
+                font-weight: 600;
+            }
+        }
+        
+        /* Small mobile (480px and below) */
+        @media (max-width: 480px) {
+            .header-container {
+                padding: 0.75rem;
+            }
+            
+            .header-left h1 {
+                font-size: 1.1rem;
+            }
+            
+            .nav-links {
+                padding: 0.4rem;
+                gap: 0.4rem;
+            }
+            
+            .nav-links a {
+                font-size: 0.8rem !important;
+                padding: 0.45rem 0.6rem !important;
+            }
+            
+            .nav-links a i {
+                font-size: 0.8rem !important;
+            }
+            
+            .dashboard-container {
+                padding: 0.75rem;
+            }
+            
+            .dashboard-card {
+                padding: 1.25rem;
+            }
+            
+            .card-header h2 {
+                font-size: 1.1rem;
+            }
+            
+            .form-group input,
+            .form-group select,
+            .form-group textarea {
+                padding: 0.6rem;
+            }
+            
+            .btn {
+                padding: 0.6rem 1.25rem;
+                font-size: 0.85rem;
+            }
+        }
+        
+        /* Very small mobile (374px and below) */
+        @media (max-width: 374px) {
+            .header-container {
+                padding: 0.5rem;
+            }
+            
+            .header-left h1 {
+                font-size: 1rem;
+            }
+            
+            .header-logo {
+                width: 35px;
+                height: 35px;
+            }
+            
+            .nav-links {
+                padding: 0.35rem;
+                gap: 0.35rem;
+                /* Force horizontal scroll even on very small screens */
+                flex-direction: row !important;
+                flex-wrap: nowrap !important;
+            }
+            
+            .nav-links a {
+                font-size: 0.75rem !important;
+                padding: 0.4rem 0.5rem !important;
+                /* Ensure links stay in a row */
+                flex: 0 0 auto;
+                min-width: fit-content;
+            }
+            
+            .nav-links a i {
+                font-size: 0.75rem !important;
+            }
+            
+            .user-info {
+                padding: 0.4rem;
+            }
+            
+            .user-name {
+                font-size: 0.85rem;
+            }
+            
+            .user-role {
+                font-size: 0.7rem;
+            }
+            
+            .logout-button {
+                padding: 0.35rem 0.6rem !important;
+                font-size: 0.8rem !important;
+            }
+            
+            .dashboard-container {
+                padding: 0.5rem;
+            }
+            
+            .dashboard-card {
+                padding: 1rem;
+                margin-bottom: 1rem;
+            }
+        }
+        
+        /* Extreme small screens (320px) */
+        @media (max-width: 320px) {
+            .nav-links a span {
+                font-size: 0.5rem;
+            }
+            
+            .nav-links a {
+                padding: 0.4rem 0.1rem !important;
+            }
+            
+            .nav-links a i {
+                font-size: 0.9rem !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Backdrop -->
+    <!-- Backdrop removed - not needed for simplified navigation -->
+    
+    <!-- Dashboard Header -->
+    <header class="dashboard-header">
+        <div class="header-container">
+            <div class="header-left">
+                <img src="../Branding/HomelessAidUKLogo.png" alt="Homeless Aid UK" class="header-logo">
+                <div>
+                    <h1 class="header-title">Outreach Dashboard</h1>
+                    <p class="header-subtitle">Attendance Logging System</p>
+                </div>
+            </div>
+            <div class="header-right">
+                <!-- Navigation Menu -->
+                <div class="nav-links" id="navLinks">
+                    <a href="/" title="Home">
+                        <i class="fas fa-home"></i> <span>Home</span>
+                    </a>
+                    <a href="dashboard.html" class="active" title="Dashboard">
+                        <i class="fas fa-tachometer-alt"></i> <span>Dash</span>
+                    </a>
+                    <a href="events-overview.html" title="Overview">
+                        <i class="fas fa-chart-bar"></i> <span>Stats</span>
+                    </a>
+                    <a href="admin.html" id="adminLink" title="Admin">
+                        <i class="fas fa-user-shield"></i> <span>Admin</span>
+                    </a>
+                    <a href="account.html" title="Account">
+                        <i class="fas fa-user-cog"></i> <span>Account</span>
+                    </a>
+                </div>
+                
+                <!-- User Info Row -->
+                <div class="user-info-row">
+                    <div class="user-info">
+                        <div class="user-name" id="userName">Loading...</div>
+                        <div class="user-role" id="userRole">Loading...</div>
+                    </div>
+                    <button class="logout-button" id="logoutButton">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Main Dashboard Content -->
+    <div class="dashboard-container">
+        <div class="dashboard-grid">
+            <!-- Attendance Form Card -->
+            <div class="dashboard-card">
+                <h2 class="card-title">
+                    <i class="fas fa-clipboard-check"></i>
+                    Log Attendance
+                </h2>
+                
+                <div class="success-message" id="successMessage">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Attendance logged successfully!</span>
+                </div>
+                
+                <div class="error-message" id="errorMessage">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span id="errorText">An error occurred. Please try again.</span>
+                </div>
+                
+                <form id="attendanceForm">
+                    <div class="form-group">
+                        <label class="form-label">
+                            Event/Location <span class="required">*</span>
+                        </label>
+                        <select class="form-select" id="eventSelect" required>
+                            <option value="">Select an event...</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">
+                            Date <span class="required">*</span>
+                        </label>
+                        <input type="date" class="form-input" id="dateInput" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">
+                            People Served <span class="required">*</span>
+                        </label>
+                        <input type="number" class="form-input" id="peopleServed" 
+                               min="0" max="500" required placeholder="Enter number">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">
+                            Notes (Optional)
+                        </label>
+                        <textarea class="form-textarea" id="notesInput" 
+                                  placeholder="Any additional details about the event..."></textarea>
+                    </div>
+                    
+                    <button type="submit" class="submit-button" id="submitButton">
+                        <i class="fas fa-save"></i>
+                        Submit Attendance
+                    </button>
+                </form>
+            </div>
+            
+            <!-- Quick Stats Card -->
+            <div class="dashboard-card">
+                <h2 class="card-title">
+                    <i class="fas fa-chart-line"></i>
+                    Today's Overview
+                </h2>
+                
+                <div id="statsContainer">
+                    <div style="display: grid; gap: 1rem;">
+                        <div style="padding: 1rem; background: #f0f9ff; border-radius: 8px; border-left: 4px solid #3b82f6;">
+                            <div style="color: #64748b; font-size: 0.875rem;">Total Logged Today</div>
+                            <div style="font-size: 2rem; font-weight: 700; color: #1e40af;" id="todayTotal">0</div>
+                        </div>
+                        <div style="padding: 1rem; background: #f0fdf4; border-radius: 8px; border-left: 4px solid #10b981;">
+                            <div style="color: #64748b; font-size: 0.875rem;">This Week</div>
+                            <div style="font-size: 2rem; font-weight: 700; color: #059669;" id="weekTotal">0</div>
+                        </div>
+                        <div style="padding: 1rem; background: #fef3c7; border-radius: 8px; border-left: 4px solid #f59e0b;">
+                            <div style="color: #64748b; font-size: 0.875rem;">This Month</div>
+                            <div style="font-size: 2rem; font-weight: 700; color: #d97706;" id="monthTotal">0</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Recent Logs -->
+        <div class="recent-logs">
+            <h2 class="card-title">
+                <i class="fas fa-history"></i>
+                Recent Attendance Logs
+            </h2>
+            
+            <div id="logsContainer">
+                <div class="empty-state">
+                    <i class="fas fa-clipboard-list"></i>
+                    <p>No attendance logs yet. Submit your first entry above!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- WhatsApp Sharing Modal -->
+    <div id="whatsappModal" class="whatsapp-modal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fab fa-whatsapp"></i> Share Attendance Update</h3>
+                <button class="close-btn" id="closeWhatsAppModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p class="modal-description">Share this attendance update on WhatsApp:</p>
+                <div class="message-preview">
+                    <div class="message-bubble">
+                        <i class="fab fa-whatsapp whatsapp-icon"></i>
+                        <div class="message-content" id="whatsappMessagePreview">
+                            <!-- Message content will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-whatsapp" id="shareOnWhatsApp">
+                    <i class="fab fa-whatsapp"></i>
+                    Share on WhatsApp
+                </button>
+                <button class="btn-skip" id="skipSharing">
+                    Skip
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <style>
         .whatsapp-modal {
             display: none;
             position: fixed;
@@ -512,452 +1056,91 @@
             color: #4b5563;
         }
         
-        /* Mobile Responsive - Solution 1: Compact Icon Grid */
+        /* Modal mobile improvements */
         @media (max-width: 768px) {
-            .dashboard-header {
-                padding: 0.75rem 0;
+            .modal-content {
+                width: 95%;
+                max-width: none;
+                margin: 1rem;
+                border-radius: 12px;
             }
             
-            .header-container {
-                padding: 0 1rem;
+            .modal-header {
+                padding: 1.25rem 1.25rem 0;
             }
             
-            .header-top {
-                margin-bottom: 0.75rem;
-            }
-            
-            .header-brand {
-                gap: 0.5rem;
-            }
-            
-            .header-logo {
-                width: 40px;
-                height: 40px;
-            }
-            
-            .header-title {
+            .modal-header h3 {
                 font-size: 1.2rem;
             }
             
-            .header-subtitle {
-                display: none;
+            .modal-body {
+                padding: 1.25rem;
             }
             
-            /* Mobile Navigation - Compact Icon Grid (Solution 1) */
-            .nav-container {
-                flex-direction: column;
+            .modal-actions {
+                padding: 0 1.25rem 1.25rem;
                 gap: 0.75rem;
             }
             
-            .nav-links {
-                display: flex !important;
-                justify-content: space-between;
-                gap: 0.4rem;
-                width: 100%;
-                padding: 0;
-                background: transparent;
-                overflow: visible;
+            .message-preview {
+                margin: 1rem 0;
             }
             
-            .nav-links a {
-                flex: 1;
-                display: flex !important;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                padding: 0.5rem 0.2rem;
-                background: rgba(255, 255, 255, 0.25);
-                border: 1px solid rgba(255, 255, 255, 0.35);
-                border-radius: 8px;
-                font-size: 0.65rem;
-                line-height: 1;
-                text-align: center;
-                min-width: 0;
-                gap: 0.3rem;
-            }
-            
-            .nav-links a i {
-                font-size: 1.1rem;
-                margin: 0;
-            }
-            
-            .nav-links a span {
-                display: block;
-            }
-            
-            .nav-links a:active {
-                transform: scale(0.95);
-                background: rgba(255, 255, 255, 0.35);
-            }
-            
-            .nav-links a.active {
-                background: rgba(255, 255, 255, 0.4);
-                border-color: rgba(255, 255, 255, 0.5);
-                font-weight: 600;
-            }
-            
-            /* User Section Mobile */
-            .user-section {
-                width: 100%;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                padding: 0.5rem 0.75rem;
-                background: rgba(0, 0, 0, 0.15);
-                border-radius: 8px;
-            }
-            
-            .user-info {
-                text-align: left;
-            }
-            
-            .user-name {
-                font-size: 0.9rem;
-            }
-            
-            .user-role {
-                font-size: 0.75rem;
-            }
-            
-            .logout-button {
-                padding: 0.4rem 0.75rem;
-                font-size: 0.8rem;
-                background: rgba(255, 255, 255, 0.2);
-            }
-            
-            /* Content adjustments */
-            .dashboard-container {
+            .message-bubble {
                 padding: 1rem;
-                margin-top: 1.5rem;
             }
-            
-            .dashboard-grid {
-                grid-template-columns: 1fr;
-                gap: 1.5rem;
-            }
-            
-            .dashboard-card {
-                padding: 1.5rem;
-            }
-            
-            .card-title {
-                font-size: 1.15rem;
-            }
-            
-            /* Table responsive */
-            .logs-table {
-                font-size: 0.85rem;
-            }
-            
-            .logs-table th:nth-child(3),
-            .logs-table td:nth-child(3),
-            .logs-table th:nth-child(5),
-            .logs-table td:nth-child(5) {
-                display: none;
-            }
-            
-            /* Modal responsive */
+        }
+        
+        @media (max-width: 480px) {
             .modal-content {
                 width: 95%;
                 margin: 0.5rem;
+                border-radius: 10px;
+            }
+            
+            .modal-header {
+                padding: 1rem 1rem 0;
+            }
+            
+            .modal-header h3 {
+                font-size: 1.1rem;
+            }
+            
+            .modal-body {
+                padding: 1rem;
             }
             
             .modal-actions {
                 flex-direction: column;
+                padding: 0 1rem 1rem;
                 gap: 0.5rem;
             }
             
-            .btn-whatsapp,
-            .btn-skip {
+            .btn-whatsapp, .btn-skip {
                 flex: none;
                 width: 100%;
-            }
-        }
-        
-        /* Small Mobile (480px) */
-        @media (max-width: 480px) {
-            .header-container {
-                padding: 0 0.75rem;
-            }
-            
-            .header-title {
-                font-size: 1.1rem;
-            }
-            
-            .nav-links {
-                gap: 0.3rem;
-            }
-            
-            .nav-links a {
-                padding: 0.45rem 0.15rem;
-                font-size: 0.6rem;
-            }
-            
-            .nav-links a i {
-                font-size: 1rem;
-            }
-            
-            .user-section {
-                padding: 0.4rem 0.6rem;
-            }
-            
-            .user-name {
-                font-size: 0.85rem;
-            }
-            
-            .user-role {
-                font-size: 0.7rem;
-            }
-            
-            .logout-button {
-                padding: 0.35rem 0.6rem;
-                font-size: 0.75rem;
-            }
-            
-            .dashboard-container {
-                padding: 0.75rem;
-            }
-            
-            .dashboard-card {
-                padding: 1.25rem;
-            }
-        }
-        
-        /* Very Small Mobile (374px) */
-        @media (max-width: 374px) {
-            .header-logo {
-                width: 35px;
-                height: 35px;
-            }
-            
-            .header-title {
-                font-size: 1rem;
-            }
-            
-            .nav-links {
-                gap: 0.25rem;
-            }
-            
-            .nav-links a {
-                padding: 0.4rem 0.1rem;
-                font-size: 0.55rem;
-                border-radius: 6px;
-            }
-            
-            .nav-links a i {
-                font-size: 0.95rem;
-            }
-            
-            .dashboard-container {
-                padding: 0.5rem;
-            }
-            
-            .dashboard-card {
-                padding: 1rem;
-            }
-        }
-        
-        /* Extreme Small (320px) */
-        @media (max-width: 320px) {
-            .nav-links a {
-                padding: 0.35rem 0.05rem;
-                font-size: 0.5rem;
-            }
-            
-            .nav-links a i {
+                min-height: 44px;
                 font-size: 0.9rem;
+            }
+            
+            .message-bubble {
+                padding: 0.875rem;
+                font-size: 0.9rem;
+            }
+            
+            .close-btn {
+                font-size: 1.25rem;
+                padding: 0.25rem;
             }
         }
     </style>
-</head>
-<body>
-    <!-- Dashboard Header -->
-    <header class="dashboard-header">
-        <div class="header-container">
-            <div class="header-top">
-                <div class="header-brand">
-                    <img src="../Branding/HomelessAidUKLogo.png" alt="Homeless Aid UK" class="header-logo">
-                    <div>
-                        <h1 class="header-title">Outreach Dashboard</h1>
-                        <p class="header-subtitle">Attendance Logging System</p>
-                    </div>
-                </div>
-            </div>
-            
-            <nav class="nav-container">
-                <div class="nav-links" id="navLinks">
-                    <a href="/" title="Home">
-                        <i class="fas fa-home"></i>
-                        <span>Home</span>
-                    </a>
-                    <a href="dashboard.html" class="active" title="Dashboard">
-                        <i class="fas fa-tachometer-alt"></i>
-                        <span>Dash</span>
-                    </a>
-                    <a href="events-overview.html" title="Overview">
-                        <i class="fas fa-chart-bar"></i>
-                        <span>Stats</span>
-                    </a>
-                    <a href="admin.html" id="adminLink" title="Admin" style="display:none;">
-                        <i class="fas fa-user-shield"></i>
-                        <span>Admin</span>
-                    </a>
-                    <a href="account.html" title="Account">
-                        <i class="fas fa-user-cog"></i>
-                        <span>Account</span>
-                    </a>
-                </div>
-                
-                <div class="user-section">
-                    <div class="user-info">
-                        <div class="user-name" id="userName">Loading...</div>
-                        <div class="user-role" id="userRole">Loading...</div>
-                    </div>
-                    <button class="logout-button" id="logoutButton">
-                        <i class="fas fa-sign-out-alt"></i> Logout
-                    </button>
-                </div>
-            </nav>
-        </div>
-    </header>
-    
-    <!-- Main Dashboard Content -->
-    <main class="dashboard-container">
-        <div class="dashboard-grid">
-            <!-- Attendance Form Card -->
-            <div class="dashboard-card">
-                <h2 class="card-title">
-                    <i class="fas fa-clipboard-check"></i>
-                    Log Attendance
-                </h2>
-                
-                <div class="success-message" id="successMessage">
-                    <i class="fas fa-check-circle"></i>
-                    <span>Attendance logged successfully!</span>
-                </div>
-                
-                <div class="error-message" id="errorMessage">
-                    <i class="fas fa-exclamation-circle"></i>
-                    <span id="errorText">An error occurred. Please try again.</span>
-                </div>
-                
-                <form id="attendanceForm">
-                    <div class="form-group">
-                        <label class="form-label">
-                            Event/Location <span class="required">*</span>
-                        </label>
-                        <select class="form-select" id="eventSelect" required>
-                            <option value="">Select an event...</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">
-                            Date <span class="required">*</span>
-                        </label>
-                        <input type="date" class="form-input" id="dateInput" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">
-                            People Served <span class="required">*</span>
-                        </label>
-                        <input type="number" class="form-input" id="peopleServed" 
-                               min="0" max="500" required placeholder="Enter number">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">
-                            Notes (Optional)
-                        </label>
-                        <textarea class="form-textarea" id="notesInput" 
-                                  placeholder="Any additional details about the event..."></textarea>
-                    </div>
-                    
-                    <button type="submit" class="submit-button" id="submitButton">
-                        <i class="fas fa-save"></i>
-                        Submit Attendance
-                    </button>
-                </form>
-            </div>
-            
-            <!-- Quick Stats Card -->
-            <div class="dashboard-card">
-                <h2 class="card-title">
-                    <i class="fas fa-chart-line"></i>
-                    Today's Overview
-                </h2>
-                
-                <div id="statsContainer">
-                    <div style="display: grid; gap: 1rem;">
-                        <div style="padding: 1rem; background: #f0f9ff; border-radius: 8px; border-left: 4px solid #3b82f6;">
-                            <div style="color: #64748b; font-size: 0.875rem;">Total Logged Today</div>
-                            <div style="font-size: 2rem; font-weight: 700; color: #1e40af;" id="todayTotal">0</div>
-                        </div>
-                        <div style="padding: 1rem; background: #f0fdf4; border-radius: 8px; border-left: 4px solid #10b981;">
-                            <div style="color: #64748b; font-size: 0.875rem;">This Week</div>
-                            <div style="font-size: 2rem; font-weight: 700; color: #059669;" id="weekTotal">0</div>
-                        </div>
-                        <div style="padding: 1rem; background: #fef3c7; border-radius: 8px; border-left: 4px solid #f59e0b;">
-                            <div style="color: #64748b; font-size: 0.875rem;">This Month</div>
-                            <div style="font-size: 2rem; font-weight: 700; color: #d97706;" id="monthTotal">0</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Recent Logs -->
-        <div class="recent-logs">
-            <h2 class="card-title">
-                <i class="fas fa-history"></i>
-                Recent Attendance Logs
-            </h2>
-            
-            <div id="logsContainer">
-                <div class="empty-state">
-                    <i class="fas fa-clipboard-list"></i>
-                    <p>No attendance logs yet. Submit your first entry above!</p>
-                </div>
-            </div>
-        </div>
-    </main>
-    
-    <!-- WhatsApp Sharing Modal -->
-    <div id="whatsappModal" class="whatsapp-modal">
-        <div class="modal-backdrop"></div>
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3><i class="fab fa-whatsapp"></i> Share Attendance Update</h3>
-                <button class="close-btn" id="closeWhatsAppModal">&times;</button>
-            </div>
-            <div class="modal-body">
-                <p class="modal-description">Share this attendance update on WhatsApp:</p>
-                <div class="message-preview">
-                    <div class="message-bubble">
-                        <i class="fab fa-whatsapp whatsapp-icon"></i>
-                        <div class="message-content" id="whatsappMessagePreview"></div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-actions">
-                <button class="btn-whatsapp" id="shareOnWhatsApp">
-                    <i class="fab fa-whatsapp"></i>
-                    Share on WhatsApp
-                </button>
-                <button class="btn-skip" id="skipSharing">
-                    Skip
-                </button>
-            </div>
-        </div>
-    </div>
     
     <script>
-        // Authentication check
+        // Check authentication on page load - support both token formats for compatibility
         let token = localStorage.getItem('outreachToken') || localStorage.getItem('outreach_token');
         let user = JSON.parse(localStorage.getItem('outreach_user') || '{}');
         
-        // Parse JWT if needed
+        // If using new format, parse JWT to get user info
         if (localStorage.getItem('outreachToken') && !user.name) {
             try {
                 const base64Url = token.split('.')[1];
@@ -968,35 +1151,40 @@
             }
         }
         
-        // Redirect if not authenticated
         if (!token) {
             window.location.href = '/Outreach/login.html';
         } else {
-            // Verify token validity
+            // Verify token is still valid
             fetch('/api/auth/verify', {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
             }).then(response => {
                 if (!response.ok) {
-                    localStorage.clear();
+                    localStorage.removeItem('outreach_token');
+                    localStorage.removeItem('outreach_user');
+                    localStorage.removeItem('outreachToken');
                     window.location.href = '/Outreach/login.html';
                 }
             }).catch(() => {
-                localStorage.clear();
+                localStorage.removeItem('outreach_token');
+                localStorage.removeItem('outreach_user');
+                localStorage.removeItem('outreachToken');
                 window.location.href = '/Outreach/login.html';
             });
         }
         
-        // Set user info
+        // Set user name and role
         document.getElementById('userName').textContent = user.name || user.username || 'Lead Volunteer';
+        
+        // Update user role and show admin link if user is admin
         const roleText = user.role === 'admin' ? 'Administrator' : 
                         user.role === 'team_lead' ? 'Team Lead' : 'Volunteer';
         document.getElementById('userRole').textContent = roleText;
         
         // Show admin link if user is admin
         if (user.role === 'admin') {
-            document.getElementById('adminLink').style.display = 'flex';
+            document.getElementById('adminLink').style.display = 'inline-block';
         }
         
         // Set today's date
@@ -1004,7 +1192,7 @@
         document.getElementById('dateInput').value = today;
         document.getElementById('dateInput').max = today;
         
-        // Load events from CSV
+        // Load events from AttendanceEvents CSV
         async function loadEvents() {
             try {
                 const response = await fetch('../AttendanceEvents.csv');
@@ -1025,29 +1213,36 @@
                     }
                 }
                 
-                // Sort and populate events
+                // Populate event dropdown with intelligent sorting
                 const eventSelect = document.getElementById('eventSelect');
                 
+                // Sort events: Street Kitchen first, then Outreach, then Others, then Takeaway
                 function sortEvents(events) {
                     const streetKitchens = events.filter(e => e.Type.includes('Street Kitchen'))
-                        .sort((a, b) => a.EventTown.localeCompare(b.EventTown));
+                        .sort((a, b) => a.EventTown.localeCompare(b.EventTown) || a.EventName.localeCompare(b.EventName));
+                    
                     const outreach = events.filter(e => e.Type.includes('Outreach'))
-                        .sort((a, b) => a.EventTown.localeCompare(b.EventTown));
+                        .sort((a, b) => a.EventTown.localeCompare(b.EventTown) || a.EventName.localeCompare(b.EventName));
+                    
                     const takeaways = events.filter(e => e.Type.includes('Takeaway'))
-                        .sort((a, b) => a.EventTown.localeCompare(b.EventTown));
+                        .sort((a, b) => a.EventTown.localeCompare(b.EventTown) || a.EventName.localeCompare(b.EventName));
+                    
                     const others = events.filter(e => 
                         !e.Type.includes('Street Kitchen') && 
                         !e.Type.includes('Takeaway') &&
                         !e.Type.includes('Outreach'))
-                        .sort((a, b) => a.EventTown.localeCompare(b.EventTown));
+                        .sort((a, b) => a.EventTown.localeCompare(b.EventTown) || a.EventName.localeCompare(b.EventName));
                     
                     return [...streetKitchens, ...outreach, ...others, ...takeaways];
                 }
                 
                 const sortedEvents = sortEvents(events);
+                
+                // Add section headers for better UX
                 let currentSection = '';
                 
                 sortedEvents.forEach((event) => {
+                    // Add section headers
                     const eventType = event.Type.includes('Street Kitchen') ? 'Street Kitchen' :
                                     event.Type.includes('Outreach') ? 'Outreach' :
                                     event.Type.includes('Takeaway') ? 'Takeaway' : 'Other Events';
@@ -1075,6 +1270,7 @@
                 
             } catch (error) {
                 console.error('Error loading events:', error);
+                // Fallback to show a message if CSV cannot be loaded
                 const eventSelect = document.getElementById('eventSelect');
                 const option = document.createElement('option');
                 option.value = '';
@@ -1084,7 +1280,10 @@
             }
         }
         
-        // Form submission
+        // Load events on page load
+        loadEvents();
+        
+        // Handle form submission
         document.getElementById('attendanceForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
@@ -1092,9 +1291,11 @@
             const successMessage = document.getElementById('successMessage');
             const errorMessage = document.getElementById('errorMessage');
             
+            // Clear previous messages
             successMessage.classList.remove('show');
             errorMessage.classList.remove('show');
             
+            // Get form data
             const eventValue = document.getElementById('eventSelect').value;
             const date = document.getElementById('dateInput').value;
             const peopleServed = document.getElementById('peopleServed').value;
@@ -1106,8 +1307,10 @@
                 return;
             }
             
+            // Parse event data
             const [eventName, eventTown] = eventValue.split(' - ');
             
+            // Show loading state
             submitButton.disabled = true;
             submitButton.classList.add('loading');
             submitButton.innerHTML = '<i class="fas fa-spinner"></i> Submitting...';
@@ -1134,6 +1337,7 @@
                 if (response.ok && data.success) {
                     successMessage.classList.add('show');
                     
+                    // Show WhatsApp sharing modal
                     showWhatsAppSharingModal({
                         eventName: eventValue,
                         date: date,
@@ -1142,13 +1346,16 @@
                         volunteer: user.name
                     });
                     
+                    // Clear form
                     document.getElementById('eventSelect').value = '';
                     document.getElementById('peopleServed').value = '';
                     document.getElementById('notesInput').value = '';
                     
+                    // Reload stats and logs
                     loadStats();
                     loadRecentLogs();
                     
+                    // Hide success message after 5 seconds
                     setTimeout(() => {
                         successMessage.classList.remove('show');
                     }, 5000);
@@ -1218,7 +1425,7 @@
                                     <tr>
                                         <td>${new Date(log.date).toLocaleDateString()}</td>
                                         <td>${log.eventName}</td>
-                                        <td>${log.location || log.eventTown || '-'}</td>
+                                        <td>${log.location}</td>
                                         <td>${log.peopleServed}</td>
                                         <td>${log.outreachName}</td>
                                     </tr>
@@ -1241,13 +1448,46 @@
             }
         }
         
-        // WhatsApp sharing
+        // Load initial data
+        loadStats();
+        loadRecentLogs();
+        
+        // Navigation menu is now always visible on mobile - no toggle needed
+        
+        // Logout functionality
+        document.getElementById('logoutButton').addEventListener('click', async () => {
+            if (confirm('Are you sure you want to logout?')) {
+                // Clear all authentication data
+                localStorage.removeItem('outreachToken');
+                localStorage.removeItem('outreach_token');
+                localStorage.removeItem('outreach_user');
+                sessionStorage.clear();
+                
+                // Call logout API
+                try {
+                    await fetch('/api/auth/logout', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                } catch (error) {
+                    // Ignore logout API errors since we're logging out anyway
+                }
+                
+                // Redirect to main site
+                window.location.href = '/';
+            }
+        });
+        
+        // WhatsApp Sharing Functionality
         let currentWhatsAppMessage = '';
         
         function showWhatsAppSharingModal(attendanceData) {
             const modal = document.getElementById('whatsappModal');
             const messagePreview = document.getElementById('whatsappMessagePreview');
             
+            // Format the date nicely
             const eventDate = new Date(attendanceData.date);
             const formattedDate = eventDate.toLocaleDateString('en-GB', {
                 day: '2-digit',
@@ -1255,16 +1495,23 @@
                 year: 'numeric'
             });
             
+            // Create the WhatsApp message
             let message = `${attendanceData.eventName} - ${formattedDate}\nPeople Served: ${attendanceData.peopleServed}`;
             
             if (attendanceData.notes && attendanceData.notes.trim()) {
                 message += `\nNotes: ${attendanceData.notes.trim()}`;
             }
             
+            // Store the message for sharing
             currentWhatsAppMessage = message;
+            
+            // Update preview
             messagePreview.textContent = message;
+            
+            // Show modal
             modal.classList.add('show');
             
+            // Focus management for accessibility
             setTimeout(() => {
                 document.getElementById('shareOnWhatsApp').focus();
             }, 100);
@@ -1278,9 +1525,14 @@
         
         function shareOnWhatsApp() {
             if (currentWhatsAppMessage) {
+                // URL encode the message
                 const encodedMessage = encodeURIComponent(currentWhatsAppMessage);
                 const whatsappUrl = `https://wa.me/?text=${encodedMessage}`;
+                
+                // Open WhatsApp
                 window.open(whatsappUrl, '_blank');
+                
+                // Hide modal
                 hideWhatsAppSharingModal();
             }
         }
@@ -1289,39 +1541,16 @@
         document.getElementById('closeWhatsAppModal').addEventListener('click', hideWhatsAppSharingModal);
         document.getElementById('skipSharing').addEventListener('click', hideWhatsAppSharingModal);
         document.getElementById('shareOnWhatsApp').addEventListener('click', shareOnWhatsApp);
+        
+        // Close modal when clicking backdrop
         document.querySelector('.modal-backdrop').addEventListener('click', hideWhatsAppSharingModal);
         
+        // Close modal with Escape key
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && document.getElementById('whatsappModal').classList.contains('show')) {
                 hideWhatsAppSharingModal();
             }
         });
-        
-        // Logout
-        document.getElementById('logoutButton').addEventListener('click', async () => {
-            if (confirm('Are you sure you want to logout?')) {
-                localStorage.clear();
-                sessionStorage.clear();
-                
-                try {
-                    await fetch('/api/auth/logout', {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${token}`
-                        }
-                    });
-                } catch (error) {
-                    // Ignore errors
-                }
-                
-                window.location.href = '/';
-            }
-        });
-        
-        // Initialize
-        loadEvents();
-        loadStats();
-        loadRecentLogs();
     </script>
 </body>
 </html>
