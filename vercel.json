@@ -50,6 +50,7 @@
     { "source": "/gm-food-banks", "destination": "/GMFoodBanks.html" },
     { "source": "/gm-foodbanks", "destination": "/GMFoodBanks.html" },
     { "source": "/greater-manchester-food-banks", "destination": "/GMFoodBanks.html" },
+    { "source": "/FoodBanks", "destination": "/FoodBanks.html" },
     { "source": "/Outreach/setup-password", "destination": "/Outreach/setup-password.html" },
     { "source": "/Outreach/login", "destination": "/Outreach/login.html" },
     { "source": "/Outreach/dashboard", "destination": "/Outreach/dashboard.html" }
@@ -62,6 +63,7 @@
     { "source": "/food-bank.html", "destination": "/food-bank", "permanent": true },
     { "source": "/useful-links.html", "destination": "/useful-links", "permanent": true },
     { "source": "/admin.html", "destination": "/admin", "permanent": true },
-    { "source": "/GMFoodBanks.html", "destination": "/GMFoodBanks", "permanent": true }
+    { "source": "/GMFoodBanks.html", "destination": "/GMFoodBanks", "permanent": true },
+    { "source": "/FoodBanks.html", "destination": "/FoodBanks", "permanent": true }
   ]
 }

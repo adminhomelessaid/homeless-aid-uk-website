@@ -1,239 +1,1094 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="description" content="Homeless Aid UK - Helping the homeless and those in need across the UK with free food, support, and volunteer opportunities">
-    <meta name="keywords" content="homeless aid, UK charity, volunteer, donate, food bank, Manchester, Bolton, Liverpool, Glasgow">
-    <title>Homeless Aid UK - Helping The Homeless & Those In Need</title>
-    <link rel="stylesheet" href="styles.css?v=2024.12.19.1">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Homeless Aid UK — Free food, warm clothes, and support for homeless people across northern England and Scotland. Freephone: 0800 124 4641">
+    <meta name="keywords" content="homeless aid, free food, street kitchen, food bank, Bolton, Manchester, Liverpool, Glasgow, volunteer, donate">
+    <title>Homeless Aid UK — You Are Not Alone</title>
+
+    <!-- Favicons & PWA -->
     <link rel="icon" href="Branding/HomelessAidUKLogo.png" type="image/png">
+    <link rel="apple-touch-icon" href="Branding/HomelessAidUKLogo.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="Branding/HomelessAidUKLogo.png">
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#1A2332">
+    <meta name="theme-color" content="#1A1A2E">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="Homeless Aid UK">
-    <link rel="apple-touch-icon" href="Branding/HomelessAidUKLogo.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="Branding/HomelessAidUKLogo.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="Branding/HomelessAidUKLogo.png">
-    <link rel="apple-touch-icon" sizes="120x120" href="Branding/HomelessAidUKLogo.png">
     <meta name="msapplication-TileImage" content="Branding/HomelessAidUKLogo.png">
-    <meta name="msapplication-TileColor" content="#007A74">
-    
-    <!-- Google tag (gtag.js) with Consent Mode -->
+    <meta name="msapplication-TileColor" content="#1B4332">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                colors: {
+                    cream:      '#FDF6EC',
+                    forest:     '#1B4332',
+                    sienna:     '#E76F51',
+                    vermillion: '#E63946',
+                    ink:        '#1A1A2E',
+                    charcoal:   '#2D3436',
+                    'forest-dark': '#142e23',
+                    'sienna-dark': '#c95a3f',
+                    'vermillion-dark': '#c1121f',
+                },
+                fontFamily: {
+                    display: ['"DM Serif Display"', 'Georgia', 'serif'],
+                    body:    ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+                },
+            }
+        }
+    }
+    </script>
+
+    <style>
+        /* ── Scroll-triggered reveals ── */
+        .reveal          { opacity:0; transform:translateY(40px);  transition:opacity .6s ease-out, transform .6s ease-out; }
+        .reveal-left     { opacity:0; transform:translateX(-40px); transition:opacity .6s ease-out, transform .6s ease-out; }
+        .reveal-right    { opacity:0; transform:translateX(40px);  transition:opacity .6s ease-out, transform .6s ease-out; }
+        .reveal-scale    { opacity:0; transform:scale(.92);        transition:opacity .6s ease-out, transform .6s ease-out; }
+        .reveal.visible,
+        .reveal-left.visible,
+        .reveal-right.visible,
+        .reveal-scale.visible { opacity:1; transform:none; }
+
+        /* Staggered children */
+        .stagger > * { opacity:0; transform:translateY(24px); transition:opacity .5s ease-out, transform .5s ease-out; }
+        .stagger.visible > *:nth-child(1) { transition-delay:.05s; }
+        .stagger.visible > *:nth-child(2) { transition-delay:.15s; }
+        .stagger.visible > *:nth-child(3) { transition-delay:.25s; }
+        .stagger.visible > *:nth-child(4) { transition-delay:.35s; }
+        .stagger.visible > *:nth-child(5) { transition-delay:.45s; }
+        .stagger.visible > *:nth-child(6) { transition-delay:.55s; }
+        .stagger.visible > * { opacity:1; transform:none; }
+
+        /* ── Neubrutalist shadows ── */
+        .shadow-brutal          { box-shadow:5px 5px 0 #1B4332; }
+        .shadow-brutal-sm       { box-shadow:3px 3px 0 #1B4332; }
+        .shadow-brutal-ink      { box-shadow:5px 5px 0 #1A1A2E; }
+        .shadow-brutal-sienna   { box-shadow:5px 5px 0 #c95a3f; }
+        .shadow-brutal-vermillion { box-shadow:4px 4px 0 #c1121f; }
+        .shadow-brutal-cream    { box-shadow:5px 5px 0 rgba(253,246,236,.3); }
+
+        /* ── Pulse for urgency ── */
+        @keyframes pulse-ring {
+            0%   { box-shadow:0 0 0 0 rgba(230,57,70,.6); }
+            70%  { box-shadow:0 0 0 10px rgba(230,57,70,0); }
+            100% { box-shadow:0 0 0 0 rgba(230,57,70,0); }
+        }
+        .pulse-ring { animation:pulse-ring 2s ease-out infinite; }
+
+        /* ── Counter glow ── */
+        @keyframes counter-glow {
+            0%,100% { text-shadow:0 0 8px rgba(231,111,81,.2); }
+            50%     { text-shadow:0 0 20px rgba(231,111,81,.5); }
+        }
+        .counter-glow { animation:counter-glow 3s ease-in-out infinite; }
+
+        /* ── Focus states ── */
+        :focus-visible { outline:3px solid #E76F51; outline-offset:3px; border-radius:2px; }
+
+        /* ── Selection ── */
+        ::selection { background:#E76F51; color:#FDF6EC; }
+
+        /* ── Texture overlays ── */
+        .texture-dots       { background-image:radial-gradient(#1B4332 .5px,transparent .5px); background-size:24px 24px; }
+        .texture-dots-light { background-image:radial-gradient(rgba(253,246,236,.08) .5px,transparent .5px); background-size:24px 24px; }
+
+        /* ── Filter pills ── */
+        .filter-pill         { transition:all .2s ease; }
+        .filter-pill.active  { background:#1B4332; color:#FDF6EC; border-color:#1B4332; }
+
+        /* ── Scrollbar ── */
+        ::-webkit-scrollbar       { width:8px; }
+        ::-webkit-scrollbar-track { background:#FDF6EC; }
+        ::-webkit-scrollbar-thumb { background:#1B4332; border-radius:99px; }
+
+        /* ── Reduced motion ── */
+        @media (prefers-reduced-motion:reduce) {
+            .reveal,.reveal-left,.reveal-right,.reveal-scale { opacity:1!important; transform:none!important; transition:none!important; }
+            .stagger > * { opacity:1!important; transform:none!important; transition:none!important; }
+            *, *::before, *::after { animation-duration:.01ms!important; animation-iteration-count:1!important; transition-duration:.01ms!important; scroll-behavior:auto!important; }
+        }
+
+        /* ── Mobile nav overlay ── */
+        .nav-overlay { transform:translateX(100%); transition:transform .35s cubic-bezier(.4,0,.2,1); }
+        .nav-overlay.open { transform:translateX(0); }
+
+        /* ── "Today" badge glow ── */
+        .today-glow { box-shadow:0 0 0 3px rgba(231,111,81,.35); }
+    </style>
+
+    <!-- Google Analytics (Consent Mode) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-8L51XD6M9J"></script>
     <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      
-      // Configure consent mode defaults
-      gtag('consent', 'default', {
-        'analytics_storage': 'denied',
-        'ad_storage': 'denied',
-        'wait_for_update': 500
-      });
-      
-      gtag('config', 'G-8L51XD6M9J', {
-        'anonymize_ip': true
-      });
+        window.dataLayer=window.dataLayer||[];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js',new Date());
+        gtag('consent','default',{analytics_storage:'denied',ad_storage:'denied'});
+        gtag('config','G-8L51XD6M9J',{anonymize_ip:true});
     </script>
 </head>
-<body>
-    <nav class="navbar">
-        <div class="container">
-            <div class="nav-content">
-                <a href="/" class="logo">
-                    <img src="Branding/HomelessAidUKLogo.png" alt="Homeless Aid UK" class="logo-img">
+
+<body class="bg-cream text-charcoal font-body antialiased overflow-x-hidden">
+
+<!-- ══════════════════════════════════════════════
+     SKIP TO CONTENT (Accessibility)
+     ══════════════════════════════════════════════ -->
+<a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-0 focus:left-0 focus:z-[9999] focus:bg-forest focus:text-cream focus:px-6 focus:py-3 focus:text-lg focus:font-bold">
+    Skip to main content
+</a>
+
+<!-- ══════════════════════════════════════════════
+     CHAPTER 0 — PERSISTENT EMERGENCY BAR
+     ══════════════════════════════════════════════ -->
+<header class="sticky top-0 z-50 bg-vermillion border-b-[3px] border-vermillion-dark" role="banner">
+    <div class="max-w-7xl mx-auto px-3 py-2 flex items-center justify-between gap-2">
+        <!-- Phone -->
+        <a href="tel:08001244641"
+           class="flex items-center gap-2 text-white font-bold group shrink-0"
+           aria-label="Call Homeless Aid UK free on 0800 124 4641">
+            <span class="relative flex items-center justify-center w-8 h-8 bg-white/20 rounded-full pulse-ring">
+                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z"/>
+                </svg>
+            </span>
+            <span class="text-base sm:text-lg tracking-wide">0800 124 4641</span>
+        </a>
+
+        <!-- Find Food -->
+        <a href="#food-finder"
+           class="bg-white text-vermillion font-extrabold text-sm sm:text-base px-4 py-2 rounded-sm border-2 border-white hover:bg-cream transition-colors shadow-brutal-vermillion whitespace-nowrap">
+            Find Food Now
+        </a>
+
+        <!-- Hamburger -->
+        <button id="nav-toggle"
+                class="flex items-center gap-2 min-w-[44px] min-h-[44px] px-3 py-2 bg-white/20 rounded-sm text-white font-bold text-sm group shrink-0 hover:bg-white/30 transition-colors"
+                aria-label="Open navigation menu"
+                aria-expanded="false"
+                aria-controls="nav-overlay">
+            <div class="flex flex-col justify-center gap-[4px]">
+                <span class="block w-5 h-[2.5px] bg-white rounded-full"></span>
+                <span class="block w-5 h-[2.5px] bg-white rounded-full"></span>
+                <span class="block w-5 h-[2.5px] bg-white rounded-full"></span>
+            </div>
+            <span class="text-white font-bold text-sm">Menu</span>
+        </button>
+    </div>
+</header>
+
+<!-- ── Mobile Nav Overlay ── -->
+<nav id="nav-overlay"
+     class="nav-overlay fixed inset-0 z-[9999] bg-ink flex flex-col items-center justify-start gap-0 overflow-y-auto"
+     aria-label="Main navigation"
+     aria-hidden="true">
+    <div class="w-full flex items-center justify-between px-6 py-4 shrink-0">
+        <span class="font-display text-cream text-xl">Homeless Aid UK</span>
+        <button id="nav-close" class="w-12 h-12 flex items-center justify-center text-cream" aria-label="Close navigation">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+    </div>
+    <div class="flex flex-col items-center gap-5 py-8 px-6 w-full">
+        <a href="/" class="font-display text-cream text-2xl sm:text-3xl hover:text-sienna transition-colors py-1">Home</a>
+        <a href="#food-finder" class="font-display text-cream text-2xl sm:text-3xl hover:text-sienna transition-colors py-1 nav-link">Food List</a>
+        <a href="/food-bank" class="font-display text-cream text-2xl sm:text-3xl hover:text-sienna transition-colors py-1">Bolton Food Bank</a>
+        <a href="/FoodBanks" class="font-display text-cream text-2xl sm:text-3xl hover:text-sienna transition-colors py-1">Food Bank Directory</a>
+        <a href="/donate" class="font-display text-cream text-2xl sm:text-3xl hover:text-sienna transition-colors py-1">Donate</a>
+        <a href="/volunteer" class="font-display text-cream text-2xl sm:text-3xl hover:text-sienna transition-colors py-1">Volunteer</a>
+        <a href="/contact" class="font-display text-cream text-2xl sm:text-3xl hover:text-sienna transition-colors py-1">Contact</a>
+        <a href="/useful-links" class="font-display text-cream text-2xl sm:text-3xl hover:text-sienna transition-colors py-1">Help &amp; Resources</a>
+        <div class="border-t border-cream/10 w-full max-w-xs mt-4 pt-6 flex flex-col items-center gap-4">
+            <a href="tel:08001244641" class="text-sienna font-display text-2xl">0800 124 4641</a>
+        </div>
+    </div>
+</nav>
+
+<!-- ══════════════════════════════════════════════
+     MAIN CONTENT
+     ══════════════════════════════════════════════ -->
+<main id="main-content">
+
+<!-- ══════════════════════════════════════════════
+     CHAPTER 1 — HERO: "WE'RE HERE TO HELP"
+     ══════════════════════════════════════════════ -->
+<section id="hero" class="relative min-h-[100dvh] bg-ink flex items-center justify-center overflow-hidden" aria-labelledby="hero-heading">
+    <!-- Texture -->
+    <div class="absolute inset-0 texture-dots-light opacity-40 pointer-events-none" aria-hidden="true"></div>
+
+    <!-- Organic hand-drawn circle (decorative SVG) -->
+    <svg class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] max-w-[600px] h-auto opacity-[.06] pointer-events-none" viewBox="0 0 500 500" fill="none" aria-hidden="true">
+        <path d="M250 30 C340 25, 430 80, 460 170 C490 260, 470 360, 400 420 C330 480, 220 490, 140 440 C60 390, 20 300, 30 210 C40 120, 130 35, 250 30Z" stroke="#E76F51" stroke-width="2" stroke-dasharray="8 6"/>
+    </svg>
+
+    <!-- Content -->
+    <div class="relative z-10 w-full max-w-4xl mx-auto px-6 py-24 text-center">
+        <!-- Brand name -->
+        <p class="font-display text-cream text-3xl sm:text-4xl md:text-5xl tracking-wide mb-10 reveal">
+            Homeless Aid UK
+        </p>
+
+        <!-- Main heading -->
+        <h1 id="hero-heading" class="font-display text-cream text-[2.75rem] sm:text-6xl md:text-7xl lg:text-8xl leading-[1.05] mb-14 reveal">
+            We're Here<br><em class="text-sienna not-italic">To Help</em>
+        </h1>
+
+        <!-- Massive phone number -->
+        <a href="tel:08001244641"
+           class="inline-block mb-10 group reveal"
+           aria-label="Call free: 0800 124 4641">
+            <span class="block font-display text-cream text-4xl sm:text-5xl md:text-6xl lg:text-7xl tracking-wider group-hover:text-sienna transition-colors duration-300">
+                0800 124 4641
+            </span>
+            <span class="block text-cream/50 text-sm mt-3 font-body">If you need help or want to help, call</span>
+        </a>
+
+        <!-- CTAs -->
+        <div class="flex flex-col sm:flex-row gap-4 justify-center items-center reveal">
+            <a href="#food-finder"
+               class="w-full sm:w-auto bg-sienna text-cream font-bold text-lg px-8 py-4 border-[3px] border-sienna hover:bg-sienna-dark hover:border-sienna-dark transition-all shadow-brutal-cream rounded-sm text-center">
+                Find Food Near Me
+            </a>
+            <a href="/donate"
+               class="w-full sm:w-auto bg-transparent text-cream font-bold text-lg px-8 py-4 border-[3px] border-cream/30 hover:border-cream hover:bg-cream/5 transition-all rounded-sm text-center">
+                Donate Now
+            </a>
+        </div>
+
+        <!-- Scroll hint -->
+        <div class="mt-16 reveal" aria-hidden="true">
+            <svg class="w-6 h-10 mx-auto text-cream/30 animate-bounce" viewBox="0 0 24 40" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="1" y="1" width="22" height="38" rx="11" />
+                <circle cx="12" cy="12" r="2" fill="currentColor"/>
+            </svg>
+        </div>
+    </div>
+
+    <!-- Organic wave divider → cream -->
+    <div class="absolute bottom-0 left-0 right-0 pointer-events-none" aria-hidden="true">
+        <svg viewBox="0 0 1440 130" preserveAspectRatio="none" class="w-full h-[60px] sm:h-[90px] md:h-[130px]">
+            <path d="M0,50 C120,90 240,20 420,60 C600,100 720,30 900,70 C1080,110 1200,40 1320,65 C1380,78 1440,55 1440,55 L1440,130 L0,130Z" fill="#FDF6EC"/>
+        </svg>
+    </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════════
+     CHAPTER 2 — FOOD FINDER
+     ══════════════════════════════════════════════ -->
+<section id="food-finder" class="relative bg-cream py-16 sm:py-24 px-4" aria-labelledby="food-heading">
+    <div class="max-w-6xl mx-auto">
+        <!-- Chapter header -->
+        <div class="text-center mb-12 reveal">
+            <p class="text-sienna text-xs tracking-[.35em] uppercase font-bold mb-3" aria-hidden="true">Chapter Two</p>
+            <h2 id="food-heading" class="font-display text-forest text-4xl sm:text-5xl md:text-6xl mb-4">Find Food Now</h2>
+            <p class="text-charcoal/70 max-w-xl mx-auto text-lg">Free hot meals, food parcels, and street kitchens near you. Every day of the week.</p>
+        </div>
+
+        <!-- Filters -->
+        <div class="flex flex-wrap gap-2 justify-center mb-10 reveal" role="group" aria-label="Filter feeds by day">
+            <button class="filter-pill active px-4 py-2 border-2 border-forest rounded-sm font-bold text-sm" data-day="today">Today</button>
+            <button class="filter-pill px-4 py-2 border-2 border-charcoal/20 rounded-sm font-bold text-sm hover:border-forest" data-day="all">All Days</button>
+            <button class="filter-pill px-4 py-2 border-2 border-charcoal/20 rounded-sm font-bold text-sm hover:border-forest" data-day="Monday">Mon</button>
+            <button class="filter-pill px-4 py-2 border-2 border-charcoal/20 rounded-sm font-bold text-sm hover:border-forest" data-day="Tuesday">Tue</button>
+            <button class="filter-pill px-4 py-2 border-2 border-charcoal/20 rounded-sm font-bold text-sm hover:border-forest" data-day="Wednesday">Wed</button>
+            <button class="filter-pill px-4 py-2 border-2 border-charcoal/20 rounded-sm font-bold text-sm hover:border-forest" data-day="Thursday">Thu</button>
+            <button class="filter-pill px-4 py-2 border-2 border-charcoal/20 rounded-sm font-bold text-sm hover:border-forest" data-day="Friday">Fri</button>
+            <button class="filter-pill px-4 py-2 border-2 border-charcoal/20 rounded-sm font-bold text-sm hover:border-forest" data-day="Saturday">Sat</button>
+            <button class="filter-pill px-4 py-2 border-2 border-charcoal/20 rounded-sm font-bold text-sm hover:border-forest" data-day="Sunday">Sun</button>
+        </div>
+
+        <!-- Town filter (generated dynamically from CSV) -->
+        <div id="town-filters" class="flex flex-wrap gap-2 justify-center mb-10 reveal" role="group" aria-label="Filter feeds by area">
+            <button class="filter-pill active px-3 py-1.5 border-2 border-sienna/30 rounded-full text-xs font-semibold hover:border-sienna text-charcoal" data-town="all">All Areas</button>
+        </div>
+
+        <!-- Feed cards container -->
+        <div id="feed-cards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5" aria-live="polite">
+            <!-- Cards injected by JS -->
+            <div class="col-span-full text-center py-12 text-charcoal/50">
+                <svg class="w-8 h-8 mx-auto mb-3 animate-spin text-sienna" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" stroke-dasharray="30 70" stroke-linecap="round"/></svg>
+                Loading feeding times...
+            </div>
+        </div>
+
+        <!-- Food bank + directory callout -->
+        <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 reveal">
+            <a href="/food-bank" class="inline-block bg-sienna text-cream font-bold px-6 py-3 rounded-sm border-[3px] border-sienna hover:bg-sienna-dark transition-colors shadow-brutal-ink">
+                Bolton Food Bank
+            </a>
+            <a href="/FoodBanks" class="inline-block bg-forest text-cream font-bold px-6 py-3 rounded-sm border-[3px] border-forest hover:bg-forest-dark transition-colors shadow-brutal-sm">
+                Food Bank Directory &rarr;
+            </a>
+        </div>
+        <p class="text-center text-charcoal/50 text-sm mt-3 reveal">Need a food parcel in Bolton? Or search 574+ food banks across Manchester, Liverpool and more.</p>
+    </div>
+
+    <!-- Wave divider → forest -->
+    <div class="absolute bottom-0 left-0 right-0 translate-y-[1px] pointer-events-none" aria-hidden="true">
+        <svg viewBox="0 0 1440 100" preserveAspectRatio="none" class="w-full h-[50px] sm:h-[70px] md:h-[100px]">
+            <path d="M0,30 C200,70 400,10 600,45 C800,80 1000,15 1200,50 C1350,70 1440,35 1440,35 L1440,100 L0,100Z" fill="#1B4332"/>
+        </svg>
+    </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════════
+     CHAPTER 3 — "OUR FOOD BANK"
+     ══════════════════════════════════════════════ -->
+<section id="food-bank" class="relative bg-ink text-cream py-20 sm:py-28 px-4 overflow-hidden" aria-labelledby="foodbank-heading">
+    <div class="absolute inset-0 texture-dots-light opacity-15 pointer-events-none" aria-hidden="true"></div>
+
+    <div class="relative z-10 max-w-5xl mx-auto">
+        <div class="text-center mb-14">
+            <p class="text-sienna text-xs tracking-[.35em] uppercase font-bold mb-3 reveal" aria-hidden="true">Chapter Three</p>
+            <h2 id="foodbank-heading" class="font-display text-cream text-4xl sm:text-5xl md:text-6xl reveal">Our Food Bank</h2>
+            <p class="text-cream/60 max-w-lg mx-auto mt-4 text-lg reveal">Homeless Aid UK Food Bank, Bolton</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="space-y-6 reveal">
+                <div class="bg-white/10 border-[3px] border-sienna p-8 rounded-sm shadow-brutal-sienna">
+                    <h3 class="font-display text-2xl text-cream mb-4">How to Get a Food Parcel</h3>
+                    <p class="font-display text-3xl sm:text-4xl text-sienna mb-2">11am — 1pm</p>
+                    <p class="text-cream/80 text-lg">Monday to Saturday</p>
+                    <p class="text-vermillion font-bold mt-4 text-sm uppercase tracking-wide">Food parcels are by appointment only.</p>
+                    <p class="text-cream/60 text-sm mt-3">Contact us to arrange your food parcel collection:</p>
+                </div>
+                <a href="tel:08001244641" class="block bg-sienna text-cream text-center font-bold text-lg px-8 py-4 rounded-sm border-[3px] border-sienna hover:bg-sienna-dark transition-colors shadow-brutal-cream">
+                    Call Now — Freephone 0800 124 4641
                 </a>
-                <button class="mobile-menu-btn" onclick="toggleMenu()">☰</button>
-                <ul class="nav-links">
-                    <li><a href="/" class="active">Home</a></li>
-                    <li><a href="#feeding-schedule">Food List</a></li>
-                    <li><a href="/donate">Donate</a></li>
-                    <li><a href="/volunteer">Volunteer</a></li>
-                    <li><a href="/Outreach/login.html" class="outreach-nav-link">
-                        Outreach Login
-                    </a></li>
-                    <li><a href="/food-bank">Food Bank</a></li>
-                    <li><a href="/contact">Contact</a></li>
-                    <li><a href="/useful-links">Useful Links</a></li>
+                <div class="bg-vermillion/10 border-[3px] border-vermillion/30 p-6 rounded-sm">
+                    <h4 class="text-vermillion font-bold text-sm uppercase tracking-wide mb-3">Important Information</h4>
+                    <p class="text-cream/60 text-sm leading-relaxed">Because of the scale of this project, everyone is receiving almost the same contents in the food hampers and therefore not all food may be suitable for you. Please check the contents of the hampers carefully if you have any medical, or religious, dietary requirements.</p>
+                </div>
+                <p class="text-cream/50 text-sm leading-relaxed">Should you have any queries or require any further information please do not hesitate to contact any of the team at Homeless Aid UK.</p>
+            </div>
+
+            <div class="space-y-6 reveal">
+                <div class="bg-white/5 border-[3px] border-cream/20 p-8 rounded-sm">
+                    <h3 class="font-display text-2xl text-cream mb-4">What's In Our Food Parcels?</h3>
+                    <p class="text-cream/70 mb-6">We have put together a hamper filled with everyday essentials, and a few treats because we care.</p>
+                    <div class="space-y-4">
+                        <div>
+                            <h4 class="text-sienna font-bold text-sm uppercase tracking-wide mb-2">Essential Items</h4>
+                            <p class="text-cream/60 text-sm">Tinned goods, pasta, rice, cereals, and other long-lasting food staples</p>
+                        </div>
+                        <div>
+                            <h4 class="text-sienna font-bold text-sm uppercase tracking-wide mb-2">Fresh Items</h4>
+                            <p class="text-cream/60 text-sm">Bread, milk, and fresh produce when available</p>
+                        </div>
+                        <div>
+                            <h4 class="text-sienna font-bold text-sm uppercase tracking-wide mb-2">Treats & Extras</h4>
+                            <p class="text-cream/60 text-sm">Small treats, snacks, and comfort items because we care</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white/5 border-[3px] border-cream/20 p-8 rounded-sm">
+                    <h3 class="font-display text-2xl text-cream mb-6">We're Here to Help</h3>
+                    <div class="space-y-5">
+                        <div class="border-l-4 border-sienna pl-5">
+                            <h4 class="text-cream font-bold mb-1">Emergency Food Parcels</h4>
+                            <p class="text-cream/60 text-sm">For families in immediate need of food assistance</p>
+                        </div>
+                        <div class="border-l-4 border-sienna pl-5">
+                            <h4 class="text-cream font-bold mb-1">Family Support</h4>
+                            <p class="text-cream/60 text-sm">Tailored support for families with children</p>
+                        </div>
+                        <div class="border-l-4 border-sienna pl-5">
+                            <h4 class="text-cream font-bold mb-1">Additional Services</h4>
+                            <p class="text-cream/60 text-sm">Information about other local support services available</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-10 reveal">
+            <a href="/food-bank" class="inline-block bg-sienna text-cream font-bold px-8 py-4 rounded-sm border-[3px] border-sienna hover:bg-sienna-dark transition-colors shadow-brutal-cream">
+                Full Food Bank Details &rarr;
+            </a>
+        </div>
+    </div>
+
+    <!-- Wave → cream -->
+    <div class="absolute bottom-0 left-0 right-0 translate-y-[1px] pointer-events-none" aria-hidden="true">
+        <svg viewBox="0 0 1440 100" preserveAspectRatio="none" class="w-full h-[50px] sm:h-[70px] md:h-[100px]">
+            <path d="M0,40 C180,75 360,15 540,55 C720,95 900,25 1080,60 C1260,95 1440,40 1440,40 L1440,100 L0,100Z" fill="#FDF6EC"/>
+        </svg>
+    </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════════
+     CHAPTER 4 — MISSION: "A GROUP OF FRIENDS"
+     ══════════════════════════════════════════════ -->
+<section id="mission" class="relative bg-cream py-20 sm:py-28 px-4" aria-labelledby="mission-heading">
+    <div class="max-w-5xl mx-auto">
+        <p class="text-sienna text-xs tracking-[.35em] uppercase font-bold mb-6 reveal" aria-hidden="true">Chapter Four</p>
+
+        <h2 id="mission-heading" class="font-display text-forest text-5xl sm:text-6xl md:text-7xl lg:text-8xl leading-[1.05] mb-12 reveal">
+            We're not a charity.<br>
+            <em class="text-sienna not-italic">We're a group<br class="hidden md:block"> of friends.</em>
+        </h2>
+
+        <div class="max-w-3xl space-y-8 text-charcoal/80 text-lg sm:text-xl leading-relaxed">
+            <p class="reveal">
+                Homeless Aid UK is an organisation established and operated by a group of friends from across the UK. Please note we are not a charity. Our team of volunteers are dedicated to ending homelessness, by delivering life-changing services and campaigning for change.
+            </p>
+            <p class="reveal">
+                We rely solely on donations and the support of the local community.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16 stagger">
+            <div class="border-l-4 border-sienna pl-6 py-2">
+                <p class="font-display text-2xl sm:text-3xl text-forest mb-2">100%</p>
+                <p class="text-charcoal/70 text-sm">Volunteer Run</p>
+            </div>
+            <div class="border-l-4 border-sienna pl-6 py-2">
+                <p class="font-display text-2xl sm:text-3xl text-forest mb-2">Every Penny</p>
+                <p class="text-charcoal/70 text-sm">Goes Direct</p>
+            </div>
+            <div class="border-l-4 border-sienna pl-6 py-2">
+                <p class="font-display text-2xl sm:text-3xl text-forest mb-2">Unpaid</p>
+                <p class="text-charcoal/70 text-sm">Every Single Volunteer</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════════
+     CHAPTER 5 — "WHERE WE ARE"
+     ══════════════════════════════════════════════ -->
+<section id="locations" class="relative bg-forest text-cream py-20 sm:py-28 px-4 overflow-hidden" aria-labelledby="locations-heading">
+    <div class="absolute inset-0 texture-dots-light opacity-15 pointer-events-none" aria-hidden="true"></div>
+
+    <div class="relative z-10 max-w-6xl mx-auto">
+        <div class="text-center mb-14">
+            <p class="text-sienna text-xs tracking-[.35em] uppercase font-bold mb-3 reveal" aria-hidden="true">Chapter Five</p>
+            <h2 id="locations-heading" class="font-display text-cream text-4xl sm:text-5xl md:text-6xl mb-4 reveal">Where We Are</h2>
+            <p class="text-cream/60 max-w-lg mx-auto text-lg reveal">Street kitchens, outreach, and partner restaurants across northern England and Scotland.</p>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 stagger">
+            <div class="bg-cream text-forest p-6 rounded-sm shadow-brutal-ink border-[3px] border-cream text-center">
+                <p class="font-display text-2xl sm:text-3xl mb-1">Bolton</p>
+                <p class="text-charcoal/60 text-xs">Street Kitchen &bull; Food Bank &bull; Takeaways</p>
+            </div>
+            <div class="bg-cream text-forest p-6 rounded-sm shadow-brutal-ink border-[3px] border-cream text-center">
+                <p class="font-display text-2xl sm:text-3xl mb-1">Manchester</p>
+                <p class="text-charcoal/60 text-xs">Breakfast &bull; Evening Outreach</p>
+            </div>
+            <div class="bg-cream text-forest p-6 rounded-sm shadow-brutal-ink border-[3px] border-cream text-center">
+                <p class="font-display text-2xl sm:text-3xl mb-1">Liverpool</p>
+                <p class="text-charcoal/60 text-xs">Tuesday Evening Outreach</p>
+            </div>
+            <div class="bg-cream text-forest p-6 rounded-sm shadow-brutal-ink border-[3px] border-cream text-center">
+                <p class="font-display text-2xl sm:text-3xl mb-1">Glasgow</p>
+                <p class="text-charcoal/60 text-xs">Saturday Outreach</p>
+            </div>
+            <div class="bg-white/10 text-cream p-6 rounded-sm border-[3px] border-cream/20 text-center">
+                <p class="font-display text-2xl sm:text-3xl mb-1">Bury</p>
+                <p class="text-cream/60 text-xs">Mon &amp; Tue Street Kitchen</p>
+            </div>
+            <div class="bg-white/10 text-cream p-6 rounded-sm border-[3px] border-cream/20 text-center">
+                <p class="font-display text-2xl sm:text-3xl mb-1">Wigan</p>
+                <p class="text-cream/60 text-xs">Wednesday Indoor Feed</p>
+            </div>
+            <div class="bg-white/10 text-cream p-6 rounded-sm border-[3px] border-cream/20 text-center">
+                <p class="font-display text-2xl sm:text-3xl mb-1">Oldham</p>
+                <p class="text-cream/60 text-xs">Thursday Street Kitchen</p>
+            </div>
+            <div class="bg-white/10 text-cream p-6 rounded-sm border-[3px] border-cream/20 text-center">
+                <p class="font-display text-2xl sm:text-3xl mb-1">Leigh</p>
+                <p class="text-cream/60 text-xs">Saturday Street Kitchen</p>
+            </div>
+        </div>
+
+        <div class="mt-16 reveal">
+            <h3 class="font-display text-cream text-2xl sm:text-3xl text-center mb-8">Our Partner Restaurants</h3>
+            <div class="flex flex-wrap justify-center gap-4">
+                <span class="bg-cream border-2 border-cream px-5 py-3 rounded-sm font-bold text-forest text-sm shadow-brutal-ink">Grillsters</span>
+                <span class="bg-cream border-2 border-cream px-5 py-3 rounded-sm font-bold text-forest text-sm shadow-brutal-ink">Rice n Three</span>
+                <span class="bg-cream border-2 border-cream px-5 py-3 rounded-sm font-bold text-forest text-sm shadow-brutal-ink">Mash's Wing Ranch</span>
+                <span class="bg-cream border-2 border-cream px-5 py-3 rounded-sm font-bold text-forest text-sm shadow-brutal-ink">Koolios Fried Chicken</span>
+                <span class="bg-cream border-2 border-cream px-5 py-3 rounded-sm font-bold text-forest text-sm shadow-brutal-ink">Syds Take Away</span>
+                <span class="bg-cream border-2 border-cream px-5 py-3 rounded-sm font-bold text-forest text-sm shadow-brutal-ink">Reel Fish And Chips</span>
+                <span class="bg-cream border-2 border-cream px-5 py-3 rounded-sm font-bold text-forest text-sm shadow-brutal-ink">The Coffee Grind</span>
+            </div>
+        </div>
+
+        <div class="mt-12 text-center reveal">
+            <a href="/FoodBanks" class="inline-block bg-sienna text-cream font-bold text-lg px-8 py-4 border-[3px] border-sienna hover:bg-sienna-dark transition-colors shadow-brutal-cream rounded-sm">
+                View Full Food Banks Directory (574+)
+            </a>
+        </div>
+    </div>
+
+    <!-- Wave → cream -->
+    <div class="absolute bottom-0 left-0 right-0 translate-y-[1px] pointer-events-none" aria-hidden="true">
+        <svg viewBox="0 0 1440 110" preserveAspectRatio="none" class="w-full h-[50px] sm:h-[75px] md:h-[110px]">
+            <path d="M0,70 C160,20 320,90 500,50 C680,10 840,80 1020,40 C1200,0 1360,70 1440,50 L1440,110 L0,110Z" fill="#E76F51"/>
+        </svg>
+    </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════════
+     CHAPTER 6 — "THREE WAYS IN"
+     ══════════════════════════════════════════════ -->
+<section id="get-involved" class="relative bg-sienna py-20 sm:py-28 px-4" aria-labelledby="involve-heading">
+    <div class="max-w-6xl mx-auto">
+        <div class="text-center mb-14">
+            <p class="text-cream/60 text-xs tracking-[.35em] uppercase font-bold mb-3 reveal" aria-hidden="true">Chapter Six</p>
+            <h2 id="involve-heading" class="font-display text-cream text-4xl sm:text-5xl md:text-6xl reveal">Three Ways In</h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-6 gap-5 stagger">
+            <a href="/donate" class="md:col-span-3 bg-cream border-[3px] border-forest p-8 sm:p-10 shadow-brutal-ink rounded-sm group hover:-translate-y-1 transition-transform block">
+                <div class="text-6xl mb-4" aria-hidden="true">
+                    <svg class="w-12 h-12 text-vermillion" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"/></svg>
+                </div>
+                <h3 class="font-display text-forest text-3xl sm:text-4xl mb-3 group-hover:text-sienna transition-colors">Donate</h3>
+                <p class="text-charcoal/70 leading-relaxed">We're 100% voluntary and receive no funding. Every penny goes directly to those who need it most.</p>
+                <span class="inline-block mt-6 text-forest font-bold border-b-2 border-forest group-hover:border-sienna group-hover:text-sienna transition-colors">Give Now &rarr;</span>
+            </a>
+
+            <a href="/volunteer" class="md:col-span-3 bg-cream border-[3px] border-forest p-8 sm:p-10 shadow-brutal-ink rounded-sm group hover:-translate-y-1 transition-transform block">
+                <div class="text-6xl mb-4" aria-hidden="true">
+                    <svg class="w-12 h-12 text-forest" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg>
+                </div>
+                <h3 class="font-display text-forest text-3xl sm:text-4xl mb-3 group-hover:text-sienna transition-colors">Volunteer</h3>
+                <p class="text-charcoal/70 leading-relaxed">Join our amazing team making a real difference in communities across the UK. No experience necessary — just compassion and commitment.</p>
+                <span class="inline-block mt-6 text-forest font-bold border-b-2 border-forest group-hover:border-sienna group-hover:text-sienna transition-colors">Join Us &rarr;</span>
+            </a>
+
+            <div class="md:col-span-6 bg-ink border-[3px] border-ink p-8 sm:p-10 shadow-brutal-sienna rounded-sm flex flex-col md:flex-row items-start md:items-center gap-6">
+                <div class="flex-1">
+                    <h3 class="font-display text-cream text-2xl sm:text-3xl mb-3">Partner With Us</h3>
+                    <p class="text-cream/70 leading-relaxed max-w-2xl">Are you a local business, restaurant, or organisation? Partner with us to help feed people in your community. We work with takeaways, cafes, and community spaces across northern England and Scotland.</p>
+                </div>
+                <a href="/contact" class="shrink-0 bg-sienna text-cream font-bold px-8 py-4 border-[3px] border-sienna hover:bg-sienna-dark transition-colors shadow-brutal-cream rounded-sm whitespace-nowrap">
+                    Get In Touch
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Wave → cream -->
+    <div class="absolute bottom-0 left-0 right-0 translate-y-[1px] pointer-events-none" aria-hidden="true">
+        <svg viewBox="0 0 1440 100" preserveAspectRatio="none" class="w-full h-[50px] sm:h-[70px] md:h-[100px]">
+            <path d="M0,60 C240,20 480,80 720,40 C960,0 1200,70 1440,30 L1440,100 L0,100Z" fill="#FDF6EC"/>
+        </svg>
+    </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════════
+     CHAPTER 7 — "EVERY PENNY DIRECT"
+     ══════════════════════════════════════════════ -->
+<section id="donate-details" class="relative bg-cream py-20 sm:py-28 px-4" aria-labelledby="donate-heading">
+    <div class="max-w-5xl mx-auto">
+        <div class="text-center mb-14">
+            <p class="text-sienna text-xs tracking-[.35em] uppercase font-bold mb-3 reveal" aria-hidden="true">Chapter Seven</p>
+            <h2 id="donate-heading" class="font-display text-forest text-4xl sm:text-5xl md:text-6xl reveal">Every Penny<br>Goes Direct</h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 stagger">
+            <div class="bg-white border-[3px] border-forest p-8 shadow-brutal rounded-sm">
+                <h3 class="font-display text-forest text-2xl mb-6">Bank Transfer</h3>
+                <dl class="space-y-4 text-charcoal">
+                    <div class="flex justify-between items-center border-b border-charcoal/10 pb-3">
+                        <dt class="text-charcoal/60 text-sm font-bold uppercase tracking-wide">Bank</dt>
+                        <dd class="font-bold text-lg">TSB Bank</dd>
+                    </div>
+                    <div class="flex justify-between items-center border-b border-charcoal/10 pb-3">
+                        <dt class="text-charcoal/60 text-sm font-bold uppercase tracking-wide">Account Name</dt>
+                        <dd class="font-bold">Homeless Aid UK</dd>
+                    </div>
+                    <div class="flex justify-between items-center border-b border-charcoal/10 pb-3">
+                        <dt class="text-charcoal/60 text-sm font-bold uppercase tracking-wide">Sort Code</dt>
+                        <dd class="font-bold text-xl font-mono tracking-widest">77-72-65</dd>
+                    </div>
+                    <div class="flex justify-between items-center border-b border-charcoal/10 pb-3">
+                        <dt class="text-charcoal/60 text-sm font-bold uppercase tracking-wide">Account No.</dt>
+                        <dd class="font-bold text-xl font-mono tracking-widest">03252068</dd>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <dt class="text-charcoal/60 text-sm font-bold uppercase tracking-wide">Reference</dt>
+                        <dd class="font-bold text-sm">FOOD DONATION</dd>
+                    </div>
+                </dl>
+            </div>
+
+            <div class="space-y-6">
+                <a href="https://www.paypal.com/paypalme/HomelessAidUK" target="_blank" rel="noopener noreferrer" class="block bg-white border-[3px] border-forest p-8 shadow-brutal rounded-sm group hover:-translate-y-1 transition-transform">
+                    <h3 class="font-display text-forest text-2xl mb-2 group-hover:text-sienna transition-colors">PayPal</h3>
+                    <p class="text-charcoal/60 mb-4">Send any amount directly. Fast and secure.</p>
+                    <span class="text-forest font-bold border-b-2 border-forest group-hover:text-sienna group-hover:border-sienna transition-colors">Donate via PayPal &rarr;</span>
+                </a>
+
+                <a href="https://www.amazon.co.uk/gp/registry/wishlist/YSPQHTLJGEJ6/" target="_blank" rel="noopener noreferrer" class="block bg-white border-[3px] border-forest p-8 shadow-brutal rounded-sm group hover:-translate-y-1 transition-transform">
+                    <h3 class="font-display text-forest text-2xl mb-2 group-hover:text-sienna transition-colors">Amazon Wishlist</h3>
+                    <p class="text-charcoal/60 mb-4">Send supplies directly. Blankets, toiletries, food, and essentials.</p>
+                    <span class="text-forest font-bold border-b-2 border-forest group-hover:text-sienna group-hover:border-sienna transition-colors">View Wishlist &rarr;</span>
+                </a>
+
+                <div class="bg-forest text-cream p-8 rounded-sm shadow-brutal-sienna border-[3px] border-forest">
+                    <p class="font-display text-xl mb-2">Regular giving makes a difference</p>
+                    <p class="text-cream/70 text-sm leading-relaxed">Please consider setting up a recurring donation to help us continue our work. Even a small monthly amount helps us plan ahead.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════════
+     FOOTER
+     ══════════════════════════════════════════════ -->
+<footer class="relative bg-ink text-cream overflow-hidden" role="contentinfo">
+    <!-- Torn paper top -->
+    <div class="pointer-events-none" aria-hidden="true">
+        <svg viewBox="0 0 1440 60" preserveAspectRatio="none" class="w-full h-[30px] sm:h-[45px] md:h-[60px]">
+            <path d="M0,30 L80,15 L160,35 L240,10 L320,28 L400,18 L480,38 L560,12 L640,32 L720,22 L800,40 L880,14 L960,30 L1040,8 L1120,36 L1200,20 L1280,34 L1360,16 L1440,28 L1440,0 L0,0Z" fill="#FDF6EC"/>
+        </svg>
+    </div>
+
+    <div class="max-w-6xl mx-auto px-6 py-16">
+        <!-- Top row: Emergency band -->
+        <div class="text-center mb-14">
+            <p class="text-cream/40 text-xs tracking-[.3em] uppercase mb-4">Still need help?</p>
+            <a href="tel:08001244641" class="font-display text-4xl sm:text-5xl md:text-6xl text-sienna hover:text-cream transition-colors">
+                0800 124 4641
+            </a>
+            <p class="text-cream/50 text-sm mt-2">Freephone — always here for you</p>
+        </div>
+
+        <!-- Link grid -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-10 mb-14">
+            <!-- Quick Links -->
+            <div>
+                <h4 class="text-sienna font-bold text-xs uppercase tracking-[.2em] mb-4">Quick Links</h4>
+                <ul class="space-y-2">
+                    <li><a href="/" class="text-cream/60 hover:text-cream transition-colors text-sm">Home</a></li>
+                    <li><a href="#food-finder" class="text-cream/60 hover:text-cream transition-colors text-sm">Food List</a></li>
+                    <li><a href="/donate" class="text-cream/60 hover:text-cream transition-colors text-sm">Donate</a></li>
+                    <li><a href="/volunteer" class="text-cream/60 hover:text-cream transition-colors text-sm">Volunteer</a></li>
+                </ul>
+            </div>
+
+            <!-- Resources -->
+            <div>
+                <h4 class="text-sienna font-bold text-xs uppercase tracking-[.2em] mb-4">Resources</h4>
+                <ul class="space-y-2">
+                    <li><a href="/food-bank" class="text-cream/60 hover:text-cream transition-colors text-sm">Bolton Food Bank</a></li>
+                    <li><a href="/FoodBanks" class="text-cream/60 hover:text-cream transition-colors text-sm">Food Bank Directory</a></li>
+                    <li><a href="/useful-links" class="text-cream/60 hover:text-cream transition-colors text-sm">Help &amp; Resources</a></li>
+                    <li><a href="/contact" class="text-cream/60 hover:text-cream transition-colors text-sm">Contact</a></li>
+                </ul>
+            </div>
+
+            <!-- Contact -->
+            <div>
+                <h4 class="text-sienna font-bold text-xs uppercase tracking-[.2em] mb-4">Contact</h4>
+                <ul class="space-y-2">
+                    <li>
+                        <a href="tel:08001244641" class="text-cream/60 hover:text-cream transition-colors text-sm flex items-center gap-2">
+                            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z"/></svg>
+                            0800 124 4641
+                        </a>
+                    </li>
+                    <li>
+                        <a href="mailto:info@homelessaid.co.uk" class="text-cream/60 hover:text-cream transition-colors text-sm flex items-center gap-2">
+                            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"/></svg>
+                            info@homelessaid.co.uk
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Emergency -->
+            <div>
+                <h4 class="text-vermillion font-bold text-xs uppercase tracking-[.2em] mb-4">Emergency</h4>
+                <ul class="space-y-2">
+                    <li class="text-cream/60 text-sm">Emergency Services: <strong class="text-cream">999</strong></li>
+                    <li class="text-cream/60 text-sm">NHS 111: <strong class="text-cream">111</strong></li>
+                    <li class="text-cream/60 text-sm">Samaritans: <strong class="text-cream">116 123</strong></li>
                 </ul>
             </div>
         </div>
-    </nav>
 
-
-    <section class="hero">
-        <div class="container">
-            <div class="hero-brand">Homeless Aid UK</div>
-            <h1><i class="fas fa-hands-helping"></i> Helping The Homeless & Those In Need</h1>
-            <div class="emergency-hotline">
-                <p class="help-text">Need help in the Bolton Area? Call us:</p>
-                <a href="tel:08001244641" class="hotline-link">
-                    <span class="phone-icon"><i class="fas fa-phone"></i></span>
-                    <span class="hotline-number">0800 124 4641</span>
+        <!-- Social + bottom -->
+        <div class="border-t border-cream/10 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-4">
+                <img src="Branding/HomelessAidUKLogo.png" alt="Homeless Aid UK Logo" class="w-10 h-10 rounded" loading="lazy">
+                <span class="text-cream/40 text-xs">&copy; 2025 Homeless Aid UK. Not a registered charity — 100% volunteer run.</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <a href="https://www.facebook.com/HomelessAidUK" target="_blank" rel="noopener noreferrer" aria-label="Follow us on Facebook" class="text-cream/40 hover:text-sienna transition-colors">
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
                 </a>
             </div>
-            <div class="cta-buttons">
-                <a href="#feeding-schedule" class="btn btn-primary"><i class="fas fa-utensils"></i> Homeless Aid Food List</a>
-                <a href="https://homelessaid.co.uk/food-bank" class="btn btn-primary" target="_blank" rel="noopener"><i class="fas fa-map-marker-alt"></i> Bolton Food Bank</a>
-                <a href="/FoodBanks" class="btn btn-primary"><i class="fas fa-store"></i> Food Bank Directory</a>
-                <a href="/donate" class="btn btn-secondary"><i class="fas fa-heart"></i> Donate Now</a>
-                <a href="/volunteer" class="btn btn-secondary"><i class="fas fa-hand-paper"></i> Volunteer</a>
-            </div>
-        </div>
-    </section>
-
-    <section class="about">
-        <div class="container">
-            <h2>About Homeless Aid UK</h2>
-            <p>Homeless Aid UK is an organisation established and operated by a group of friends from across the UK. Please note we are not a charity. Our team of volunteers are dedicated to ending homelessness, by delivering life-changing services and campaigning for change.</p>
-            <p><strong>We rely solely on donations and the support of the local community.</strong></p>
-        </div>
-    </section>
-
-
-    <section id="feeding-schedule" class="feeding-schedule">
-        <div class="container">
-            <h2><i class="fas fa-map-marker-alt"></i> Free Food List</h2>
-            <div class="search-container">
-                <div class="search-box">
-                    <i class="fas fa-search search-icon"></i>
-                    <input type="text" id="locationSearch" placeholder="Search by location, town, or postcode..." class="search-input">
-                    <button type="button" class="clear-search" id="clearSearch" style="display: none;">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                <button type="button" class="near-me-btn" id="nearMeBtn">
-                    <i class="fas fa-location-arrow"></i>
-                    <span>Near Me</span>
-                </button>
-            </div>
-            <div class="filter-buttons">
-                <button class="filter-btn active" data-filter="all">All Days</button>
-                <button class="filter-btn" data-filter="Monday">Monday</button>
-                <button class="filter-btn" data-filter="Tuesday">Tuesday</button>
-                <button class="filter-btn" data-filter="Wednesday">Wednesday</button>
-                <button class="filter-btn" data-filter="Thursday">Thursday</button>
-                <button class="filter-btn" data-filter="Friday">Friday</button>
-                <button class="filter-btn" data-filter="Saturday">Saturday</button>
-                <button class="filter-btn" data-filter="Sunday">Sunday</button>
-            </div>
-            <div id="feeding-times" class="feeding-grid">
-                <div class="loading">Loading feeding times...</div>
-            </div>
-        </div>
-    </section>
-
-
-    <section class="impact">
-        <div class="container">
-            <div class="impact-grid">
-                <div class="impact-card">
-                    <div class="impact-icon"><i class="fas fa-users"></i></div>
-                    <h3>100% Volunteer Run</h3>
-                    <p>Every member of our team is a volunteer</p>
-                </div>
-                <div class="impact-card">
-                    <div class="impact-icon"><i class="fas fa-map-marked-alt"></i></div>
-                    <h3>Many Locations Covered</h3>
-                    <p>Operating across major UK cities</p>
-                </div>
-                <div class="impact-card">
-                    <div class="impact-icon"><i class="fas fa-coins"></i></div>
-                    <h3>Every Penny Goes Direct</h3>
-                    <p>All donations go to those in need</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Calendar Modal -->
-    <div id="calendar-modal-backdrop" class="calendar-modal-backdrop">
-        <div id="calendar-modal" class="calendar-modal">
-            <div class="calendar-modal-header">
-                <h3 id="calendar-modal-title">Add to Calendar</h3>
-                <button id="calendar-modal-close" class="calendar-modal-close">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="calendar-modal-content">
-                <p id="calendar-modal-event-details" class="calendar-modal-event-details"></p>
-                <div class="calendar-modal-options">
-                    <a href="#" id="calendar-option-google" class="calendar-modal-option">
-                        <i class="fab fa-google"></i>
-                        <div class="calendar-option-text">
-                            <strong>Google Calendar</strong>
-                            <span>Add to your Google Calendar</span>
-                        </div>
-                    </a>
-                    <a href="#" id="calendar-option-ics" class="calendar-modal-option">
-                        <i class="fas fa-download"></i>
-                        <div class="calendar-option-text">
-                            <strong>Download .ics file</strong>
-                            <span>For Outlook, Apple Calendar & other apps</span>
-                        </div>
-                    </a>
-                </div>
-            </div>
         </div>
     </div>
 
-    <!-- Floating Call Button -->
-    <div class="floating-call-btn">
-        <a href="tel:08001244641" class="call-btn" title="Call us now - Free phone">
-            <i class="fas fa-phone"></i>
-            <span class="call-text">Call Us</span>
-        </a>
+    <!-- Giant background text -->
+    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 font-display text-cream/[.03] text-[12vw] sm:text-[10vw] whitespace-nowrap pointer-events-none select-none" aria-hidden="true">
+        HOMELESS AID UK
     </div>
+</footer>
 
-    <footer>
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <div class="footer-logo">
-                        <img src="Branding/HomelessAidUKLogo.png" alt="Homeless Aid UK" class="footer-logo-img">
-                        <h4>Homeless Aid UK</h4>
-                    </div>
-                    <p>100% volunteer-run organisation helping the homeless and those in need across the UK</p>
-                </div>
-                <div class="footer-section">
-                    <h4>Quick Links</h4>
-                    <ul>
-                        <li><a href="/">Home</a></li>
-                        <li><a href="#feeding-schedule">Food List</a></li>
-                        <li><a href="/donate">Donate</a></li>
-                        <li><a href="/volunteer">Volunteer</a></li>
-                        <li><a href="/Outreach/login.html">Outreach Login</a></li>
-                        <li><a href="/food-bank">Food Bank</a></li>
-                        <li><a href="/contact">Contact</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4>Contact</h4>
-                    <p>📞 0800 124 4641</p>
-                    <p>✉️ info@homelessaid.co.uk</p>
-                </div>
-                <div class="footer-section">
-                    <h4>Follow Us</h4>
-                    <div class="social-links">
-                        <a href="https://www.facebook.com/HomelessAidUK" class="social-link">Facebook</a>
-                    </div>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2024 Homeless Aid UK. All rights reserved. | Not a registered charity - 100% volunteer run</p>
-            </div>
-        </div>
-    </footer>
+</main>
 
-    <script src="script.js?v=2024.12.19.1"></script>
+
+<!-- ══════════════════════════════════════════════
+     JAVASCRIPT
+     ══════════════════════════════════════════════ -->
+<script>
+(function(){
+    'use strict';
+
+    /* ── Navigation toggle ── */
+    const navToggle = document.getElementById('nav-toggle');
+    const navClose  = document.getElementById('nav-close');
+    const navOverlay= document.getElementById('nav-overlay');
+    const navLinks  = navOverlay.querySelectorAll('a');
+
+    function openNav()  { navOverlay.classList.add('open');    navOverlay.setAttribute('aria-hidden','false'); navToggle.setAttribute('aria-expanded','true');  document.body.style.overflow='hidden'; }
+    function closeNav() { navOverlay.classList.remove('open'); navOverlay.setAttribute('aria-hidden','true');  navToggle.setAttribute('aria-expanded','false'); document.body.style.overflow=''; }
+
+    navToggle.addEventListener('click', function(){ navOverlay.classList.contains('open') ? closeNav() : openNav(); });
+    navClose.addEventListener('click', closeNav);
+    navLinks.forEach(function(l){ l.addEventListener('click', closeNav); });
+    document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeNav(); });
+
+
+    /* ── Scroll-triggered reveals (IntersectionObserver) ── */
+    const revealEls = document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale, .stagger');
+    if('IntersectionObserver' in window){
+        const obs = new IntersectionObserver(function(entries){
+            entries.forEach(function(entry){
+                if(entry.isIntersecting){
+                    entry.target.classList.add('visible');
+                    obs.unobserve(entry.target);
+                }
+            });
+        }, { threshold:0.12, rootMargin:'0px 0px -40px 0px' });
+        revealEls.forEach(function(el){ obs.observe(el); });
+    } else {
+        revealEls.forEach(function(el){ el.classList.add('visible'); });
+    }
+
+
+    /* ── Animated counters ── */
+    const counters = document.querySelectorAll('[data-count]');
+    if('IntersectionObserver' in window){
+        const counterObs = new IntersectionObserver(function(entries){
+            entries.forEach(function(entry){
+                if(!entry.isIntersecting) return;
+                const el = entry.target;
+                const target = parseInt(el.dataset.count, 10);
+                const suffix = el.dataset.suffix || '';
+                const duration = 1800;
+                const start = performance.now();
+
+                function tick(now){
+                    const elapsed = now - start;
+                    const progress = Math.min(elapsed / duration, 1);
+                    const eased = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+                    const current = Math.round(eased * target);
+                    el.textContent = current + suffix;
+                    if(progress < 1) requestAnimationFrame(tick);
+                }
+                requestAnimationFrame(tick);
+                counterObs.unobserve(el);
+            });
+        }, { threshold:0.5 });
+        counters.forEach(function(el){ counterObs.observe(el); });
+    }
+
+
+    /* ── Food schedule loader ── */
+    var DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    var today = DAYS[new Date().getDay()];
+    var allFeeds = [];
+    var activeDay = 'today';
+    var activeTown = 'all';
+
+    /* CSV parser — handles quoted fields (LatLong has internal commas) */
+    function parseCSV(text){
+        var lines = text.trim().split('\n');
+        var headers = parseCSVLine(lines[0]);
+        var results = [];
+        for(var i=1; i<lines.length; i++){
+            var line = lines[i].trim();
+            if(!line) continue;
+            var vals = parseCSVLine(line);
+            var obj = {};
+            for(var j=0; j<headers.length; j++){
+                obj[headers[j].trim()] = (vals[j]||'').trim();
+            }
+            results.push(obj);
+        }
+        return results;
+    }
+    function parseCSVLine(line){
+        var result=[],current='',inQuotes=false;
+        for(var i=0;i<line.length;i++){
+            var c=line[i];
+            if(inQuotes){
+                if(c==='"'&&line[i+1]==='"'){current+='"';i++;}
+                else if(c==='"'){inQuotes=false;}
+                else{current+=c;}
+            } else {
+                if(c==='"'){inQuotes=true;}
+                else if(c===','){result.push(current);current='';}
+                else{current+=c;}
+            }
+        }
+        result.push(current);
+        return result;
+    }
+
+    /* Type → colour mapping */
+    function getTypeColor(type){
+        var t=(type||'').toLowerCase();
+        if(t.indexOf('street kitchen')!==-1) return {bg:'bg-forest',text:'text-cream'};
+        if(t.indexOf('outreach')!==-1)       return {bg:'bg-ink',text:'text-cream'};
+        if(t.indexOf('takeaway')!==-1)       return {bg:'bg-sienna',text:'text-cream'};
+        if(t.indexOf('drink')!==-1||t.indexOf('cake')!==-1) return {bg:'bg-amber-700',text:'text-cream'};
+        if(t.indexOf('indoor')!==-1)         return {bg:'bg-forest/80',text:'text-cream'};
+        return {bg:'bg-charcoal',text:'text-cream'};
+    }
+
+    /* Format time: "19:00" → "7:00pm", handle "19:00:00" typo in data */
+    function fmtTime(raw){
+        if(!raw) return '';
+        raw = raw.replace(/:00:00$/,':00'); // fix Sunday typo "19:00:00"
+        var parts=raw.split(':');
+        var h=parseInt(parts[0],10), m=parts[1]||'00';
+        var ampm=h>=12?'pm':'am';
+        if(h===0) h=12; else if(h>12) h-=12;
+        return h+':'+m+ampm;
+    }
+
+    /* Build Google Maps directions URL */
+    function directionsUrl(f){
+        if(f.LatLong){
+            return 'https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(f.LatLong);
+        }
+        var addr = (f['Address 1']||'')+' '+(f.Postcode||'')+' '+(f.Town||'');
+        return 'https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(addr.trim());
+    }
+
+    /* Build .ics calendar data URI */
+    function calendarUrl(f){
+        var now = new Date();
+        // Find next occurrence of f.Day
+        var dayIdx = DAYS.indexOf(f.Day);
+        var diff = (dayIdx - now.getDay() + 7) % 7;
+        if(diff === 0){
+            // Today — check if event already passed
+            var endParts = (f.EndTime||'').replace(/:00:00$/,':00').split(':');
+            var endH = parseInt(endParts[0]||'23',10);
+            if(now.getHours() >= endH) diff = 7;
+        }
+        var eventDate = new Date(now);
+        eventDate.setDate(now.getDate() + diff);
+        var startParts = (f.StartTime||'19:00').split(':');
+        var endParts2 = (f.EndTime||'20:00').replace(/:00:00$/,':00').split(':');
+        function pad(n){return n<10?'0'+n:''+n;}
+        function icsDate(d,h,m){
+            return d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate())+'T'+pad(h)+pad(m)+'00';
+        }
+        var dtStart = icsDate(eventDate, parseInt(startParts[0],10), parseInt(startParts[1]||'0',10));
+        var dtEnd   = icsDate(eventDate, parseInt(endParts2[0],10), parseInt(endParts2[1]||'0',10));
+        var summary = (f.Type||'Feed')+' — '+(f.Name||f.Town);
+        var location = (f['Address 1']||'')+', '+(f.Postcode||'')+', '+(f.Town||'');
+        var ics = [
+            'BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//HomelessAidUK//Feed//EN',
+            'BEGIN:VEVENT',
+            'DTSTART:'+dtStart, 'DTEND:'+dtEnd,
+            'SUMMARY:'+summary, 'LOCATION:'+location.replace(/,\s*,/g,',').replace(/^,|,$/g,''),
+            'DESCRIPTION:Homeless Aid UK — 0800 124 4641',
+            'END:VEVENT','END:VCALENDAR'
+        ].join('\r\n');
+        return 'data:text/calendar;charset=utf-8,'+encodeURIComponent(ics);
+    }
+
+    /* Determine access label from Notes field */
+    function accessLabel(notes){
+        if(!notes) return {text:'Open to anyone',cls:'text-forest font-bold'};
+        var n = notes.toLowerCase();
+        if(n.indexOf('referral')!==-1) return {text:'Referral Only',cls:'text-vermillion font-bold'};
+        if(n.indexOf('coffee')!==-1)   return {text:'Coffee Shop',cls:'text-amber-700 font-bold'};
+        if(n.indexOf('walk')!==-1)     return {text:'Walk-around outreach',cls:'text-ink font-bold'};
+        return {text:notes, cls:'text-charcoal/70'};
+    }
+
+    /* Escape HTML */
+    function esc(s){ var d=document.createElement('div'); d.textContent=s||''; return d.innerHTML; }
+
+    /* ── Render cards ── */
+    function renderFeeds(){
+        var container = document.getElementById('feed-cards');
+        var feeds = allFeeds.slice();
+
+        if(activeDay==='today'){
+            feeds = feeds.filter(function(f){ return f.Day===today; });
+        } else if(activeDay!=='all'){
+            feeds = feeds.filter(function(f){ return f.Day===activeDay; });
+        }
+        if(activeTown!=='all'){
+            feeds = feeds.filter(function(f){ return f.Town===activeTown; });
+        }
+
+        if(feeds.length===0){
+            container.innerHTML = '<div class="col-span-full text-center py-12 text-charcoal/50">'+
+                '<p class="font-display text-2xl text-forest/60 mb-2">No feeds found</p>'+
+                '<p>Try selecting a different day or area.</p></div>';
+            return;
+        }
+
+        feeds.sort(function(a,b){ return (a.StartTime||'').localeCompare(b.StartTime||''); });
+
+        container.innerHTML = feeds.map(function(f){
+            var colors = getTypeColor(f.Type);
+            var isToday = f.Day===today;
+            var access = accessLabel(f.Notes);
+            var timeStr = fmtTime(f.StartTime)+' — '+fmtTime(f.EndTime);
+            var addr1 = f['Address 1']||'';
+            var postcode = f.Postcode||'';
+            var fullAddr = addr1+(postcode ? ', '+postcode : '');
+            var hasCalendar = (f['Enable Calendar']||'').toLowerCase()==='yes';
+            var moreInfo = f.MoreInfo||'';
+
+            var html = '<article class="'+(isToday?'today-glow ':'')+
+                'bg-white border-[3px] border-forest rounded-sm shadow-brutal p-5 flex flex-col gap-3">';
+
+            /* Top row: type badge + day/today */
+            html += '<div class="flex items-start justify-between gap-2">';
+            html += '<span class="'+colors.bg+' '+colors.text+' text-xs font-bold px-3 py-1 rounded-sm uppercase tracking-wide shrink-0">'+esc(f.Type||'Feed')+'</span>';
+            html += isToday
+                ? '<span class="bg-vermillion text-cream text-xs font-bold px-2 py-1 rounded-sm animate-pulse shrink-0">TODAY</span>'
+                : '<span class="text-charcoal/40 text-xs font-bold shrink-0">'+esc(f.Day)+'</span>';
+            html += '</div>';
+
+            /* Name */
+            html += '<h3 class="font-display text-forest text-xl leading-tight">'+esc(f.Name||f.Town)+'</h3>';
+
+            /* Address + postcode */
+            if(fullAddr){
+                html += '<p class="text-charcoal/60 text-sm leading-snug">'+esc(fullAddr)+'</p>';
+            }
+
+            /* Time */
+            html += '<p class="font-bold text-forest text-lg">'+esc(timeStr)+'</p>';
+
+            /* Access label */
+            html += '<p class="text-xs '+access.cls+'">'+esc(access.text)+'</p>';
+
+            /* Action links row */
+            html += '<div class="mt-auto pt-3 border-t border-charcoal/10 flex flex-wrap gap-3 items-center">';
+
+            /* Directions */
+            html += '<a href="'+directionsUrl(f)+'" target="_blank" rel="noopener noreferrer" '+
+                'class="inline-flex items-center gap-1 text-xs font-bold text-forest hover:text-sienna transition-colors" aria-label="Get directions to '+esc(f.Name||f.Town)+'">'+
+                '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/></svg>'+
+                'Directions</a>';
+
+            /* Calendar */
+            if(hasCalendar){
+                html += '<a href="'+calendarUrl(f)+'" download="feed.ics" '+
+                    'class="inline-flex items-center gap-1 text-xs font-bold text-forest hover:text-sienna transition-colors" aria-label="Add '+esc(f.Name||f.Town)+' to calendar">'+
+                    '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/></svg>'+
+                    'Add to Calendar</a>';
+            }
+
+            /* More Info toggle */
+            if(moreInfo){
+                var id = 'info-'+f.Day+'-'+f.StartTime+'-'+(f.Name||'').replace(/\s/g,'');
+                html += '<button onclick="var el=document.getElementById(\''+id+'\');el.classList.toggle(\'hidden\');this.querySelector(\'span\').textContent=el.classList.contains(\'hidden\')?\'More Info\':\'Less Info\'" '+
+                    'class="inline-flex items-center gap-1 text-xs font-bold text-sienna hover:text-forest transition-colors" aria-expanded="false">'+
+                    '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"/></svg>'+
+                    '<span>More Info</span></button>';
+            }
+
+            html += '</div>';
+
+            /* Expandable more info */
+            if(moreInfo){
+                html += '<div id="'+id+'" class="hidden text-xs text-charcoal/60 leading-relaxed bg-cream/50 p-3 rounded-sm mt-1">'+esc(moreInfo)+'</div>';
+            }
+
+            html += '</article>';
+            return html;
+        }).join('');
+    }
+
+    /* ── Build dynamic town filter pills ── */
+    function buildTownFilters(){
+        var towns = {};
+        allFeeds.forEach(function(f){ if(f.Town) towns[f.Town]=true; });
+        var sorted = Object.keys(towns).sort();
+        var container = document.getElementById('town-filters');
+        sorted.forEach(function(town){
+            var btn = document.createElement('button');
+            btn.className = 'filter-pill px-3 py-1.5 border-2 border-sienna/30 rounded-full text-xs font-semibold hover:border-sienna text-charcoal';
+            btn.setAttribute('data-town', town);
+            btn.textContent = town;
+            container.appendChild(btn);
+        });
+        // Bind click events for all town pills (including dynamic ones)
+        container.querySelectorAll('[data-town]').forEach(function(btn){
+            btn.addEventListener('click', function(){
+                container.querySelectorAll('[data-town]').forEach(function(b){ b.classList.remove('active'); });
+                btn.classList.add('active');
+                activeTown = btn.dataset.town;
+                renderFeeds();
+            });
+        });
+    }
+
+    /* ── Fetch CSV and boot ── */
+    fetch('/feed-times.csv')
+        .then(function(r){ return r.text(); })
+        .then(function(text){
+            allFeeds = parseCSV(text);
+            buildTownFilters();
+            renderFeeds();
+        })
+        .catch(function(){
+            document.getElementById('feed-cards').innerHTML =
+                '<div class="col-span-full text-center py-12 text-vermillion">'+
+                '<p class="font-bold">Unable to load feeding times.</p>'+
+                '<p class="text-charcoal/60 mt-2">Please call <a href="tel:08001244641" class="underline font-bold">0800 124 4641</a> for information.</p></div>';
+        });
+
+    /* ── Day filter clicks ── */
+    document.querySelectorAll('[data-day]').forEach(function(btn){
+        btn.addEventListener('click', function(){
+            document.querySelectorAll('[data-day]').forEach(function(b){ b.classList.remove('active'); });
+            btn.classList.add('active');
+            activeDay = btn.dataset.day;
+            renderFeeds();
+        });
+    });
+
+})();
+</script>
+
 </body>
 </html>

@@ -340,17 +340,7 @@ class FoodBanksManager {
 
         document.getElementById('filtersToggle').addEventListener('click', () => {
             const advancedFilters = document.getElementById('advancedFilters');
-            const toggleIcon = document.querySelector('#filtersToggle i');
-            
-            if (advancedFilters.style.display === 'none' || !advancedFilters.style.display) {
-                advancedFilters.style.display = 'flex';
-                toggleIcon.classList.remove('fa-chevron-down');
-                toggleIcon.classList.add('fa-chevron-up');
-            } else {
-                advancedFilters.style.display = 'none';
-                toggleIcon.classList.remove('fa-chevron-up');
-                toggleIcon.classList.add('fa-chevron-down');
-            }
+            advancedFilters.classList.toggle('show');
         });
 
         document.getElementById('modalOverlay').addEventListener('click', (e) => {
@@ -507,11 +497,9 @@ class FoodBanksManager {
 
         const locationBtn = document.getElementById('locationBtn');
         const locationText = locationBtn.querySelector('.location-text');
-        const locationIcon = locationBtn.querySelector('i');
 
         locationBtn.disabled = true;
-        locationIcon.className = 'fas fa-spinner fa-spin';
-        locationText.textContent = 'Getting location...';
+        if(locationText) locationText.textContent = 'Locating...';
 
         this.locationRequested = true;
         this.trackEvent('location_request_started');
@@ -524,8 +512,7 @@ class FoodBanksManager {
                 };
                 this.isLocationEnabled = true;
                 
-                locationIcon.className = 'fas fa-map-marker-alt';
-                locationText.textContent = 'Location Found';
+                if(locationText) locationText.textContent = 'Located';
                 locationBtn.classList.add('location-active');
                 locationBtn.disabled = false;
                 
@@ -544,8 +531,7 @@ class FoodBanksManager {
             },
             (error) => {
                 this.showLocationError(this.getLocationErrorMessage(error));
-                locationIcon.className = 'fas fa-location-arrow';
-                locationText.textContent = 'Near Me';
+                if(locationText) locationText.textContent = 'Near Me';
                 locationBtn.disabled = false;
                 
                 this.trackEvent('location_request_failed', {
@@ -792,58 +778,40 @@ class FoodBanksManager {
 
     createFoodBankCard(bank) {
         const card = document.createElement('div');
-        card.className = 'foodbank-card';
+        card.className = 'bg-white border-[3px] border-[#1B4332] rounded-sm p-5 flex flex-col gap-3';
+        card.style.boxShadow = '4px 4px 0 #1B4332';
         card.setAttribute('data-id', bank.id);
 
-        const statusClass = bank.status || 'closed';
+        const statusClass = bank.status === 'open' ? 'status-open' : bank.status === 'opening-soon' ? 'status-opening-soon' : 'status-closed';
         const statusText = this.getStatusText(bank);
-        const distanceText = bank.distance ? `${bank.distance.toFixed(1)} miles` : '';
-        
+        const distanceText = bank.distance ? `${bank.distance.toFixed(1)} mi` : '';
+
         card.innerHTML = `
-            <div class="card-header">
-                <div class="status-badge ${statusClass}">${statusText}</div>
-                ${distanceText ? `<div class="distance">${distanceText}</div>` : ''}
+            <div class="flex items-start justify-between gap-2">
+                <span class="${statusClass} text-xs font-bold px-2.5 py-1 rounded-sm uppercase tracking-wide">${statusText}</span>
+                ${distanceText ? `<span class="text-[#E76F51] text-xs font-bold shrink-0">${distanceText}</span>` : ''}
             </div>
-            
-            <div class="card-content">
-                <h3 class="foodbank-name">${bank.name}</h3>
-                <div class="foodbank-location">
-                    <i class="fas fa-map-marker-alt"></i>
-                    <span>${bank.borough}${bank.area ? `, ${bank.area}` : ''}</span>
-                </div>
-                
-                <div class="card-details">
-                    <div class="detail-item">
-                        <i class="fas fa-pound-sign"></i>
-                        <span>${bank.cost || 'Contact for details'}</span>
-                    </div>
-                    
-                    <div class="detail-item">
-                        <i class="fas fa-door-open"></i>
-                        <span>${this.formatAccessType(bank.accessType)}</span>
-                    </div>
-                </div>
-                
-                <div class="services-icons">
-                    ${this.renderServiceIcons(bank)}
-                </div>
-                
-                <div class="card-address">
-                    ${bank.fullAddress}${bank.postcode ? `, ${bank.postcode}` : ''}
-                </div>
-                
-                ${bank.nextOpening ? `<div class="next-opening">${bank.nextOpening}</div>` : ''}
+
+            <h3 class="font-['DM_Serif_Display',Georgia,serif] text-[#1B4332] text-lg leading-tight">${bank.name}</h3>
+
+            <p class="text-[#2D3436]/60 text-xs">${bank.borough}${bank.area ? ' · ' + bank.area : ''}</p>
+
+            <div class="flex flex-wrap gap-x-4 gap-y-1 text-xs text-[#2D3436]/70">
+                <span class="font-bold">${bank.cost || 'Contact for details'}</span>
+                <span>${this.formatAccessType(bank.accessType)}</span>
             </div>
-            
-            <div class="card-actions">
-                <button class="btn btn-outline directions-btn" onclick="foodBanksManager.openDirections('${bank.id}')">
-                    <i class="fas fa-directions"></i>
-                    Directions
-                </button>
-                <button class="btn btn-primary info-btn" onclick="foodBanksManager.showDetails('${bank.id}')">
-                    <i class="fas fa-info-circle"></i>
-                    More Info
-                </button>
+
+            <div class="flex flex-wrap gap-1.5">
+                ${this.renderServiceIcons(bank)}
+            </div>
+
+            <p class="text-[#2D3436]/50 text-xs leading-snug">${bank.fullAddress}${bank.postcode ? ', ' + bank.postcode : ''}</p>
+
+            ${bank.nextOpening ? `<p class="text-[#E76F51] text-xs font-bold">${bank.nextOpening}</p>` : ''}
+
+            <div class="mt-auto pt-3 border-t border-[#2D3436]/10 flex gap-3">
+                <button class="flex-1 text-[#1B4332] font-bold text-xs py-2 px-3 border-2 border-[#1B4332] rounded-sm hover:bg-[#1B4332] hover:text-[#FDF6EC] transition-colors min-h-[36px]" onclick="foodBanksManager.openDirections('${bank.id}')">Directions</button>
+                <button class="flex-1 bg-[#1B4332] text-[#FDF6EC] font-bold text-xs py-2 px-3 border-2 border-[#1B4332] rounded-sm hover:bg-[#142e23] transition-colors min-h-[36px]" onclick="foodBanksManager.showDetails('${bank.id}')">More Info</button>
             </div>
         `;
 
@@ -882,21 +850,16 @@ class FoodBanksManager {
 
     renderServiceIcons(bank) {
         const services = [
-            { key: 'serviceFoodBank', icon: 'fas fa-shopping-basket', label: 'Food Bank' },
-            { key: 'serviceCommunityMeals', icon: 'fas fa-utensils', label: 'Community Meals' },
-            { key: 'serviceDelivery', icon: 'fas fa-truck', label: 'Delivery' },
-            { key: 'serviceClothing', icon: 'fas fa-tshirt', label: 'Clothing' },
-            { key: 'serviceFurniture', icon: 'fas fa-couch', label: 'Furniture' },
-            { key: 'serviceUtilities', icon: 'fas fa-bolt', label: 'Utilities' }
+            { key: 'serviceFoodBank', label: 'Food Bank' },
+            { key: 'serviceCommunityMeals', label: 'Meals' },
+            { key: 'serviceDelivery', label: 'Delivery' },
+            { key: 'serviceClothing', label: 'Clothing' },
+            { key: 'serviceFurniture', label: 'Furniture' },
+            { key: 'serviceUtilities', label: 'Utilities' }
         ];
 
-        return services.map(service => {
-            const isActive = bank[service.key];
-            return `
-                <div class="service-icon ${isActive ? 'active' : 'inactive'}" title="${service.label}">
-                    <i class="${service.icon}"></i>
-                </div>
-            `;
+        return services.filter(s => bank[s.key]).map(service => {
+            return `<span class="bg-[#1B4332]/10 text-[#1B4332] text-[10px] font-bold px-2 py-0.5 rounded-sm uppercase tracking-wide">${service.label}</span>`;
         }).join('');
     }
 
@@ -932,95 +895,51 @@ class FoodBanksManager {
     createDetailedView(bank) {
         const openingHours = this.formatOpeningHours(bank);
         const services = this.formatDetailedServices(bank);
-        
+        const statusClass = bank.status === 'open' ? 'status-open' : bank.status === 'opening-soon' ? 'status-opening-soon' : 'status-closed';
+
         return `
-            <div class="modal-header">
-                <h2>${bank.name}</h2>
-                <div class="status-badge ${bank.status || 'closed'}">
-                    ${this.getStatusText(bank)}
-                </div>
+            <div class="flex items-start justify-between gap-3 mb-6">
+                <h2 class="font-['DM_Serif_Display',Georgia,serif] text-[#1B4332] text-2xl sm:text-3xl leading-tight">${bank.name}</h2>
+                <span class="${statusClass} text-xs font-bold px-3 py-1.5 rounded-sm uppercase tracking-wide shrink-0">${this.getStatusText(bank)}</span>
             </div>
-            
-            <div class="modal-section">
-                <h3><i class="fas fa-map-marker-alt"></i> Location & Contact</h3>
-                <p class="modal-address">${bank.fullAddress}${bank.postcode ? `, ${bank.postcode}` : ''}</p>
-                
-                <div class="contact-details">
-                    ${bank.phone ? `
-                        <div class="contact-item">
-                            <i class="fas fa-phone"></i>
-                            <a href="tel:${bank.phone}">${bank.phone}</a>
-                        </div>
-                    ` : ''}
-                    
-                    ${bank.email ? `
-                        <div class="contact-item">
-                            <i class="fas fa-envelope"></i>
-                            <a href="mailto:${bank.email}">${bank.email}</a>
-                        </div>
-                    ` : ''}
-                    
-                    ${bank.website ? `
-                        <div class="contact-item">
-                            <i class="fas fa-globe"></i>
-                            <a href="${bank.website}" target="_blank" rel="noopener">Visit Website</a>
-                        </div>
-                    ` : ''}
+
+            <div class="mb-6 pb-6 border-b-2 border-[#1B4332]/10">
+                <h3 class="font-bold text-[#1B4332] text-sm uppercase tracking-wide mb-3">Location & Contact</h3>
+                <p class="text-[#2D3436] text-sm mb-3">${bank.fullAddress}${bank.postcode ? ', ' + bank.postcode : ''}</p>
+                <div class="space-y-2">
+                    ${bank.phone ? '<a href="tel:' + bank.phone + '" class="flex items-center gap-2 text-[#1B4332] font-bold text-sm hover:text-[#E76F51] transition-colors">' + bank.phone + '</a>' : ''}
+                    ${bank.email ? '<a href="mailto:' + bank.email + '" class="flex items-center gap-2 text-[#1B4332] text-sm hover:text-[#E76F51] transition-colors break-all">' + bank.email + '</a>' : ''}
+                    ${bank.website ? '<a href="' + bank.website + '" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 text-[#E76F51] text-sm font-bold hover:text-[#1B4332] transition-colors">Visit Website &rarr;</a>' : ''}
                 </div>
-                
-                ${bank.distance ? `<p class="distance-info">Distance: ${bank.distance.toFixed(1)} miles from your location</p>` : ''}
+                ${bank.distance ? '<p class="text-[#E76F51] text-xs font-bold mt-3">' + bank.distance.toFixed(1) + ' miles from you</p>' : ''}
             </div>
-            
-            <div class="modal-section">
-                <h3><i class="fas fa-clock"></i> Opening Hours</h3>
+
+            <div class="mb-6 pb-6 border-b-2 border-[#1B4332]/10">
+                <h3 class="font-bold text-[#1B4332] text-sm uppercase tracking-wide mb-3">Opening Hours</h3>
                 ${openingHours}
-                ${bank.timeNotes ? `<p class="time-notes"><strong>Note:</strong> ${bank.timeNotes}</p>` : ''}
+                ${bank.timeNotes ? '<p class="text-[#E76F51] text-xs font-bold mt-2">' + bank.timeNotes + '</p>' : ''}
             </div>
-            
-            <div class="modal-section">
-                <h3><i class="fas fa-hand-holding-heart"></i> Services</h3>
+
+            <div class="mb-6 pb-6 border-b-2 border-[#1B4332]/10">
+                <h3 class="font-bold text-[#1B4332] text-sm uppercase tracking-wide mb-3">Services</h3>
                 ${services}
             </div>
-            
-            <div class="modal-section">
-                <h3><i class="fas fa-info-circle"></i> Access Information</h3>
-                <div class="access-info">
-                    <div class="info-item">
-                        <strong>Cost:</strong> ${bank.cost || 'Contact for details'}
-                    </div>
-                    <div class="info-item">
-                        <strong>Access Type:</strong> ${this.formatAccessType(bank.accessType)}
-                    </div>
-                    ${bank.requirements ? `
-                        <div class="info-item">
-                            <strong>Requirements:</strong> ${bank.requirements}
-                        </div>
-                    ` : ''}
+
+            <div class="mb-6 pb-6 border-b-2 border-[#1B4332]/10">
+                <h3 class="font-bold text-[#1B4332] text-sm uppercase tracking-wide mb-3">Access Information</h3>
+                <div class="space-y-2 text-sm text-[#2D3436]">
+                    <p><strong>Cost:</strong> ${bank.cost || 'Contact for details'}</p>
+                    <p><strong>Access:</strong> ${this.formatAccessType(bank.accessType)}</p>
+                    ${bank.requirements ? '<p><strong>Requirements:</strong> ' + bank.requirements + '</p>' : ''}
                 </div>
             </div>
-            
-            ${bank.notes ? `
-                <div class="modal-section">
-                    <h3><i class="fas fa-sticky-note"></i> Additional Information</h3>
-                    <p>${bank.notes}</p>
-                </div>
-            ` : ''}
-            
-            <div class="modal-actions">
-                <button class="btn btn-primary" onclick="foodBanksManager.openDirections('${bank.id}')">
-                    <i class="fas fa-directions"></i>
-                    Get Directions
-                </button>
-                ${bank.phone ? `
-                    <button class="btn btn-outline" onclick="window.open('tel:${bank.phone}')">
-                        <i class="fas fa-phone"></i>
-                        Call Now
-                    </button>
-                ` : ''}
-                <button class="btn btn-link" onclick="foodBanksManager.shareLocation('${bank.id}')">
-                    <i class="fas fa-share"></i>
-                    Share
-                </button>
+
+            ${bank.notes ? '<div class="mb-6 pb-6 border-b-2 border-[#1B4332]/10"><h3 class="font-bold text-[#1B4332] text-sm uppercase tracking-wide mb-3">Additional Info</h3><p class="text-[#2D3436]/70 text-sm leading-relaxed">' + bank.notes + '</p></div>' : ''}
+
+            <div class="flex flex-wrap gap-3">
+                <button class="flex-1 bg-[#1B4332] text-[#FDF6EC] font-bold text-sm py-3 px-4 border-[3px] border-[#1B4332] rounded-sm hover:bg-[#142e23] transition-colors min-h-[44px]" onclick="foodBanksManager.openDirections('${bank.id}')">Get Directions</button>
+                ${bank.phone ? '<a href="tel:' + bank.phone + '" class="flex-1 text-center text-[#1B4332] font-bold text-sm py-3 px-4 border-[3px] border-[#1B4332] rounded-sm hover:bg-[#1B4332] hover:text-[#FDF6EC] transition-colors min-h-[44px] flex items-center justify-center">Call Now</a>' : ''}
+                <button class="text-[#E76F51] font-bold text-sm py-3 px-4 hover:text-[#1B4332] transition-colors min-h-[44px]" onclick="foodBanksManager.shareLocation('${bank.id}')">Share</button>
             </div>
         `;
     }
@@ -1038,19 +957,17 @@ class FoodBanksManager {
 
         const hours = days.map(day => {
             const isOpen = bank[day.key];
-            const times = isOpen && bank.openingTime && bank.closingTime 
+            const times = isOpen && bank.openingTime && bank.closingTime
                 ? `${bank.openingTime} - ${bank.closingTime}`
                 : 'Closed';
-                
-            return `
-                <div class="hours-row ${isOpen ? 'open' : 'closed'}">
-                    <span class="day">${day.name}</span>
-                    <span class="times">${times}</span>
-                </div>
-            `;
+
+            return `<div class="flex justify-between py-1.5 ${isOpen ? 'text-[#2D3436]' : 'text-[#2D3436]/30'}">
+                <span class="font-bold text-sm">${day.name}</span>
+                <span class="text-sm ${isOpen ? 'text-[#1B4332] font-bold' : ''}">${times}</span>
+            </div>`;
         }).join('');
 
-        return `<div class="opening-hours">${hours}</div>`;
+        return `<div class="divide-y divide-[#1B4332]/10">${hours}</div>`;
     }
 
     formatDetailedServices(bank) {
@@ -1064,19 +981,14 @@ class FoodBanksManager {
         if (bank.serviceUtilities) services.push('Utilities Support');
         
         if (services.length === 0) {
-            return '<p>Contact for service details</p>';
+            return '<p class="text-[#2D3436]/50 text-sm">Contact for service details</p>';
         }
-        
+
         return `
-            <div class="services-list">
-                ${services.map(service => `
-                    <div class="service-item">
-                        <i class="fas fa-check"></i>
-                        <span>${service}</span>
-                    </div>
-                `).join('')}
+            <div class="flex flex-wrap gap-2 mb-3">
+                ${services.map(service => `<span class="bg-[#1B4332]/10 text-[#1B4332] text-xs font-bold px-3 py-1 rounded-sm">${service}</span>`).join('')}
             </div>
-            ${bank.services ? `<p class="service-description">${bank.services}</p>` : ''}
+            ${bank.services ? '<p class="text-[#2D3436]/60 text-xs leading-relaxed">' + bank.services + '</p>' : ''}
         `;
     }
 
@@ -1139,20 +1051,24 @@ class FoodBanksManager {
 
     showToast(message) {
         const toast = document.createElement('div');
-        toast.className = 'toast';
         toast.textContent = message;
         toast.style.cssText = `
             position: fixed;
             bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
-            background: var(--primary-color);
-            color: white;
+            background: #1B4332;
+            color: #FDF6EC;
             padding: 12px 24px;
-            border-radius: 8px;
+            border-radius: 2px;
+            border: 2px solid #1B4332;
+            box-shadow: 3px 3px 0 #1A1A2E;
             z-index: 10001;
             opacity: 0;
             transition: opacity 0.3s ease;
+            font-family: Inter, system-ui, sans-serif;
+            font-size: 14px;
+            font-weight: 700;
         `;
         
         document.body.appendChild(toast);

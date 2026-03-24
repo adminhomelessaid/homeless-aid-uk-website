@@ -1,242 +1,572 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="description" content="Donate to Homeless Aid UK - Support our volunteer work helping the homeless across the UK">
-    <title>Donate - Homeless Aid UK</title>
-    <link rel="stylesheet" href="styles.css?v=2024.12.19.1">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Donate to Homeless Aid UK — 100% volunteer-run. Every penny goes directly to free food, clothing, and outreach for homeless people across northern England and Scotland.">
+    <meta name="keywords" content="donate, homeless aid, volunteer, food bank, Bolton, Manchester, Liverpool, Glasgow">
+    <title>Donate — Homeless Aid UK</title>
+
+    <!-- Favicons & PWA -->
     <link rel="icon" href="Branding/HomelessAidUKLogo.png" type="image/png">
-    
-    <!-- Google tag (gtag.js) with Consent Mode -->
+    <link rel="apple-touch-icon" href="Branding/HomelessAidUKLogo.png">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1A1A2E">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                colors: {
+                    cream:      '#FDF6EC',
+                    forest:     '#1B4332',
+                    sienna:     '#E76F51',
+                    vermillion: '#E63946',
+                    ink:        '#1A1A2E',
+                    charcoal:   '#2D3436',
+                    'forest-dark': '#142e23',
+                    'sienna-dark': '#c95a3f',
+                    'vermillion-dark': '#c1121f',
+                },
+                fontFamily: {
+                    display: ['"DM Serif Display"', 'Georgia', 'serif'],
+                    body:    ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+                },
+            }
+        }
+    }
+    </script>
+
+    <style>
+        .reveal          { opacity:0; transform:translateY(40px);  transition:opacity .6s ease-out, transform .6s ease-out; }
+        .reveal.visible  { opacity:1; transform:none; }
+        .stagger > *     { opacity:0; transform:translateY(24px); transition:opacity .5s ease-out, transform .5s ease-out; }
+        .stagger.visible > *:nth-child(1) { transition-delay:.05s; }
+        .stagger.visible > *:nth-child(2) { transition-delay:.15s; }
+        .stagger.visible > *:nth-child(3) { transition-delay:.25s; }
+        .stagger.visible > *:nth-child(4) { transition-delay:.35s; }
+        .stagger.visible > * { opacity:1; transform:none; }
+
+        .shadow-brutal          { box-shadow:5px 5px 0 #1B4332; }
+        .shadow-brutal-sm       { box-shadow:3px 3px 0 #1B4332; }
+        .shadow-brutal-ink      { box-shadow:5px 5px 0 #1A1A2E; }
+        .shadow-brutal-sienna   { box-shadow:5px 5px 0 #c95a3f; }
+        .shadow-brutal-cream    { box-shadow:5px 5px 0 rgba(253,246,236,.3); }
+
+        @keyframes pulse-ring {
+            0%   { box-shadow:0 0 0 0 rgba(230,57,70,.6); }
+            70%  { box-shadow:0 0 0 10px rgba(230,57,70,0); }
+            100% { box-shadow:0 0 0 0 rgba(230,57,70,0); }
+        }
+        .pulse-ring { animation:pulse-ring 2s ease-out infinite; }
+
+        :focus-visible { outline:3px solid #E76F51; outline-offset:3px; border-radius:2px; }
+        ::selection { background:#E76F51; color:#FDF6EC; }
+
+        .texture-dots-light { background-image:radial-gradient(rgba(253,246,236,.08) .5px,transparent .5px); background-size:24px 24px; }
+
+        ::-webkit-scrollbar       { width:8px; }
+        ::-webkit-scrollbar-track { background:#FDF6EC; }
+        ::-webkit-scrollbar-thumb { background:#1B4332; border-radius:99px; }
+
+        .nav-overlay { transform:translateX(100%); transition:transform .35s cubic-bezier(.4,0,.2,1); }
+        .nav-overlay.open { transform:translateX(0); }
+
+        @media (prefers-reduced-motion:reduce) {
+            .reveal { opacity:1!important; transform:none!important; transition:none!important; }
+            .stagger > * { opacity:1!important; transform:none!important; transition:none!important; }
+            *, *::before, *::after { animation-duration:.01ms!important; animation-iteration-count:1!important; transition-duration:.01ms!important; scroll-behavior:auto!important; }
+        }
+    </style>
+
+    <!-- Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-8L51XD6M9J"></script>
     <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      
-      // Configure consent mode defaults
-      gtag('consent', 'default', {
-        'analytics_storage': 'denied',
-        'ad_storage': 'denied',
-        'wait_for_update': 500
-      });
-      
-      gtag('config', 'G-8L51XD6M9J', {
-        'anonymize_ip': true
-      });
+        window.dataLayer=window.dataLayer||[];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js',new Date());
+        gtag('consent','default',{analytics_storage:'denied',ad_storage:'denied'});
+        gtag('config','G-8L51XD6M9J',{anonymize_ip:true});
     </script>
 </head>
-<body>
-    <nav class="navbar">
-        <div class="container">
-            <div class="nav-content">
-                <a href="/" class="logo">
-                    <img src="Branding/HomelessAidUKLogo.png" alt="Homeless Aid UK" class="logo-img">
-                </a>
-                <button class="mobile-menu-btn" onclick="toggleMenu()">☰</button>
-                <ul class="nav-links">
-                    <li><a href="/">Home</a></li>
-                    <li><a href="index.html#feeding-schedule">Food List</a></li>
-                    <li><a href="/donate" class="active">Donate</a></li>
-                    <li><a href="/volunteer">Volunteer</a></li>
-                    <li><a href="/food-bank">Food Bank</a></li>
-                    <li><a href="/contact">Contact</a></li>
-                    <li><a href="/useful-links">Useful Links</a></li>
+
+<body class="bg-cream text-charcoal font-body antialiased overflow-x-hidden">
+
+<!-- Skip to content -->
+<a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-0 focus:left-0 focus:z-[9999] focus:bg-forest focus:text-cream focus:px-6 focus:py-3 focus:text-lg focus:font-bold">
+    Skip to main content
+</a>
+
+<!-- ══════════════════════════════════════════════
+     EMERGENCY BAR
+     ══════════════════════════════════════════════ -->
+<header class="sticky top-0 z-50 bg-vermillion border-b-[3px] border-vermillion-dark" role="banner">
+    <div class="max-w-7xl mx-auto px-3 py-2 flex items-center justify-between gap-2">
+        <a href="tel:08001244641"
+           class="flex items-center gap-2 text-white font-bold group shrink-0"
+           aria-label="Call Homeless Aid UK free on 0800 124 4641">
+            <span class="relative flex items-center justify-center w-8 h-8 bg-white/20 rounded-full pulse-ring">
+                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z"/>
+                </svg>
+            </span>
+            <span class="text-base sm:text-lg tracking-wide">0800 124 4641</span>
+        </a>
+
+        <a href="/#food-finder"
+           class="bg-white text-vermillion font-extrabold text-sm sm:text-base px-4 py-2 rounded-sm border-2 border-white hover:bg-cream transition-colors shadow-[4px_4px_0_#c1121f] whitespace-nowrap">
+            Find Food Now
+        </a>
+
+        <button id="nav-toggle"
+                class="flex items-center gap-2 min-w-[44px] min-h-[44px] px-3 py-2 bg-white/20 rounded-sm text-white font-bold text-sm group shrink-0 hover:bg-white/30 transition-colors"
+                aria-label="Open navigation menu"
+                aria-expanded="false"
+                aria-controls="nav-overlay">
+            <div class="flex flex-col justify-center gap-[4px]">
+                <span class="block w-5 h-[2.5px] bg-white rounded-full"></span>
+                <span class="block w-5 h-[2.5px] bg-white rounded-full"></span>
+                <span class="block w-5 h-[2.5px] bg-white rounded-full"></span>
+            </div>
+            <span class="text-white font-bold text-sm">Menu</span>
+        </button>
+    </div>
+</header>
+
+<!-- Nav Overlay -->
+<nav id="nav-overlay"
+     class="nav-overlay fixed inset-0 z-[9999] bg-ink flex flex-col items-center justify-start gap-0 overflow-y-auto"
+     aria-label="Main navigation"
+     aria-hidden="true">
+    <div class="w-full flex items-center justify-between px-6 py-4 shrink-0">
+        <span class="font-display text-cream text-xl">Homeless Aid UK</span>
+        <button id="nav-close" class="w-12 h-12 flex items-center justify-center text-cream" aria-label="Close navigation">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+    </div>
+    <div class="flex flex-col items-center gap-5 py-8 px-6 w-full">
+        <a href="/" class="font-display text-cream text-2xl sm:text-3xl hover:text-sienna transition-colors py-1">Home</a>
+        <a href="/#food-finder" class="font-display text-cream text-2xl sm:text-3xl hover:text-sienna transition-colors py-1">Food List</a>
+        <a href="/food-bank" class="font-display text-cream text-2xl sm:text-3xl hover:text-sienna transition-colors py-1">Bolton Food Bank</a>
+        <a href="/FoodBanks" class="font-display text-cream text-2xl sm:text-3xl hover:text-sienna transition-colors py-1">Food Bank Directory</a>
+        <a href="/donate" class="font-display text-sienna text-2xl sm:text-3xl py-1">Donate</a>
+        <a href="/volunteer" class="font-display text-cream text-2xl sm:text-3xl hover:text-sienna transition-colors py-1">Volunteer</a>
+        <a href="/contact" class="font-display text-cream text-2xl sm:text-3xl hover:text-sienna transition-colors py-1">Contact</a>
+        <a href="/useful-links" class="font-display text-cream text-2xl sm:text-3xl hover:text-sienna transition-colors py-1">Help &amp; Resources</a>
+        <div class="border-t border-cream/10 w-full max-w-xs mt-4 pt-6 flex flex-col items-center gap-4">
+            <a href="tel:08001244641" class="text-sienna font-display text-2xl">0800 124 4641</a>
+        </div>
+    </div>
+</nav>
+
+
+<!-- ══════════════════════════════════════════════
+     MAIN CONTENT
+     ══════════════════════════════════════════════ -->
+<main id="main-content">
+
+<!-- ══════════════════════════════════════════════
+     SECTION 1 — HERO
+     ══════════════════════════════════════════════ -->
+<section class="relative bg-ink py-24 sm:py-32 px-4 overflow-hidden" aria-labelledby="donate-hero-heading">
+    <div class="absolute inset-0 texture-dots-light opacity-40 pointer-events-none" aria-hidden="true"></div>
+
+    <!-- Decorative circle -->
+    <svg class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[70vw] max-w-[500px] h-auto opacity-[.05] pointer-events-none" viewBox="0 0 500 500" fill="none" aria-hidden="true">
+        <path d="M250 30 C340 25, 430 80, 460 170 C490 260, 470 360, 400 420 C330 480, 220 490, 140 440 C60 390, 20 300, 30 210 C40 120, 130 35, 250 30Z" stroke="#E76F51" stroke-width="2" stroke-dasharray="8 6"/>
+    </svg>
+
+    <div class="relative z-10 max-w-4xl mx-auto text-center">
+        <p class="font-display text-cream text-2xl sm:text-3xl md:text-4xl tracking-wide mb-8 reveal">
+            Homeless Aid UK
+        </p>
+
+        <h1 id="donate-hero-heading" class="font-display text-cream text-[2.5rem] sm:text-6xl md:text-7xl leading-[1.05] mb-8 reveal">
+            Every Penny<br><em class="text-sienna not-italic">Goes Direct</em>
+        </h1>
+
+        <p class="text-cream/70 text-lg sm:text-xl max-w-2xl mx-auto leading-relaxed reveal">
+            We're 100% voluntary and receive no funding. No salaries. No corporate overhead. When you give to us, your money goes straight to feeding and helping people.
+        </p>
+
+        <p class="text-cream/40 text-sm max-w-lg mx-auto mt-6 reveal">
+            We're not a registered charity — we're a group of friends who give a damn. That means no Gift Aid or tax receipts, but it also means zero bureaucracy between your donation and someone getting a hot meal.
+        </p>
+    </div>
+
+    <!-- Wave → cream -->
+    <div class="absolute bottom-0 left-0 right-0 pointer-events-none" aria-hidden="true">
+        <svg viewBox="0 0 1440 130" preserveAspectRatio="none" class="w-full h-[60px] sm:h-[90px] md:h-[130px]">
+            <path d="M0,50 C120,90 240,20 420,60 C600,100 720,30 900,70 C1080,110 1200,40 1320,65 C1380,78 1440,55 1440,55 L1440,130 L0,130Z" fill="#FDF6EC"/>
+        </svg>
+    </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════════
+     SECTION 2 — WHERE YOUR DONATION GOES
+     ══════════════════════════════════════════════ -->
+<section class="bg-cream py-20 sm:py-28 px-4" aria-labelledby="where-heading">
+    <div class="max-w-6xl mx-auto">
+        <div class="text-center mb-14">
+            <h2 id="where-heading" class="font-display text-forest text-4xl sm:text-5xl md:text-6xl mb-4 reveal">Where Your<br>Money Goes</h2>
+            <p class="text-charcoal/60 max-w-xl mx-auto text-lg reveal">Straight to the people who need it. Here's what your donation pays for.</p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 stagger">
+            <div class="bg-white border-[3px] border-forest p-6 rounded-sm shadow-brutal">
+                <div class="w-12 h-12 bg-sienna/10 rounded-sm flex items-center justify-center mb-4">
+                    <svg class="w-6 h-6 text-sienna" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8.25v-1.5m0 1.5c-1.355 0-2.697.056-4.024.166C6.845 8.51 6 9.473 6 10.608v2.513m6-4.871c1.355 0 2.697.056 4.024.166C17.155 8.51 18 9.473 18 10.608v2.513M15 8.25v-1.5m-6 1.5v-1.5m12 9.75l-1.5.75a3.354 3.354 0 01-3 0 3.354 3.354 0 00-3 0 3.354 3.354 0 01-3 0 3.354 3.354 0 00-3 0 3.354 3.354 0 01-3 0L3 16.5m15-3.379a48.474 48.474 0 00-6-.371c-2.032 0-4.034.126-6 .371m12 0c.39.049.777.102 1.163.16 1.07.16 1.837 1.094 1.837 2.175v5.169c0 .621-.504 1.125-1.125 1.125H4.125A1.125 1.125 0 013 20.625v-5.17c0-1.08.768-2.014 1.837-2.174A47.78 47.78 0 016 13.12M12.265 3.11a.375.375 0 11-.53 0L12 2.845l.265.265zm-3 0a.375.375 0 11-.53 0L9 2.845l.265.265zm6 0a.375.375 0 11-.53 0L15 2.845l.265.265z"/></svg>
+                </div>
+                <h3 class="font-display text-forest text-xl mb-2">Food & Meals</h3>
+                <p class="text-charcoal/60 text-sm leading-relaxed">Providing hot meals and food packages to those in need</p>
+            </div>
+
+            <div class="bg-white border-[3px] border-forest p-6 rounded-sm shadow-brutal">
+                <div class="w-12 h-12 bg-sienna/10 rounded-sm flex items-center justify-center mb-4">
+                    <svg class="w-6 h-6 text-sienna" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"/></svg>
+                </div>
+                <h3 class="font-display text-forest text-xl mb-2">Clothing</h3>
+                <p class="text-charcoal/60 text-sm leading-relaxed">Essential clothing and blankets for warmth and dignity</p>
+            </div>
+
+            <div class="bg-white border-[3px] border-forest p-6 rounded-sm shadow-brutal">
+                <div class="w-12 h-12 bg-sienna/10 rounded-sm flex items-center justify-center mb-4">
+                    <svg class="w-6 h-6 text-sienna" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5"/></svg>
+                </div>
+                <h3 class="font-display text-forest text-xl mb-2">Essential Items</h3>
+                <p class="text-charcoal/60 text-sm leading-relaxed">Toiletries, first aid supplies, and hygiene products</p>
+            </div>
+
+            <div class="bg-white border-[3px] border-forest p-6 rounded-sm shadow-brutal">
+                <div class="w-12 h-12 bg-sienna/10 rounded-sm flex items-center justify-center mb-4">
+                    <svg class="w-6 h-6 text-sienna" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12"/></svg>
+                </div>
+                <h3 class="font-display text-forest text-xl mb-2">Outreach</h3>
+                <p class="text-charcoal/60 text-sm leading-relaxed">Transportation and equipment for our street teams</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Wave → forest -->
+    <!-- Wave → forest -->
+    <div class="relative -mb-1" aria-hidden="true">
+        <svg viewBox="0 0 1440 100" preserveAspectRatio="none" class="w-full h-[50px] sm:h-[70px] md:h-[100px] block">
+            <path d="M0,30 C200,70 400,10 600,45 C800,80 1000,15 1200,50 C1350,70 1440,35 1440,35 L1440,100 L0,100Z" fill="#1B4332"/>
+        </svg>
+    </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════════
+     SECTION 3 — DONATE NOW (the methods)
+     ══════════════════════════════════════════════ -->
+<section class="relative bg-forest text-cream pt-16 sm:pt-20 pb-20 sm:pb-28 px-4 overflow-hidden" aria-labelledby="methods-heading">
+    <div class="absolute inset-0 texture-dots-light opacity-15 pointer-events-none" aria-hidden="true"></div>
+
+    <div class="relative z-10 max-w-5xl mx-auto">
+        <div class="text-center mb-14">
+            <h2 id="methods-heading" class="font-display text-cream text-4xl sm:text-5xl md:text-6xl mb-4 reveal">Donate Now</h2>
+            <p class="text-cream/60 max-w-lg mx-auto text-lg reveal">Three ways to help. Pick whichever's easiest for you.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 stagger">
+            <!-- Bank Transfer — large card -->
+            <div class="md:row-span-2 bg-cream text-charcoal border-[3px] border-cream p-8 rounded-sm shadow-brutal-ink">
+                <h3 class="font-display text-forest text-2xl sm:text-3xl mb-6">Bank Transfer</h3>
+                <dl class="space-y-4">
+                    <div class="flex justify-between items-center border-b border-charcoal/10 pb-3">
+                        <dt class="text-charcoal/60 text-sm font-bold uppercase tracking-wide">Bank</dt>
+                        <dd class="font-bold text-lg text-forest">TSB Bank</dd>
+                    </div>
+                    <div class="flex justify-between items-center border-b border-charcoal/10 pb-3">
+                        <dt class="text-charcoal/60 text-sm font-bold uppercase tracking-wide">Account Name</dt>
+                        <dd class="font-bold text-forest">Homeless Aid UK</dd>
+                    </div>
+                    <div class="flex justify-between items-center border-b border-charcoal/10 pb-3">
+                        <dt class="text-charcoal/60 text-sm font-bold uppercase tracking-wide">Sort Code</dt>
+                        <dd class="font-bold text-xl font-mono tracking-widest text-forest">77-72-65</dd>
+                    </div>
+                    <div class="flex justify-between items-center border-b border-charcoal/10 pb-3">
+                        <dt class="text-charcoal/60 text-sm font-bold uppercase tracking-wide">Account No.</dt>
+                        <dd class="font-bold text-xl font-mono tracking-widest text-forest">03252068</dd>
+                    </div>
+                    <div class="flex justify-between items-start pt-1">
+                        <dt class="text-charcoal/60 text-sm font-bold uppercase tracking-wide">Reference</dt>
+                        <dd class="text-right">
+                            <span class="font-bold text-forest">FOOD DONATION</span>
+                            <span class="text-charcoal/50 text-sm block">or HAUK ADMIN</span>
+                        </dd>
+                    </div>
+                </dl>
+            </div>
+
+            <!-- PayPal -->
+            <a href="https://www.paypal.com/paypalme/HomelessAidUK"
+               target="_blank" rel="noopener noreferrer"
+               class="block bg-cream text-charcoal border-[3px] border-cream p-8 rounded-sm shadow-brutal-ink group hover:-translate-y-1 transition-transform">
+                <h3 class="font-display text-forest text-2xl mb-3 group-hover:text-sienna transition-colors">PayPal</h3>
+                <p class="text-charcoal/60 mb-4 leading-relaxed">Quick and secure online donation through PayPal. Send any amount directly.</p>
+                <span class="text-forest font-bold border-b-2 border-forest group-hover:text-sienna group-hover:border-sienna transition-colors">Donate via PayPal &rarr;</span>
+            </a>
+
+            <!-- Amazon Wishlist -->
+            <a href="https://www.amazon.co.uk/gp/registry/wishlist/YSPQHTLJGEJ6/"
+               target="_blank" rel="noopener noreferrer"
+               class="block bg-cream text-charcoal border-[3px] border-cream p-8 rounded-sm shadow-brutal-ink group hover:-translate-y-1 transition-transform">
+                <h3 class="font-display text-forest text-2xl mb-3 group-hover:text-sienna transition-colors">Amazon Wishlist</h3>
+                <p class="text-charcoal/60 mb-4 leading-relaxed">Purchase essential items directly from our wishlist. Blankets, toiletries, food, and supplies.</p>
+                <span class="text-forest font-bold border-b-2 border-forest group-hover:text-sienna group-hover:border-sienna transition-colors">View Wishlist &rarr;</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Wave → cream -->
+    <div class="absolute bottom-0 left-0 right-0 translate-y-[1px] pointer-events-none" aria-hidden="true">
+        <svg viewBox="0 0 1440 110" preserveAspectRatio="none" class="w-full h-[50px] sm:h-[75px] md:h-[110px]">
+            <path d="M0,70 C160,20 320,90 500,50 C680,10 840,80 1020,40 C1200,0 1360,70 1440,50 L1440,110 L0,110Z" fill="#FDF6EC"/>
+        </svg>
+    </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════════
+     SECTION 4 — DONATE ONLINE (SumUp + Monthly)
+     ══════════════════════════════════════════════ -->
+<section class="bg-cream py-20 sm:py-28 px-4" aria-labelledby="online-heading">
+    <div class="max-w-5xl mx-auto">
+
+        <!-- One-off via SumUp -->
+        <div class="text-center mb-12">
+            <h2 id="online-heading" class="font-display text-forest text-4xl sm:text-5xl md:text-6xl mb-4 reveal">Donate by Card</h2>
+            <p class="text-charcoal/60 max-w-xl mx-auto text-lg reveal">Quick one-off donation. Pick an amount and you'll be taken to a secure checkout.</p>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 max-w-3xl mx-auto mb-6 stagger">
+            <!-- TODO: Replace # with SumUp Payment Link URLs when created -->
+            <a href="#" class="block bg-white border-[3px] border-forest p-5 sm:p-6 rounded-sm shadow-brutal text-center hover:-translate-y-1 transition-transform group">
+                <p class="font-display text-forest text-3xl sm:text-4xl mb-1 group-hover:text-sienna transition-colors">&pound;5</p>
+                <p class="text-charcoal/50 text-xs font-bold uppercase tracking-wide">Donate</p>
+            </a>
+            <a href="#" class="block bg-white border-[3px] border-forest p-5 sm:p-6 rounded-sm shadow-brutal text-center hover:-translate-y-1 transition-transform group">
+                <p class="font-display text-forest text-3xl sm:text-4xl mb-1 group-hover:text-sienna transition-colors">&pound;10</p>
+                <p class="text-charcoal/50 text-xs font-bold uppercase tracking-wide">Donate</p>
+            </a>
+            <a href="#" class="block bg-white border-[3px] border-forest p-5 sm:p-6 rounded-sm shadow-brutal text-center hover:-translate-y-1 transition-transform group">
+                <p class="font-display text-forest text-3xl sm:text-4xl mb-1 group-hover:text-sienna transition-colors">&pound;25</p>
+                <p class="text-charcoal/50 text-xs font-bold uppercase tracking-wide">Donate</p>
+            </a>
+            <a href="#" class="block bg-white border-[3px] border-forest p-5 sm:p-6 rounded-sm shadow-brutal text-center hover:-translate-y-1 transition-transform group">
+                <p class="font-display text-forest text-3xl sm:text-4xl mb-1 group-hover:text-sienna transition-colors">&pound;50</p>
+                <p class="text-charcoal/50 text-xs font-bold uppercase tracking-wide">Donate</p>
+            </a>
+            <a href="#" class="block bg-sienna border-[3px] border-sienna p-5 sm:p-6 rounded-sm shadow-brutal-ink text-center hover:-translate-y-1 transition-transform group col-span-2 sm:col-span-1">
+                <p class="font-display text-cream text-2xl sm:text-3xl mb-1">Other</p>
+                <p class="text-cream/70 text-xs font-bold uppercase tracking-wide">Your Amount</p>
+            </a>
+        </div>
+
+        <p class="text-center text-charcoal/40 text-xs mb-16 reveal">Secure card payment via SumUp. 2.5% processing fee applies.</p>
+
+        <!-- Monthly giving via standing order -->
+        <div class="max-w-2xl mx-auto reveal">
+            <div class="bg-forest text-cream p-8 sm:p-10 rounded-sm shadow-brutal-sienna border-[3px] border-forest">
+                <h3 class="font-display text-2xl sm:text-3xl text-cream mb-4">Want to Give Monthly?</h3>
+                <p class="text-cream/70 leading-relaxed mb-6">Setting up a regular donation helps us plan ahead and ensure consistent support for those who need it most. Set up a standing order with your bank using our details:</p>
+
+                <div class="grid grid-cols-2 gap-x-6 gap-y-3 text-sm mb-6">
+                    <span class="text-cream/50 font-bold uppercase tracking-wide text-xs">Sort Code</span>
+                    <span class="text-cream font-bold font-mono tracking-widest">77-72-65</span>
+                    <span class="text-cream/50 font-bold uppercase tracking-wide text-xs">Account No.</span>
+                    <span class="text-cream font-bold font-mono tracking-widest">03252068</span>
+                    <span class="text-cream/50 font-bold uppercase tracking-wide text-xs">Reference</span>
+                    <span class="text-cream font-bold">FOOD DONATION</span>
+                </div>
+
+                <div class="border-t border-cream/10 pt-5 grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
+                    <div>
+                        <p class="font-display text-sienna text-2xl">&pound;5<span class="text-cream/50 text-sm">/mo</span></p>
+                        <p class="text-cream/50 text-xs mt-1">10 hot drinks</p>
+                    </div>
+                    <div>
+                        <p class="font-display text-sienna text-2xl">&pound;10<span class="text-cream/50 text-sm">/mo</span></p>
+                        <p class="text-cream/50 text-xs mt-1">Feeds 5 people</p>
+                    </div>
+                    <div>
+                        <p class="font-display text-sienna text-2xl">&pound;25<span class="text-cream/50 text-sm">/mo</span></p>
+                        <p class="text-cream/50 text-xs mt-1">A week of meals</p>
+                    </div>
+                    <div>
+                        <p class="font-display text-sienna text-2xl">&pound;50<span class="text-cream/50 text-sm">/mo</span></p>
+                        <p class="text-cream/50 text-xs mt-1">Emergency supplies</p>
+                    </div>
+                </div>
+
+                <p class="text-cream/40 text-xs mt-6">Any amount helps — there's no minimum and every bit makes a difference.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Torn paper → sienna -->
+    <div class="relative -mb-1" aria-hidden="true">
+        <svg viewBox="0 0 1440 80" preserveAspectRatio="none" class="w-full h-[40px] sm:h-[60px] md:h-[80px] block">
+            <path d="M0,20 L60,35 L120,15 L180,40 L240,10 L300,30 L360,18 L420,42 L480,8 L540,38 L600,22 L660,45 L720,12 L780,32 L840,20 L900,40 L960,15 L1020,35 L1080,10 L1140,38 L1200,25 L1260,42 L1320,18 L1380,36 L1440,22 L1440,80 L0,80Z" fill="#E76F51"/>
+        </svg>
+    </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════════
+     SECTION 5 — OTHER WAYS TO HELP
+     ══════════════════════════════════════════════ -->
+<section class="relative bg-sienna pt-16 sm:pt-20 pb-20 sm:pb-28 px-4" aria-labelledby="other-heading">
+    <div class="max-w-5xl mx-auto">
+        <div class="text-center mb-14">
+            <h2 id="other-heading" class="font-display text-cream text-4xl sm:text-5xl md:text-6xl mb-4 reveal">Other Ways<br>to Help</h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5 stagger">
+            <div class="bg-cream border-[3px] border-forest p-8 rounded-sm shadow-brutal-ink">
+                <h3 class="font-display text-forest text-xl mb-3">Fundraising Events</h3>
+                <p class="text-charcoal/60 text-sm leading-relaxed">Organize or participate in fundraising events in your community</p>
+            </div>
+            <div class="bg-cream border-[3px] border-forest p-8 rounded-sm shadow-brutal-ink">
+                <h3 class="font-display text-forest text-xl mb-3">Corporate Partnerships</h3>
+                <p class="text-charcoal/60 text-sm leading-relaxed">Partner with us through your business or workplace giving scheme</p>
+            </div>
+            <div class="bg-cream border-[3px] border-forest p-8 rounded-sm shadow-brutal-ink">
+                <h3 class="font-display text-forest text-xl mb-3">Gift in Memory</h3>
+                <p class="text-charcoal/60 text-sm leading-relaxed">Make a donation in memory of a loved one</p>
+            </div>
+        </div>
+
+        <div class="text-center mt-12 reveal">
+            <p class="text-cream/70 mb-4">Want to chat about how you can help?</p>
+            <a href="/contact" class="inline-block bg-cream text-forest font-bold text-lg px-8 py-4 rounded-sm border-[3px] border-cream hover:bg-white transition-colors shadow-brutal-ink">
+                Get In Touch
+            </a>
+        </div>
+    </div>
+
+    <!-- Wave → ink (footer) -->
+    <div class="relative -mb-1" aria-hidden="true">
+        <svg viewBox="0 0 1440 100" preserveAspectRatio="none" class="w-full h-[50px] sm:h-[70px] md:h-[100px] block">
+            <path d="M0,60 C240,20 480,80 720,40 C960,0 1200,70 1440,30 L1440,100 L0,100Z" fill="#1A1A2E"/>
+        </svg>
+    </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════════
+     FOOTER
+     ══════════════════════════════════════════════ -->
+<footer class="relative bg-ink text-cream overflow-hidden" role="contentinfo">
+    <div class="max-w-6xl mx-auto px-6 py-16">
+        <div class="text-center mb-14">
+            <p class="text-cream/40 text-xs tracking-[.3em] uppercase mb-4">Still need help?</p>
+            <a href="tel:08001244641" class="font-display text-4xl sm:text-5xl md:text-6xl text-sienna hover:text-cream transition-colors">
+                0800 124 4641
+            </a>
+            <p class="text-cream/50 text-sm mt-2">If you need help or want to help, call</p>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-10 mb-14">
+            <div>
+                <h4 class="text-sienna font-bold text-xs uppercase tracking-[.2em] mb-4">Quick Links</h4>
+                <ul class="space-y-2">
+                    <li><a href="/" class="text-cream/60 hover:text-cream transition-colors text-sm">Home</a></li>
+                    <li><a href="/#food-finder" class="text-cream/60 hover:text-cream transition-colors text-sm">Food List</a></li>
+                    <li><a href="/donate" class="text-cream/60 hover:text-cream transition-colors text-sm">Donate</a></li>
+                    <li><a href="/volunteer" class="text-cream/60 hover:text-cream transition-colors text-sm">Volunteer</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-sienna font-bold text-xs uppercase tracking-[.2em] mb-4">Resources</h4>
+                <ul class="space-y-2">
+                    <li><a href="/food-bank" class="text-cream/60 hover:text-cream transition-colors text-sm">Bolton Food Bank</a></li>
+                    <li><a href="/FoodBanks" class="text-cream/60 hover:text-cream transition-colors text-sm">Food Bank Directory</a></li>
+                    <li><a href="/useful-links" class="text-cream/60 hover:text-cream transition-colors text-sm">Help &amp; Resources</a></li>
+                    <li><a href="/contact" class="text-cream/60 hover:text-cream transition-colors text-sm">Contact</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-sienna font-bold text-xs uppercase tracking-[.2em] mb-4">Contact</h4>
+                <ul class="space-y-2">
+                    <li><a href="tel:08001244641" class="text-cream/60 hover:text-cream transition-colors text-sm">0800 124 4641</a></li>
+                    <li><a href="mailto:info@homelessaid.co.uk" class="text-cream/60 hover:text-cream transition-colors text-sm">info@homelessaid.co.uk</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-vermillion font-bold text-xs uppercase tracking-[.2em] mb-4">Emergency</h4>
+                <ul class="space-y-2">
+                    <li class="text-cream/60 text-sm">Emergency Services: <strong class="text-cream">999</strong></li>
+                    <li class="text-cream/60 text-sm">NHS 111: <strong class="text-cream">111</strong></li>
+                    <li class="text-cream/60 text-sm">Samaritans: <strong class="text-cream">116 123</strong></li>
                 </ul>
             </div>
         </div>
-    </nav>
 
-    <nav class="breadcrumb" aria-label="Breadcrumb">
-        <div class="container">
-            <ol class="breadcrumb-list">
-                <li class="breadcrumb-item"><a href="/"><i class="fas fa-home"></i> Home</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Donate</li>
-            </ol>
-        </div>
-    </nav>
-
-    <section class="page-hero">
-        <div class="container">
-            <h1><i class="fas fa-heart"></i> Help Us Make A Difference</h1>
-            <p class="hero-subtitle">We're 100% voluntary and receive no funding. Please consider setting up a recurring donation to help us continue our work.</p>
-        </div>
-    </section>
-
-    <section class="donation-options">
-        <div class="container">
-            <div class="donation-grid">
-                <div class="donation-card bank-transfer">
-                    <div class="card-icon">🏦</div>
-                    <h3>Bank Transfer</h3>
-                    <div class="bank-details">
-                        <p><strong>TSB Bank</strong></p>
-                        <div class="detail-row">
-                            <span class="label">Account:</span>
-                            <span class="value">Homeless Aid UK</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="label">Sort Code:</span>
-                            <span class="value">77-72-65</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="label">Account Number:</span>
-                            <span class="value">03252068</span>
-                        </div>
-                        <div class="reference-note">
-                            <p><strong>Reference:</strong></p>
-                            <p>FOOD DONATION <em>or</em> HAUK ADMIN</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="donation-card paypal">
-                    <div class="card-icon">💳</div>
-                    <h3>PayPal Donation</h3>
-                    <p>Quick and secure online donation through PayPal</p>
-                    <a href="https://www.paypal.com/paypalme/HomelessAidUK" target="_blank" class="btn btn-primary">Donate via PayPal</a>
-                </div>
-
-                <div class="donation-card wishlist">
-                    <div class="card-icon">📦</div>
-                    <h3>Amazon Wishlist</h3>
-                    <p>Purchase essential items directly from our wishlist</p>
-                    <a href="https://www.amazon.co.uk/gp/registry/wishlist/YSPQHTLJGEJ6/" target="_blank" class="btn btn-primary">View Wishlist</a>
-                </div>
+        <div class="border-t border-cream/10 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-4">
+                <img src="Branding/HomelessAidUKLogo.png" alt="Homeless Aid UK Logo" class="w-10 h-10 rounded" loading="lazy">
+                <span class="text-cream/40 text-xs">&copy; 2025 Homeless Aid UK. Not a registered charity — 100% volunteer run.</span>
             </div>
+            <a href="https://www.facebook.com/HomelessAidUK" target="_blank" rel="noopener noreferrer" aria-label="Follow us on Facebook" class="text-cream/40 hover:text-sienna transition-colors">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+            </a>
         </div>
-    </section>
-
-    <section class="donation-info">
-        <div class="container">
-            <h2>Where Your Donation Goes</h2>
-            <div class="info-grid">
-                <div class="info-card">
-                    <div class="info-icon">🍲</div>
-                    <h3>Food & Meals</h3>
-                    <p>Providing hot meals and food packages to those in need</p>
-                </div>
-                <div class="info-card">
-                    <div class="info-icon">👕</div>
-                    <h3>Clothing</h3>
-                    <p>Essential clothing and blankets for warmth and dignity</p>
-                </div>
-                <div class="info-card">
-                    <div class="info-icon">🏥</div>
-                    <h3>Essential Items</h3>
-                    <p>Toiletries, first aid supplies, and hygiene products</p>
-                </div>
-                <div class="info-card">
-                    <div class="info-icon">🚐</div>
-                    <h3>Outreach</h3>
-                    <p>Transportation and equipment for our street teams</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="regular-giving">
-        <div class="container">
-            <div class="regular-giving-content">
-                <h2>🔄 Regular Giving Makes a Difference</h2>
-                <p>Setting up a regular donation helps us plan ahead and ensure consistent support for those who need it most.</p>
-                <div class="giving-examples">
-                    <div class="example">
-                        <strong>£5 per month</strong>
-                        <span>Provides 10 hot drinks</span>
-                    </div>
-                    <div class="example">
-                        <strong>£10 per month</strong>
-                        <span>Feeds 5 people</span>
-                    </div>
-                    <div class="example">
-                        <strong>£25 per month</strong>
-                        <span>Supplies a week of meals</span>
-                    </div>
-                    <div class="example">
-                        <strong>£50 per month</strong>
-                        <span>Provides emergency supplies</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="other-ways">
-        <div class="container">
-            <h2>Other Ways to Help</h2>
-            <div class="ways-grid">
-                <div class="way-card">
-                    <h3>🎭 Fundraising Events</h3>
-                    <p>Organize or participate in fundraising events in your community</p>
-                </div>
-                <div class="way-card">
-                    <h3>🏢 Corporate Partnerships</h3>
-                    <p>Partner with us through your business or workplace giving scheme</p>
-                </div>
-                <div class="way-card">
-                    <h3>🎁 Gift in Memory</h3>
-                    <p>Make a donation in memory of a loved one</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Floating Call Button -->
-    <div class="floating-call-btn">
-        <a href="tel:08001244641" class="call-btn" title="Call us now - Free phone">
-            <i class="fas fa-phone"></i>
-            <span class="call-text">Call Us</span>
-        </a>
     </div>
 
-    <footer>
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <div class="footer-logo">
-                        <img src="Branding/HomelessAidUKLogo.png" alt="Homeless Aid UK" class="footer-logo-img">
-                        <h4>Homeless Aid UK</h4>
-                    </div>
-                    <p>100% volunteer-run organisation helping the homeless and those in need across the UK</p>
-                </div>
-                <div class="footer-section">
-                    <h4>Quick Links</h4>
-                    <ul>
-                        <li><a href="/">Home</a></li>
-                        <li><a href="index.html#feeding-schedule">Food List</a></li>
-                        <li><a href="/donate">Donate</a></li>
-                        <li><a href="/volunteer">Volunteer</a></li>
-                        <li><a href="/Outreach/login.html">Outreach Login</a></li>
-                        <li><a href="/food-bank">Food Bank</a></li>
-                        <li><a href="/contact">Contact</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4>Contact</h4>
-                    <p>📞 0800 124 4641</p>
-                    <p>✉️ info@homelessaid.co.uk</p>
-                </div>
-                <div class="footer-section">
-                    <h4>Follow Us</h4>
-                    <div class="social-links">
-                        <a href="https://www.facebook.com/HomelessAidUK" class="social-link">Facebook</a>
-                    </div>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2024 Homeless Aid UK. All rights reserved. | Not a registered charity - 100% volunteer run</p>
-            </div>
-        </div>
-    </footer>
+    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 font-display text-cream/[.03] text-[12vw] sm:text-[10vw] whitespace-nowrap pointer-events-none select-none" aria-hidden="true">
+        HOMELESS AID UK
+    </div>
+</footer>
 
-    <script src="script.js?v=2024.12.19.1"></script>
+</main>
+
+
+<!-- ══════════════════════════════════════════════
+     JAVASCRIPT
+     ══════════════════════════════════════════════ -->
+<script>
+(function(){
+    'use strict';
+
+    /* Navigation */
+    var navToggle = document.getElementById('nav-toggle');
+    var navClose  = document.getElementById('nav-close');
+    var navOverlay= document.getElementById('nav-overlay');
+    var navLinks  = navOverlay.querySelectorAll('a');
+
+    function openNav()  { navOverlay.classList.add('open');    navOverlay.setAttribute('aria-hidden','false'); navToggle.setAttribute('aria-expanded','true');  document.body.style.overflow='hidden'; }
+    function closeNav() { navOverlay.classList.remove('open'); navOverlay.setAttribute('aria-hidden','true');  navToggle.setAttribute('aria-expanded','false'); document.body.style.overflow=''; }
+
+    navToggle.addEventListener('click', function(){ navOverlay.classList.contains('open') ? closeNav() : openNav(); });
+    navClose.addEventListener('click', closeNav);
+    navLinks.forEach(function(l){ l.addEventListener('click', closeNav); });
+    document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeNav(); });
+
+    /* Scroll reveals */
+    var revealEls = document.querySelectorAll('.reveal, .stagger');
+    if('IntersectionObserver' in window){
+        var obs = new IntersectionObserver(function(entries){
+            entries.forEach(function(entry){
+                if(entry.isIntersecting){ entry.target.classList.add('visible'); obs.unobserve(entry.target); }
+            });
+        }, { threshold:0.12, rootMargin:'0px 0px -40px 0px' });
+        revealEls.forEach(function(el){ obs.observe(el); });
+    } else {
+        revealEls.forEach(function(el){ el.classList.add('visible'); });
+    }
+})();
+</script>
+
 </body>
 </html>
