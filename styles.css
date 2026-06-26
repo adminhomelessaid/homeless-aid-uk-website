@@ -2986,11 +2986,6 @@ footer {
     border-left: 4px solid #007a74;
 }
 
-.paypal {
-    background: linear-gradient(135deg, #fff5f5 0%, #fed7d7 100%);
-    border-left: 4px solid #e53e3e;
-}
-
 .wishlist {
     background: linear-gradient(135deg, #fffaf0 0%, #feebc8 100%);
     border-left: 4px solid #dd6b20;
