@@ -74,9 +74,11 @@
     function isStaff(user) { return ['admin', 'team_lead'].includes(user && user.role); }
     function navItems(user) {
         return [
-            ...(isStaff(user) ? [{ key: 'volunteers', href: '/Outreach/volunteers', icon: 'fa-users', label: 'Volunteers' }] : []),
-            { key: 'log', href: '/Outreach/dashboard.html', icon: 'fa-clipboard-check', label: 'Log attendance' },
-            { key: 'attendances', href: '/Outreach/events-overview.html', icon: 'fa-list-check', label: 'Attendances' },
+            ...(isStaff(user) ? [
+                { key: 'volunteers', href: '/Outreach/volunteers', icon: 'fa-users', label: 'Volunteers' },
+                { key: 'log', href: '/Outreach/dashboard.html', icon: 'fa-clipboard-check', label: 'Log attendance' },
+                { key: 'attendances', href: '/Outreach/events-overview.html', icon: 'fa-list-check', label: 'Attendances' }
+            ] : []),
             { key: 'registration', href: '/Outreach/registration', icon: 'fa-user-check', label: 'My registration' },
             { key: 'policies', href: '/Outreach/registration#policies', icon: 'fa-file-signature', label: 'Policies' },
             ...(user.role === 'admin' ? [{ key: 'users', href: '/Outreach/admin.html', icon: 'fa-user-gear', label: 'Users' }] : []),

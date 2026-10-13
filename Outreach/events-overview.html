@@ -60,6 +60,7 @@
 <script src="/Outreach/registration-shell.js"></script>
 <script>
 const me = Shell.requireAuth();
+if (!Shell.isStaff(me)) { location.replace(Shell.landing(me)); throw new Error('redirecting'); }
 Shell.renderNav({ active: 'attendances', user: me });
 const $ = (s) => document.querySelector(s);
 let all = [];

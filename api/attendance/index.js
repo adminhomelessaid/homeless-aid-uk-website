@@ -42,6 +42,14 @@ module.exports = async (req, res) => {
             });
         }
         
+        // Attendance is a team lead and admin tool; volunteers only use the registration pages.
+        if (!['admin', 'team_lead'].includes(decoded.role)) {
+            return res.status(403).json({
+                success: false,
+                message: 'Attendance logging is for team leads and admins'
+            });
+        }
+
         const url = new URL(req.url, `http://${req.headers.host}`);
         const action = url.searchParams.get('action') || 'list';
         
