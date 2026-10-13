@@ -158,4 +158,121 @@ Object.assign(handlers, {
     }
 });
 
+async function listWithState(db, now) {
+    const [users, policies, latest] = await Promise.all([db.listUsers(), db.listActivePolicies(), db.listLatestSignaturesByUser()]);
+    const active = policies.filter(p => p.current_version);
+    return users.map(u => ({ ...u, state: computeRegistrationState(u, latest.get(u.id) || null, active, now) }));
+}
+
+function csvCell(v) {
+    const s = v === null || v === undefined ? '' : String(v);
+    return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+}
+
+function validatePartialDetails(body) {
+    // Validate only the detail fields that are present. Reuses validateDetails rules.
+    const present = {};
+    for (const k of ['date_of_birth', 'mobile_phone', 'team', 'next_of_kin_name', 'next_of_kin_phone']) if (k in body) present[k] = body[k];
+    if (Object.keys(present).length === 0) return { fields: {}, errors: [] };
+    const filler = { date_of_birth: '2000-01-01', mobile_phone: '07000000000', team: TEAMS[0], next_of_kin_name: 'xx', next_of_kin_phone: '07000000000' };
+    const { fields, errors } = validateDetails({ ...filler, ...present });
+    const out = {};
+    for (const k of Object.keys(present)) if (k in fields) out[k] = fields[k];
+    return { fields: out, errors };
+}
+
+Object.assign(handlers, {
+    async volunteers(ctx) {
+        const r = requireRole(ctx, ['admin', 'team_lead']); if (r) return r;
+        const all = await listWithState(ctx.db, ctx.now);
+        const counts = {
+            total: all.length,
+            complete: all.filter(v => v.state.registration_complete).length,
+            needs_signing: all.filter(v => v.state.signature_status !== 'signed').length,
+            incomplete: all.filter(v => !v.state.registration_complete).length,
+            blocked: all.filter(v => !v.is_active).length
+        };
+        const q = normaliseName(ctx.query.q || '');
+        const status = ctx.query.status || '';
+        const role = ctx.query.role || '';
+        const volunteers = all.filter(v => {
+            if (q && !normaliseName(`${v.full_name} ${v.email} ${v.username}`).includes(q)) return false;
+            if (role && v.role !== role) return false;
+            if (status === 'blocked') return !v.is_active;
+            if (status === 'complete') return v.state.registration_complete;
+            if (status === 'incomplete') return !v.state.registration_complete;
+            if (status === 'needs_signing') return v.state.signature_status !== 'signed';
+            return true;
+        });
+        return ok({ volunteers, counts });
+    },
+
+    async volunteer(ctx) {
+        const r = requireRole(ctx, ['admin', 'team_lead']); if (r) return r;
+        const user = await ctx.db.getUserById(ctx.query.id);
+        if (!user) return fail(404, 'Volunteer not found');
+        const [{ policies, state }, signatures] = await Promise.all([stateFor(ctx.db, user, ctx.now), ctx.db.listSignatures(user.id)]);
+        return ok({ user, state, policies: policies.map(policySummary), signatures });
+    },
+
+    async 'admin-update-volunteer'(ctx) {
+        const m = requirePost(ctx); if (m) return m;
+        const r = requireRole(ctx, ['admin']); if (r) return r;
+        const body = ctx.body || {};
+        const target = await ctx.db.getUserById(body.user_id);
+        if (!target) return fail(404, 'Volunteer not found');
+        const fields = {};
+        const errors = [];
+        if ('full_name' in body) { const n = String(body.full_name || '').trim(); if (n.length < 2 || n.length > 100) errors.push('Full name must be 2 to 100 characters'); else fields.full_name = n; }
+        if ('email' in body) { const e = String(body.email || '').trim().toLowerCase(); if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)) errors.push('Email is not valid'); else fields.email = e; }
+        if ('role' in body) { if (!ROLES.includes(body.role)) errors.push('Invalid role'); else fields.role = body.role; }
+        const d = validatePartialDetails(body);
+        errors.push(...d.errors);
+        Object.assign(fields, d.fields);
+        if (errors.length) return fail(400, errors.join('. '));
+        if (Object.keys(fields).length === 0) return fail(400, 'Nothing to update');
+        const user = await ctx.db.updateUser(target.id, fields);
+        const { state } = await stateFor(ctx.db, user, ctx.now);
+        return ok({ user, state });
+    },
+
+    async block(ctx) { return setActive(ctx, false); },
+    async unblock(ctx) { return setActive(ctx, true); },
+
+    async 'delete-volunteer'(ctx) {
+        const m = requirePost(ctx); if (m) return m;
+        const r = requireRole(ctx, ['admin']); if (r) return r;
+        const { user_id, confirm_name } = ctx.body || {};
+        if (!user_id) return fail(400, 'user_id is required');
+        if (user_id === ctx.user.id) return fail(400, 'You cannot delete your own account');
+        const target = await ctx.db.getUserById(user_id);
+        if (!target) return fail(404, 'Volunteer not found');
+        if (normaliseName(confirm_name) !== normaliseName(target.full_name)) return fail(400, 'Type the volunteer\'s full name exactly to confirm deletion');
+        await ctx.db.deleteUser(user_id);
+        console.log(`Volunteer deleted: ${target.username} (${target.id}) by ${ctx.user.username} (${ctx.user.id})`);
+        return ok({});
+    },
+
+    async export(ctx) {
+        const r = requireRole(ctx, ['admin']); if (r) return r;
+        const all = await listWithState(ctx.db, ctx.now);
+        const header = ['volunteer_number','full_name','email','role','team','mobile_phone','date_of_birth','next_of_kin_name','next_of_kin_phone','is_active','details_complete','photo_complete','signature_status','signed_at','expires_at'];
+        const rows = all.map(v => [v.volunteer_number, v.full_name, v.email, v.role, v.team, v.mobile_phone, v.date_of_birth, v.next_of_kin_name, v.next_of_kin_phone, v.is_active, v.state.details_complete, v.state.photo_complete, v.state.signature_status, v.state.signature?.signed_at || '', v.state.signature?.expires_at || ''].map(csvCell).join(','));
+        const date = ctx.now.toISOString().slice(0, 10);
+        return { status: 200, raw: [header.join(','), ...rows].join('\n'), headers: { 'Content-Type': 'text/csv; charset=utf-8', 'Content-Disposition': `attachment; filename="volunteers-${date}.csv"` } };
+    }
+});
+
+async function setActive(ctx, is_active) {
+    const m = requirePost(ctx); if (m) return m;
+    const r = requireRole(ctx, ['admin']); if (r) return r;
+    const { user_id } = ctx.body || {};
+    if (!user_id) return fail(400, 'user_id is required');
+    if (user_id === ctx.user.id) return fail(400, 'You cannot change your own account status');
+    const target = await ctx.db.getUserById(user_id);
+    if (!target) return fail(404, 'Volunteer not found');
+    const user = await ctx.db.updateUser(user_id, { is_active });
+    return ok({ user });
+}
+
 module.exports = { handlers, TEAMS, ROLES, ok, fail, requirePost, requireRole, policySummary, stateFor, validateDetails, normaliseName, addMonths, sanitizeHtml, validatePhoto };
