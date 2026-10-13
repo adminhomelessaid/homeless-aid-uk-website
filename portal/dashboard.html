@@ -95,7 +95,8 @@ function logRow(l) {
 async function loadRecent() {
     try {
         const r = await Shell.call('/api/attendance/index?limit=8');
-        const logs = r.logs || [];
+        const yearStart = new Date().getFullYear() + '-01-01';
+        const logs = (r.logs || []).filter(l => l.date >= yearStart); // older entries live on the Attendances page
         $('#recent').innerHTML = logs.length ? logs.map(logRow).join('') : '<p class="muted small">No entries yet.</p>';
         const today = logs.filter(l => l.date === todayIso());
         $('#todayList').innerHTML = today.length ? today.map(logRow).join('') : '<p class="muted small">Nothing logged yet today.</p>';

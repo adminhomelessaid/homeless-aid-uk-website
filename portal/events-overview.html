@@ -65,6 +65,9 @@ Shell.renderNav({ active: 'attendances', user: me });
 const $ = (s) => document.querySelector(s);
 let all = [];
 let sortKey = 'date', sortAsc = false;
+// Default to this year onwards; older entries stay in the database and show when the From date is cleared.
+const YEAR_START = new Date().getFullYear() + '-01-01';
+$('#from').value = YEAR_START;
 
 async function load() {
     try {
@@ -100,6 +103,7 @@ function render() {
 document.querySelectorAll('th.sort').forEach(th => th.onclick = () => { if (sortKey === th.dataset.k) sortAsc = !sortAsc; else { sortKey = th.dataset.k; sortAsc = th.dataset.k !== 'date' && th.dataset.k !== 'peopleServed'; } render(); });
 ['q', 'town', 'from', 'to'].forEach(id => $('#' + id).addEventListener('input', render));
 $('#clearBtn').onclick = () => { ['q', 'town', 'from', 'to'].forEach(id => $('#' + id).value = ''); render(); };
+$('#clearBtn').title = 'Clear all filters, including the this-year default, to see older entries';
 $('#csvBtn').onclick = () => {
     const rows = filtered();
     const cell = (v) => { let s = String(v ?? ''); if (/^[=+\-@\t\r]/.test(s)) s = "'" + s; return /[",\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; };
