@@ -400,6 +400,9 @@ async function ledTeams(ctx) {
     return parseTeams(me && me.team) || [];
 }
 
+// True when the teams table exists (even if empty). The real db exposes teamsTableExists; the test fake always has it.
+async function teamsTableReady(db) { return db.teamsTableExists ? db.teamsTableExists() : true; }
+
 async function teamsWithLeads(db, { includeInactive }) {
     const [rows, leads, users] = await Promise.all([db.listTeams(), db.listTeamLeads(), db.listUsers()]);
     const byId = new Map(users.map(u => [u.id, u]));
@@ -419,12 +422,15 @@ Object.assign(handlers, {
         const r = requireRole(ctx, ['admin', 'team_lead']); if (r) return r;
         const all = await teamsWithLeads(ctx.db, { includeInactive: ctx.user.role === 'admin' });
         const staff = ctx.user.role === 'admin' ? (await ctx.db.listUsers()).filter(u => ['admin', 'team_lead'].includes(u.role) && u.is_active).map(u => ({ id: u.id, full_name: u.full_name, role: u.role })) : undefined;
-        return ok({ teams: all, ...(staff ? { staff } : {}) });
+        return ok({ teams: all, set_up: TEAM_ROWS.length > 0 || all.length > 0, ...(staff ? { staff } : {}) });
     },
 
     async 'team-save'(ctx) {
         const m = requirePost(ctx); if (m) return m;
         const r = requireRole(ctx, ['admin']); if (r) return r;
+        if (!TEAM_ROWS.length && (await ctx.db.listTeams()).length === 0 && !(await teamsTableReady(ctx.db))) {
+            return fail(503, 'Teams are not set up in the database yet. Run the teams migration in Supabase, then try again.');
+        }
         const body = ctx.body || {};
         const name = String(body.name || '').trim().replace(/\s+/g, ' ');
         const town = String(body.town || '').trim();

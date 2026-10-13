@@ -90,6 +90,10 @@ function createRegistrationDb(supabase) {
             if (error) { if (/does not exist|schema cache/i.test(error.message)) return []; throw new Error(error.message); }
             return data;
         },
+        async teamsTableExists() {
+            const { error } = await supabase.from('teams').select('id').limit(1);
+            return !error;
+        },
         async insertTeam(fields) { return must(await supabase.from('teams').insert([fields]).select('id, name, town, day, sort_order, is_active').single()); },
         async updateTeam(id, fields) { return must(await supabase.from('teams').update(fields).eq('id', id).select('id, name, town, day, sort_order, is_active').single()); },
         async listTeamLeads() {

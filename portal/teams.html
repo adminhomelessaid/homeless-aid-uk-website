@@ -38,11 +38,13 @@ const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'
 let teams = [], staff = [];
 
 async function load() {
-    try { const r = await Shell.api('teams'); teams = r.teams; staff = r.staff || []; }
+    let setUp = true;
+    try { const r = await Shell.api('teams'); teams = r.teams; staff = r.staff || []; setUp = r.set_up !== false; }
     catch (e) { $('#view').innerHTML = `<div class="empty">${Shell.escape(e.message)}</div>`; return; }
     const towns = [];
     for (const t of teams) { let g = towns.find(x => x.town === t.town); if (!g) towns.push(g = { town: t.town, items: [] }); g.items.push(t); }
     const noLead = teams.filter(t => t.is_active && t.leads.length === 0 && t.name !== 'Other').length;
+    if (!setUp) { $('#view').innerHTML = '<div class="banner"><i class="fas fa-database"></i><div><b>Teams are not set up yet.</b> Run the teams migration in the Supabase SQL editor, then refresh this page.</div></div>'; return; }
     $('#view').innerHTML = (noLead ? `<div class="banner"><i class="fas fa-triangle-exclamation"></i><div>${noLead} team${noLead === 1 ? ' has' : 's have'} no team lead yet, so sign-ups for ${noLead === 1 ? 'it' : 'them'} only reach admins.</div></div>` : '') +
         towns.map(g => `<div class="town"><h3>${Shell.escape(g.town)}</h3>${g.items.map(t => `
           <div class="card team" style="${t.is_active ? '' : 'opacity:.55'}">
