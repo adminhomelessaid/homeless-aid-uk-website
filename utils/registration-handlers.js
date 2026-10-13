@@ -340,4 +340,17 @@ Object.assign(handlers, {
     }
 });
 
-module.exports = { handlers, TEAMS, ROLES, ok, fail, requirePost, requireRole, policySummary, stateFor, validateDetails, normaliseName, addMonths, sanitizeHtml, validatePhoto };
+// Single entry point used by the API function: unknown actions 404, blocked or deleted users are refused
+// on every action except ping, then the handler runs.
+async function dispatch(action, ctx) {
+    const handler = Object.prototype.hasOwnProperty.call(handlers, action) ? handlers[action] : null;
+    if (!handler) return fail(404, `Unknown action: ${action}`);
+    if (action !== "ping") {
+        const row = await ctx.db.getUserById(ctx.user.id);
+        if (!row) return fail(401, "This account no longer exists. Please log in again.");
+        if (!row.is_active) return fail(403, "This account is blocked. Please contact an administrator.");
+    }
+    return handler(ctx);
+}
+
+module.exports = { handlers, dispatch, TEAMS, ROLES, ok, fail, requirePost, requireRole, policySummary, stateFor, validateDetails, normaliseName, addMonths, sanitizeHtml, validatePhoto };

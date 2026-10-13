@@ -1,7 +1,7 @@
 const AuthUtils = require('../../utils/auth');
 const { createSupabaseClient } = require('../../utils/supabase');
 const { createRegistrationDb } = require('../../utils/registration-db');
-const { handlers } = require('../../utils/registration-handlers');
+const { handlers, dispatch } = require('../../utils/registration-handlers');
 
 module.exports = async (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -32,7 +32,7 @@ module.exports = async (req, res) => {
 
     try {
         const db = createRegistrationDb(createSupabaseClient());
-        const result = await handler({
+        const result = await dispatch(action, {
             user, method: req.method, query, body, db,
             ip: (req.headers['x-forwarded-for'] || '').split(',')[0].trim() || null,
             userAgent: (req.headers['user-agent'] || '').slice(0, 300),
