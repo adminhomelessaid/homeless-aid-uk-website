@@ -101,6 +101,22 @@
     {
       "source": "/Outreach/dashboard",
       "destination": "/Outreach/dashboard.html"
+    },
+    {
+      "source": "/api/registration/ping",
+      "destination": "/api/registration?action=ping"
+    },
+    {
+      "source": "/Outreach/registration",
+      "destination": "/Outreach/registration.html"
+    },
+    {
+      "source": "/Outreach/volunteers",
+      "destination": "/Outreach/volunteers.html"
+    },
+    {
+      "source": "/Outreach/policies",
+      "destination": "/Outreach/policies-admin.html"
     }
   ],
   "redirects": [
@@ -148,6 +164,12 @@
       "source": "/FoodBanks.html",
       "destination": "/FoodBanks",
       "permanent": true
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/registration/ping",
+      "schedule": "0 6 * * *"
     }
   ]
 }

@@ -275,4 +275,69 @@ async function setActive(ctx, is_active) {
     return ok({ user });
 }
 
+function slugify(s) {
+    return normaliseName(s).replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 60);
+}
+
+function policyFull(p) {
+    const s = policySummary(p);
+    return { ...s, current_version: p.current_version ? { ...s.current_version, body_html: p.current_version.body_html, created_by: p.current_version.created_by } : null };
+}
+
+Object.assign(handlers, {
+    async 'policies-admin'(ctx) {
+        const r = requireRole(ctx, ['admin']); if (r) return r;
+        const all = await ctx.db.listAllPolicies();
+        return ok({ policies: all.map(policyFull) });
+    },
+
+    async 'policy-save'(ctx) {
+        const m = requirePost(ctx); if (m) return m;
+        const r = requireRole(ctx, ['admin']); if (r) return r;
+        const body = ctx.body || {};
+        const title = String(body.title || '').trim();
+        if (title.length < 2 || title.length > 150) return fail(400, 'Title must be 2 to 150 characters');
+        const html = sanitizeHtml(body.body_html);
+        if (!html.replace(/<[^>]+>/g, '').trim()) return fail(400, 'Policy text cannot be empty');
+        const change_note = String(body.change_note || '').trim().slice(0, 300) || null;
+
+        let policy;
+        let nextVersion = 1;
+        if (body.policy_id) {
+            policy = await ctx.db.getPolicyById(body.policy_id);
+            if (!policy) return fail(404, 'Policy not found');
+            nextVersion = (policy.current_version?.version || 0) + 1;
+            if (policy.title !== title) policy = { ...policy, ...(await ctx.db.updatePolicy(policy.id, { title })) };
+        } else {
+            const slug = slugify(body.slug || title);
+            if (!slug) return fail(400, 'Could not make a slug from the title');
+            const all = await ctx.db.listAllPolicies();
+            if (all.some(p => p.slug === slug)) return fail(409, `A policy with the slug "${slug}" already exists`);
+            const sort_order = all.reduce((m, p) => Math.max(m, p.sort_order), 0) + 1;
+            policy = await ctx.db.insertPolicy({ slug, title, sort_order });
+        }
+        const version = await ctx.db.insertPolicyVersion({ policy_id: policy.id, version: nextVersion, body_html: html, change_note, created_by: ctx.user.id });
+        return ok({ policy: policyFull({ ...policy, current_version: version }) });
+    },
+
+    async 'policy-reorder'(ctx) {
+        const m = requirePost(ctx); if (m) return m;
+        const r = requireRole(ctx, ['admin']); if (r) return r;
+        const order = Array.isArray(ctx.body?.order) ? ctx.body.order : [];
+        if (order.length === 0) return fail(400, 'order is required');
+        for (let i = 0; i < order.length; i++) await ctx.db.updatePolicy(order[i], { sort_order: i + 1 });
+        return ok({});
+    },
+
+    async 'policy-retire'(ctx) {
+        const m = requirePost(ctx); if (m) return m;
+        const r = requireRole(ctx, ['admin']); if (r) return r;
+        const { policy_id, is_active } = ctx.body || {};
+        const existing = await ctx.db.getPolicyById(policy_id);
+        if (!existing) return fail(404, 'Policy not found');
+        const row = await ctx.db.updatePolicy(policy_id, { is_active: Boolean(is_active) });
+        return ok({ policy: policyFull({ ...existing, ...row }) });
+    }
+});
+
 module.exports = { handlers, TEAMS, ROLES, ok, fail, requirePost, requireRole, policySummary, stateFor, validateDetails, normaliseName, addMonths, sanitizeHtml, validatePhoto };
