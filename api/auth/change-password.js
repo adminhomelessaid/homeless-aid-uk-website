@@ -80,17 +80,13 @@ module.exports = async (req, res) => {
             });
         }
         
-        // Skip current password verification for hardcoded BenAdmin
-        if (decoded.username !== 'BenAdmin') {
-            // Verify current password
-            const isCurrentPasswordValid = await AuthUtils.verifyPassword(currentPassword, user.password_hash);
-            
-            if (!isCurrentPasswordValid) {
-                return res.status(400).json({ 
-                    success: false, 
-                    message: 'Current password is incorrect' 
-                });
-            }
+        // Verify current password for every account
+        const isCurrentPasswordValid = user.password_hash && await AuthUtils.verifyPassword(currentPassword, user.password_hash);
+        if (!isCurrentPasswordValid) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Current password is incorrect' 
+            });
         }
         
         // Hash new password
