@@ -412,8 +412,7 @@ async function teamsWithLeads(db, { includeInactive }) {
 
 Object.assign(handlers, {
     async 'team-list'(ctx) {
-        const rows = (await ctx.db.listTeams()).filter(t => t.is_active);
-        return ok({ teams: rows.map(t => ({ name: t.name, town: t.town, day: t.day || null })) });
+        return ok({ teams: teamOptions() }); // dispatch has loaded the active teams; falls back to towns
     },
 
     async teams(ctx) {

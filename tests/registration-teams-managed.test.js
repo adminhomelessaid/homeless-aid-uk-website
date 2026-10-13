@@ -80,3 +80,10 @@ test('team-save creates a team with several leads, and renaming moves members to
     assert.equal(db._users.get('p1').team, 'Bolton Saturday Night');
     assert.deepEqual(ren.body.team.leads.map(l => l.id), ['ls']);
 });
+
+test('team-list falls back to the built-in towns when no teams exist yet, so sign-up never breaks', async () => {
+    const db = createFakeDb({ users: [admin] });
+    const r = await dispatch('team-list', { user: null, method: 'GET', query: {}, body: {}, db });
+    assert.ok(r.body.teams.length > 0);
+    assert.ok(r.body.teams.some(t => t.name === 'Bolton'));
+});
