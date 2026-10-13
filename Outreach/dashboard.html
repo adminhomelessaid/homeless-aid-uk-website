@@ -31,6 +31,7 @@
     <header class="topbar"><h1>Log attendance</h1><p>Record how many people you served at a session</p></header>
     <main class="main">
       <div id="banner"></div>
+      <div id="share"></div>
       <div class="kpis" id="kpis">
         <div class="kpi"><div class="l">Served today</div><div class="v" id="kToday">–</div></div>
         <div class="kpi"><div class="l">This week</div><div class="v" id="kWeek">–</div></div>
@@ -112,6 +113,10 @@ form.addEventListener('submit', async (e) => {
         await Shell.call('/api/attendance/index', { method: 'POST', body: { date: form.date.value, eventName, eventTown, peopleServed: Number(form.peopleServed.value), notes: form.notes.value.trim() } });
         localStorage.setItem('lastEvent', form.event.value);
         Shell.toast('Saved. Thank you!');
+        const label = form.event.options[form.event.selectedIndex].text;
+        const served = Number(form.peopleServed.value);
+        const msg = `Homeless Aid UK attendance update\n${label}\n${Shell.fmtDate(form.date.value)}\nPeople served: ${served}${form.notes.value.trim() ? '\nNotes: ' + form.notes.value.trim() : ''}\nLogged by ${me.name}`;
+        $('#share').innerHTML = `<div class="card" style="background:var(--ok-bg);border-color:#9AE6B4;display:flex;gap:12px;align-items:center;flex-wrap:wrap"><div style="flex:1"><b>Saved.</b> <span class="small">${Shell.escape(label)} · ${served} served</span></div><a class="btn sm" style="background:#25D366" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent(msg)}"><i class="fab fa-whatsapp"></i> Share on WhatsApp</a></div>`;
         form.peopleServed.value = ''; form.notes.value = '';
         loadStats(); loadRecent();
     } catch (ex) { Shell.toast(ex.message, 'error'); }

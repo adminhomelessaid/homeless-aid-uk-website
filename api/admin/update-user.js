@@ -137,21 +137,12 @@ module.exports = async (req, res) => {
         }
         
         // Update user
-        const updateData = {
-            email: email.toLowerCase(),
-            full_name,
-            role,
-            status: status || 'active',
-            updated_at: new Date().toISOString(),
-            date_of_birth: date_of_birth || null,
-            address_line1: address_line1 || null,
-            address_line2: address_line2 || null,
-            city: city || null,
-            postcode: postcode || null,
-            emergency_contact_name: emergency_contact_name || null,
-            emergency_contact_phone: emergency_contact_phone || null,
-            emergency_contact_relationship: emergency_contact_relationship || null
-        };
+        // Only write the fields that were sent, so an edit of one field never wipes the others.
+        const updateData = { email: email.toLowerCase(), full_name, role, updated_at: new Date().toISOString() };
+        if (status !== undefined) updateData.status = status;
+        for (const [key, value] of Object.entries({ date_of_birth, address_line1, address_line2, city, postcode, emergency_contact_name, emergency_contact_phone, emergency_contact_relationship })) {
+            if (value !== undefined) updateData[key] = value || null;
+        }
         
         const { data: updatedUser, error } = await supabase
             .from('outreach_users')

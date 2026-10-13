@@ -105,7 +105,7 @@ function openEdit(u) {
       <label class="field"><span>Full name</span><input class="input" name="full_name" value="${Shell.escape(u.full_name)}" required></label>
       <label class="field"><span>Email</span><input class="input" type="email" name="email" value="${Shell.escape(u.email)}" required></label>
       <label class="field"><span>Role</span><select class="select" name="role" ${self ? 'disabled' : ''}>${roleOptions(u.role)}</select>${self ? '<span class="small muted" style="font-weight:400">You cannot change your own role.</span>' : ''}</label>
-      <div class="actions"><button class="btn" type="submit">Save</button><button class="btn ghost" type="button" id="cancelBtn">Cancel</button>${self ? '' : `<button class="btn ${u.is_active ? 'danger' : ''}" type="button" id="toggleBtn" style="margin-left:auto">${u.is_active ? 'Block login' : 'Unblock'}</button>`}</div>
+      <div class="actions"><button class="btn" type="submit">Save</button><button class="btn ghost" type="button" id="cancelBtn">Cancel</button>${self ? '' : `<button class="btn ghost" type="button" id="resetBtn" title="Clears their password and emails a link to set a new one"><i class="fas fa-key"></i> Reset password</button><button class="btn ${u.is_active ? 'danger' : ''}" type="button" id="toggleBtn" style="margin-left:auto">${u.is_active ? 'Block login' : 'Unblock'}</button>`}</div>
       <p class="small muted" style="margin:12px 0 0">Registration details, photo and signatures are on the <a href="/Outreach/volunteers#volunteer/${u.id}">volunteer record</a>.</p></form>`);
     $('#cancelBtn').onclick = closeModal;
     $('#editForm').onsubmit = async (e) => {
@@ -114,6 +114,16 @@ function openEdit(u) {
             await Shell.call('/api/admin/update-user', { method: 'PUT', body: { userId: u.id, full_name: f.full_name.value.trim(), email: f.email.value.trim(), role: self ? u.role : f.role.value } });
             closeModal(); Shell.toast('Saved'); load();
         } catch (ex) { Shell.toast(ex.message, 'error'); btn.disabled = false; }
+    };
+    const rb = $('#resetBtn'); if (rb) rb.onclick = async () => {
+        if (!window.confirm(`Send ${u.full_name} a password reset link? Their current password stops working immediately.`)) return;
+        rb.disabled = true;
+        try {
+            const r = await Shell.api('send-reset-link', { method: 'POST', body: { user_id: u.id } });
+            if (r.emailed) { Shell.toast('Reset link emailed'); closeModal(); }
+            else openModal(`<h2>Email could not be sent</h2><p class="small">Send them this link another way. It works for 7 days.</p><input class="input" readonly value="${Shell.escape(r.setup_url)}" onclick="this.select()"><div class="actions" style="margin-top:12px"><button class="btn ghost" type="button" id="closeReset">Close</button></div>`), ($('#closeReset').onclick = closeModal);
+            load();
+        } catch (ex) { Shell.toast(ex.message, 'error'); rb.disabled = false; }
     };
     const t = $('#toggleBtn'); if (t) t.onclick = async () => {
         try { await Shell.api(u.is_active ? 'block' : 'unblock', { method: 'POST', body: { user_id: u.id } }); closeModal(); Shell.toast(u.is_active ? 'Login blocked' : 'Unblocked'); load(); }

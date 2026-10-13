@@ -36,7 +36,8 @@ module.exports = async (req, res) => {
             user, method: req.method, query, body, db,
             ip: (req.headers['x-forwarded-for'] || '').split(',')[0].trim() || null,
             userAgent: (req.headers['user-agent'] || '').slice(0, 300),
-            now: new Date()
+            now: new Date(),
+            origin: req.headers.origin || (req.headers.host ? `https://${req.headers.host}` : 'https://homelessaid.co.uk')
         });
         if (result.raw !== undefined) {
             for (const [k, v] of Object.entries(result.headers || {})) res.setHeader(k, v);
