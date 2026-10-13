@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Volunteers - Homeless Aid UK</title>
+<link rel="manifest" href="/Outreach/manifest.json">
+<meta name="theme-color" content="#1A2332">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="/Outreach/registration.css">
+</head>
+<body>
+<div class="app">
+  <div id="shellNav"></div>
+  <div style="flex:1;min-width:0;display:flex;flex-direction:column">
+    <header class="topbar" style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
+      <div><h1 id="title">Volunteers</h1><p id="subtitle"></p></div>
+      <div class="actions" id="headActions"></div>
+    </header>
+    <main class="main" id="view"><div class="empty">Loading…</div></main>
+  </div>
+</div>
+<div class="modal-bg" id="modal"><div class="modal" id="modalBody"></div></div>
+
+<script src="/Outreach/registration-shell.js"></script>
+<script>
+const me = Shell.requireAuth();
+if (!['admin', 'team_lead'].includes(me.role)) location.href = '/Outreach/registration';
+Shell.renderNav({ active: 'volunteers', user: me });
+const isAdmin = me.role === 'admin';
+const $ = (s) => document.querySelector(s);
+const view = $('#view');
+const setHead = (t, s = '', actions = '') => { $('#title').textContent = t; $('#subtitle').textContent = s; $('#headActions').innerHTML = actions; };
+const filters = { q: '', status: '' };
+let listCache = null;
+
+function route() {
+    const h = location.hash || '#list';
+    if (h.startsWith('#volunteer/')) return renderRecord(h.slice(11));
+    renderList();
+}
+window.addEventListener('hashchange', route);
+
+async function renderList() {
+    setHead('Volunteers', '', isAdmin ? `<button class="btn ghost sm" id="exportBtn"><i class="fas fa-download"></i> Export CSV</button><a class="btn sm" href="/Outreach/admin.html"><i class="fas fa-plus"></i> Invite</a>` : '');
+    if (!listCache) view.innerHTML = '<div class="empty">Loading…</div>';
+    let r;
+    try { r = await Shell.api('volunteers', { query: filters }); } catch (err) { view.innerHTML = `<div class="empty">${Shell.escape(err.message)}</div>`; return; }
+    listCache = r;
+    const c = r.counts;
+    $('#subtitle').textContent = `${c.total} volunteers · ${c.incomplete} need attention`;
+    const chip = (key, label) => `<span class="chip ${filters.status === key ? 'on' : ''}" data-status="${key}">${label}</span>`;
+    const rowDesc = (v) => `${Shell.roleLabel(v.role)}${v.team ? ' · ' + Shell.escape(v.team) : ''}`;
+    const progBar = (s) => { const n = [s.details_complete, s.photo_complete, s.signature_status === 'signed'].filter(Boolean).length; return `<span title="${n}/3 steps" style="display:inline-flex;gap:3px">${[0, 1, 2].map(i => `<i style="width:16px;height:6px;border-radius:3px;background:${i < n ? '#48BB78' : '#E2E8F0'};display:inline-block"></i>`).join('')}</span>`; };
+    view.innerHTML = `
+      <div class="kpis">
+        <div class="kpi" data-status=""><div class="l">Total</div><div class="v">${c.total}</div></div>
+        <div class="kpi" data-status="complete"><div class="l">Fully registered</div><div class="v ok">${c.complete}</div></div>
+        <div class="kpi" data-status="needs_signing"><div class="l">Needs signing</div><div class="v warn">${c.needs_signing}</div></div>
+        <div class="kpi" data-status="blocked"><div class="l">Blocked</div><div class="v bad">${c.blocked}</div></div>
+      </div>
+      <input class="input" id="search" placeholder="Search name or email…" value="${Shell.escape(filters.q)}" style="margin-bottom:10px">
+      <div class="chips" style="margin-bottom:12px">${chip('', 'All')}${chip('needs_signing', 'Needs signing')}${chip('incomplete', 'Incomplete')}${chip('complete', 'Complete')}${chip('blocked', 'Blocked')}</div>
+      ${r.volunteers.length === 0 ? '<div class="empty">No volunteers match.</div>' : ''}
+      ${r.volunteers.map(v => `<a class="row-card" href="#volunteer/${v.id}" style="${v.is_active ? '' : 'opacity:.55'}"><span class="avatar">${Shell.escape(Shell.initials(v.full_name))}</span><div><b>${Shell.escape(v.full_name)}</b><small>${rowDesc(v)}</small></div><div class="r">${v.is_active ? Shell.statusChip(v.state) : '<span class="st bad">Blocked</span>'}<br><span class="small muted">${progBar(v.state)}</span></div></a>`).join('')}
+      <table class="table"><thead><tr><th>Volunteer</th><th>Role</th><th>Team</th><th>Registration</th><th>Policies</th><th>Status</th></tr></thead><tbody>
+        ${r.volunteers.map(v => `<tr data-id="${v.id}" style="${v.is_active ? '' : 'opacity:.55'}"><td><div class="person"><span class="avatar">${Shell.escape(Shell.initials(v.full_name))}</span><div><b>${Shell.escape(v.full_name)}</b><small>${Shell.escape(v.email)}</small></div></div></td><td>${Shell.roleLabel(v.role)}</td><td>${Shell.escape(v.team || '—')}</td><td>${progBar(v.state)}</td><td>${Shell.statusChip(v.state)}</td><td>${v.is_active ? '<span class="st ok">Active</span>' : '<span class="st bad">Blocked</span>'}</td></tr>`).join('')}
+      </tbody></table>`;
+    let t; $('#search').addEventListener('input', (e) => { clearTimeout(t); t = setTimeout(() => { filters.q = e.target.value.trim(); renderList(); }, 250); });
+    view.querySelectorAll('[data-status]').forEach(el => el.addEventListener('click', () => { filters.status = el.dataset.status; renderList(); }));
+    view.querySelectorAll('tr[data-id]').forEach(tr => tr.addEventListener('click', () => { location.hash = `#volunteer/${tr.dataset.id}`; }));
+    const ex = $('#exportBtn'); if (ex) ex.onclick = () => Shell.download('export', {}, `volunteers-${new Date().toISOString().slice(0, 10)}.csv`).catch(e => Shell.toast(e.message, 'error'));
+}
+
+async function renderRecord(id) {
+    setHead('Volunteer', '', `<a class="btn ghost sm" href="#list"><i class="fas fa-arrow-left"></i> All volunteers</a>`);
+    view.innerHTML = '<div class="empty">Loading…</div>';
+    let r; try { r = await Shell.api('volunteer', { query: { id } }); } catch (err) { view.innerHTML = `<div class="empty">${Shell.escape(err.message)}</div>`; return; }
+    const { user: u, state: s, signatures } = r;
+    setHead(u.full_name, `${Shell.roleLabel(u.role)} · Volunteer #${String(u.volunteer_number || 0).padStart(4, '0')}`, `<a class="btn ghost sm" href="#list"><i class="fas fa-arrow-left"></i> Back</a>`);
+    const row = (k, v) => `<div style="display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid #EDF2F7"><span class="muted">${k}</span><b style="text-align:right">${v || '—'}</b></div>`;
+    view.innerHTML = `
+      ${!u.is_active ? '<div class="banner"><i class="fas fa-ban"></i> This account is blocked and cannot log in.</div>' : ''}
+      <div class="card" style="display:flex;gap:16px;align-items:center;flex-wrap:wrap">
+        <span class="avatar lg" id="recAvatar">${Shell.escape(Shell.initials(u.full_name))}</span>
+        <div style="flex:1;min-width:200px">${Shell.statusChip(s)} ${s.registration_complete ? '<span class="st ok">Registration complete</span>' : '<span class="st warn">Registration incomplete</span>'}<br>
+          <span class="small muted">${u.email}${u.mobile_phone ? ' · ' + Shell.escape(u.mobile_phone) : ''}</span></div>
+        <div class="actions">
+          ${u.has_photo ? `<button class="btn ghost sm" id="dlPhoto"><i class="fas fa-download"></i> Download photo</button>` : '<span class="st mute">No photo yet</span>'}
+          ${isAdmin ? `<button class="btn ghost sm" id="upPhoto"><i class="fas fa-camera"></i> ${u.has_photo ? 'Replace' : 'Upload'} photo</button><input type="file" id="upInput" accept="image/*" class="hidden">` : ''}
+        </div>
+      </div>
+      <div class="card"><h3>Details ${isAdmin ? '<button class="btn ghost sm" id="editBtn" style="float:right"><i class="fas fa-pen"></i> Edit</button>' : ''}</h3>
+        ${row('Date of birth', Shell.escape(u.date_of_birth ? Shell.fmtDate(u.date_of_birth) : ''))}${row('Mobile', Shell.escape(u.mobile_phone))}${row('Team', Shell.escape(u.team))}${row('Next of kin', Shell.escape(u.next_of_kin_name))}${row('Next of kin phone', Shell.escape(u.next_of_kin_phone))}${row('Email', Shell.escape(u.email))}${row('Username', Shell.escape(u.username))}${row('Joined', Shell.fmtDate(u.created_at))}${row('Last login', u.last_login ? Shell.fmtDate(u.last_login) : 'Never')}
+      </div>
+      <div class="card"><h3>Signature history</h3>
+        ${signatures.length === 0 ? '<p class="muted small">Not signed yet.</p>' : signatures.map(g => `<div class="small" style="padding:8px 0;border-bottom:1px solid #EDF2F7"><b>${Shell.fmtDate(g.signed_at)}</b> · signed as "${Shell.escape(g.typed_name)}" · valid until ${Shell.fmtDate(g.expires_at)} · ${g.version_ids.length} policies<br><span class="muted">${Shell.escape(g.ip_address || '')}</span></div>`).join('')}
+        ${s.signature_status === 'outdated' ? `<p class="small" style="color:var(--warn);margin-top:8px">Needs re-signing: ${Shell.escape(s.outdated_policies.join(', '))}</p>` : ''}
+      </div>
+      ${isAdmin && u.id !== me.id ? `<div class="card"><h3>Account</h3><div class="actions">
+        <button class="btn ${u.is_active ? 'ghost' : ''} sm" id="blockBtn"><i class="fas ${u.is_active ? 'fa-ban' : 'fa-check'}"></i> ${u.is_active ? 'Block login' : 'Unblock'}</button>
+        <button class="btn danger sm" id="deleteBtn"><i class="fas fa-trash"></i> Delete account</button></div>
+        <p class="muted small" style="margin:10px 0 0">Block keeps their details and signature history. Delete removes everything permanently; prefer Block if you may need to prove they signed the policies.</p></div>` : ''}`;
+    if (u.has_photo) {
+        fetch(Shell.apiUrl('photo', { id: u.id }), { headers: { Authorization: `Bearer ${Shell.getToken()}` } }).then(async res => { if (res.ok) $('#recAvatar').innerHTML = `<img src="${URL.createObjectURL(await res.blob())}" style="width:100%;height:100%;object-fit:cover">`; }).catch(() => {});
+        $('#dlPhoto').onclick = () => Shell.download('photo', { id: u.id }, `HAUK-${String(u.volunteer_number || 0).padStart(4, '0')}-${u.full_name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}.jpg`).catch(e => Shell.toast(e.message, 'error'));
+    }
+    if (isAdmin) {
+        $('#upPhoto').onclick = () => $('#upInput').click();
+        $('#upInput').onchange = async (e) => { const f = e.target.files[0]; if (!f) return; try { const b64 = await squareJpeg(f, 400); await Shell.api('upload-photo', { method: 'POST', body: { user_id: u.id, photo: b64 } }); Shell.toast('Photo saved'); renderRecord(id); } catch (err) { Shell.toast(err.message, 'error'); } };
+        $('#editBtn').onclick = () => openEdit(u, r.teams || null);
+        const bb = $('#blockBtn'); if (bb) bb.onclick = async () => { try { await Shell.api(u.is_active ? 'block' : 'unblock', { method: 'POST', body: { user_id: u.id } }); Shell.toast(u.is_active ? 'Login blocked' : 'Unblocked'); listCache = null; renderRecord(id); } catch (err) { Shell.toast(err.message, 'error'); } };
+        const db = $('#deleteBtn'); if (db) db.onclick = () => openDelete(u);
+    }
+}
+
+function openModal(html) { $('#modalBody').innerHTML = html; $('#modal').classList.add('open'); }
+function closeModal() { $('#modal').classList.remove('open'); }
+$('#modal').addEventListener('click', (e) => { if (e.target.id === 'modal') closeModal(); });
+
+const TEAMS = ['Bolton', 'Manchester', 'Bury', 'Liverpool', 'Wigan', 'Oldham', 'Glasgow', 'Leigh', 'Other'];
+function openEdit(u) {
+    openModal(`<form id="editForm"><h2>Edit ${Shell.escape(u.full_name)}</h2>
+      <label class="field"><span>Full name</span><input class="input" name="full_name" value="${Shell.escape(u.full_name)}" required></label>
+      <label class="field"><span>Email</span><input class="input" type="email" name="email" value="${Shell.escape(u.email)}" required></label>
+      <label class="field"><span>Role</span><select class="select" name="role">${['volunteer', 'team_lead', 'admin'].map(r => `<option value="${r}" ${u.role === r ? 'selected' : ''}>${Shell.roleLabel(r)}</option>`).join('')}</select></label>
+      <label class="field"><span>Date of birth</span><input class="input" type="date" name="date_of_birth" value="${Shell.escape(u.date_of_birth || '')}"></label>
+      <label class="field"><span>Mobile</span><input class="input" type="tel" name="mobile_phone" value="${Shell.escape(u.mobile_phone || '')}"></label>
+      <label class="field"><span>Team</span><select class="select" name="team"><option value="">—</option>${TEAMS.map(t => `<option ${u.team === t ? 'selected' : ''}>${t}</option>`).join('')}</select></label>
+      <label class="field"><span>Next of kin name</span><input class="input" name="next_of_kin_name" value="${Shell.escape(u.next_of_kin_name || '')}"></label>
+      <label class="field"><span>Next of kin phone</span><input class="input" type="tel" name="next_of_kin_phone" value="${Shell.escape(u.next_of_kin_phone || '')}"></label>
+      <div class="actions"><button class="btn" type="submit">Save</button><button class="btn ghost" type="button" id="cancelEdit">Cancel</button></div></form>`);
+    $('#cancelEdit').onclick = closeModal;
+    $('#editForm').onsubmit = async (e) => {
+        e.preventDefault();
+        const body = { user_id: u.id };
+        for (const [k, v] of new FormData(e.target).entries()) { if (v !== '' || ['full_name', 'email', 'role'].includes(k)) body[k] = v; }
+        try { await Shell.api('admin-update-volunteer', { method: 'POST', body }); closeModal(); Shell.toast('Saved'); listCache = null; renderRecord(u.id); } catch (err) { Shell.toast(err.message, 'error'); }
+    };
+}
+
+function openDelete(u) {
+    openModal(`<form id="delForm"><h2 style="color:var(--bad)">Delete ${Shell.escape(u.full_name)}?</h2>
+      <p class="small">This permanently removes their account, details, photo and signature history. It cannot be undone. If you only want to stop them logging in, use Block instead.</p>
+      <label class="field"><span>Type their full name to confirm</span><input class="input" name="confirm_name" placeholder="${Shell.escape(u.full_name)}" required autocomplete="off"></label>
+      <div class="actions"><button class="btn danger" type="submit">Delete permanently</button><button class="btn ghost" type="button" id="cancelDel">Cancel</button></div></form>`);
+    $('#cancelDel').onclick = closeModal;
+    $('#delForm').onsubmit = async (e) => {
+        e.preventDefault();
+        try { await Shell.api('delete-volunteer', { method: 'POST', body: { user_id: u.id, confirm_name: e.target.confirm_name.value } }); closeModal(); Shell.toast('Account deleted'); listCache = null; location.hash = '#list'; } catch (err) { Shell.toast(err.message, 'error'); }
+    };
+}
+
+function squareJpeg(file, size) {
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => {
+            const side = Math.min(img.naturalWidth, img.naturalHeight), sx = (img.naturalWidth - side) / 2, sy = (img.naturalHeight - side) / 2;
+            const c = document.createElement('canvas'); c.width = size; c.height = size;
+            c.getContext('2d').drawImage(img, sx, sy, side, side, 0, 0, size, size);
+            let q = 0.85, b64; do { b64 = c.toDataURL('image/jpeg', q).split(',')[1]; q -= 0.1; } while (b64.length * 0.75 > 280000 && q > 0.3);
+            URL.revokeObjectURL(img.src); resolve(b64);
+        };
+        img.onerror = () => reject(new Error('bad image')); img.src = URL.createObjectURL(file);
+    });
+}
+
+route();
+</script>
+</body>
+</html>
