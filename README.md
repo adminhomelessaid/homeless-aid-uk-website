@@ -21,6 +21,9 @@ Secure volunteer management system with:
 - Statistics dashboard
 - User management (Admin only)
 
+### Volunteer Registration
+Volunteers complete their details, upload a photo and sign all policies with one signature at `/Outreach/registration`. Team Leads and Admins see everyone at `/Outreach/volunteers`; Admins edit policies at `/Outreach/policies`. Signatures expire after 12 months or when any policy changes. See `docs/superpowers/specs/2026-10-13-volunteer-registration-design.md`. Run `npm test` for the unit tests and `npm run dev` for a local server (needs `.env`).
+
 ## 🔐 Authentication System
 
 ### Current Status: ✅ OPERATIONAL (With Security Updates)

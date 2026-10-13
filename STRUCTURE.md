@@ -37,11 +37,14 @@ homeless-aid-uk/
 │   │   ├── change-password.js # Change existing password
 │   │   ├── update-profile.js # Update user profile
 │   │   └── verify-invitation.js # Verify invitation tokens
-│   └── send-invitation-email.js # Send user invitations
+│   └── registration/
+│       └── index.js          # Volunteer Registration (profile, photo, policies, signatures, admin)
 │
 ├── 📁 utils/                   # Utilities
 │   ├── auth.js               # Authentication helpers
-│   └── supabase.js           # Database connection
+│   ├── supabase.js           # Database connection
+│   ├── send-invitation-email.js # Invitation email helper (was an API function)
+│   └── registration-*.js, sanitize-html.js, jpeg.js # Volunteer Registration logic (unit tested)
 │
 ├── 📁 Branding/               # Brand Assets
 │   ├── HomelessAidUKLogo.png # Main logo

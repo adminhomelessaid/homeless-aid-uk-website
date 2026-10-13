@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>My Registration - Homeless Aid UK</title>
+<link rel="manifest" href="/Outreach/manifest.json">
+<meta name="theme-color" content="#1A2332">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="/Outreach/registration.css">
+</head>
+<body>
+<div class="app">
+  <div id="shellNav"></div>
+  <div style="flex:1;min-width:0;display:flex;flex-direction:column">
+    <header class="topbar"><h1 id="title">My registration</h1><p id="subtitle"></p></header>
+    <main class="main" id="view"><div class="empty">Loading…</div></main>
+  </div>
+</div>
+<div class="modal-bg" id="modal"><div class="modal" id="modalBody"></div></div>
+
+<script src="/Outreach/registration-shell.js"></script>
+<script>
+const me = Shell.requireAuth();
+Shell.renderNav({ active: location.hash.startsWith('#polic') ? 'policies' : 'registration', user: me });
+let data = null;        // { user, state, policies, teams }
+let policyBodies = null; // from action=policies
+
+const $ = (s) => document.querySelector(s);
+const view = $('#view');
+const setHead = (t, s = '') => { $('#title').textContent = t; $('#subtitle').textContent = s; };
+
+async function load() { data = await Shell.api('me'); route(); }
+
+function route() {
+    const h = location.hash || '#home';
+    Shell.renderNav({ active: h.startsWith('#polic') ? 'policies' : 'registration', user: me });
+    if (h.startsWith('#policy/')) return renderPolicy(h.slice(8));
+    ({ '#details': renderDetails, '#photo': renderPhoto, '#policies': renderPolicies }[h] || renderHome)();
+    window.scrollTo(0, 0);
+}
+window.addEventListener('hashchange', route);
+
+function progress() {
+    const s = data.state; const n = [s.details_complete, s.photo_complete, s.signature_status === 'signed'].filter(Boolean).length;
+    return { n, pct: Math.round(n / 3 * 100) };
+}
+
+function renderHome() {
+    const { user, state } = data; const p = progress();
+    const first = (user.full_name || '').split(' ')[0];
+    setHead(`Hi ${first} 👋`, state.registration_complete ? 'You are fully registered' : "Let's get you registered");
+    const sigReason = state.signature_status === 'expired' ? 'Your signature has expired' : state.signature_status === 'outdated' ? `Updated: ${state.outdated_policies.join(', ')}` : state.signature_status === 'signed' ? `Signed, valid until ${Shell.fmtDate(state.signature.expires_at)}` : `${data.policies.length} policies to read and sign`;
+    const next = !state.details_complete ? '#details' : !state.photo_complete ? '#photo' : state.signature_status !== 'signed' ? '#policies' : null;
+    view.innerHTML = `
+      <div class="card">
+        <div class="person"><span class="avatar lg" id="homeAvatar">${Shell.escape(Shell.initials(user.full_name))}</span>
+          <div><b style="font-size:17px">${Shell.escape(user.full_name)}</b><br><span class="muted small">${Shell.escape(Shell.roleLabel(user.role))} · Volunteer #${String(user.volunteer_number || 0).padStart(4, '0')}${user.team ? ' · ' + Shell.escape(user.team) : ''}</span></div></div>
+        <div class="prog"><i style="width:${p.pct}%"></i></div><span class="muted small">${p.n} of 3 steps complete</span>
+      </div>
+      <div class="steps">
+        <a class="step" href="#details"><span class="ic ${state.details_complete ? 'done' : 'todo'}">${state.details_complete ? '✓' : '!'}</span><div><b>Your details</b><small>Date of birth, mobile, team, next of kin</small></div><i class="fas fa-chevron-right chev"></i></a>
+        <a class="step" href="#photo"><span class="ic ${state.photo_complete ? 'done' : 'todo'}">${state.photo_complete ? '✓' : '!'}</span><div><b>Profile photo</b><small>Used for your volunteer ID card</small></div><i class="fas fa-chevron-right chev"></i></a>
+        <a class="step" href="#policies"><span class="ic ${state.signature_status === 'signed' ? 'done' : 'todo'}">${state.signature_status === 'signed' ? '✓' : '!'}</span><div><b>Read &amp; sign policies</b><small>${Shell.escape(sigReason)}</small></div><i class="fas fa-chevron-right chev"></i></a>
+      </div>
+      ${next ? `<a class="btn block" style="margin-top:16px" href="${next}">Continue</a>` : '<div class="card" style="margin-top:16px;text-align:center"><b>All done. Thank you!</b><br><span class="muted small">We will let you know when anything needs re-signing.</span></div>'}
+      <p class="small muted" style="margin-top:20px;text-align:center"><a href="/Outreach/account.html">Account settings</a> · <a href="#" onclick="Shell.logout();return false">Log out</a></p>`;
+    if (user.has_photo) loadAvatar('#homeAvatar');
+}
+
+async function loadAvatar(sel) {
+    try {
+        const res = await fetch(Shell.apiUrl('photo', { id: me.id }), { headers: { Authorization: `Bearer ${Shell.getToken()}` } });
+        if (!res.ok) return;
+        const url = URL.createObjectURL(await res.blob());
+        const el = $(sel); el.innerHTML = `<img src="${url}" alt="" style="width:100%;height:100%;object-fit:cover">`;
+    } catch {}
+}
+
+function renderDetails() {
+    const u = data.user;
+    setHead('Your details', 'Kept private, used only in an emergency');
+    view.innerHTML = `
+      <form class="card" id="detailsForm">
+        <label class="field"><span>Full name</span><input class="input" value="${Shell.escape(u.full_name)}" disabled><span class="muted small" style="font-weight:400">Ask an admin to change your name.</span></label>
+        <label class="field"><span>Date of birth</span><input class="input" type="date" name="date_of_birth" required max="${new Date().toISOString().slice(0, 10)}" value="${Shell.escape(u.date_of_birth || '')}"></label>
+        <label class="field"><span>Mobile number</span><input class="input" type="tel" name="mobile_phone" required autocomplete="tel" inputmode="tel" value="${Shell.escape(u.mobile_phone || '')}"></label>
+        <label class="field"><span>Team</span><select class="select" name="team" required><option value="">Choose your team…</option>${data.teams.map(t => `<option ${u.team === t ? 'selected' : ''}>${Shell.escape(t)}</option>`).join('')}</select></label>
+        <h3 style="margin-top:8px">Next of kin</h3>
+        <label class="field"><span>Name</span><input class="input" name="next_of_kin_name" required value="${Shell.escape(u.next_of_kin_name || '')}"></label>
+        <label class="field"><span>Phone</span><input class="input" type="tel" name="next_of_kin_phone" required inputmode="tel" value="${Shell.escape(u.next_of_kin_phone || '')}"></label>
+        <button class="btn block" type="submit">Save details</button>
+        <a class="btn ghost block" href="#home" style="margin-top:8px">Back</a>
+      </form>`;
+    $('#detailsForm').addEventListener('submit', async (e) => {
+        e.preventDefault(); const btn = e.target.querySelector('button'); btn.disabled = true;
+        try {
+            const body = Object.fromEntries(new FormData(e.target).entries());
+            const r = await Shell.api('update-me', { method: 'POST', body });
+            data.user = r.user; data.state = r.state; Shell.toast('Details saved'); location.hash = '#home';
+        } catch (err) { Shell.toast(err.message, 'error'); } finally { btn.disabled = false; }
+    });
+}
+
+function renderPhoto() {
+    setHead('Profile photo', 'A clear photo of your face, like a passport photo');
+    view.innerHTML = `
+      <div class="card" style="text-align:center">
+        <span class="avatar lg" id="photoPreview" style="width:160px;height:160px;font-size:40px;margin:0 auto 12px">${Shell.escape(Shell.initials(data.user.full_name))}</span>
+        <input type="file" id="photoInput" accept="image/*" capture="user" class="hidden">
+        <div class="actions" style="justify-content:center">
+          <button class="btn" id="pickBtn"><i class="fas fa-camera"></i> ${data.user.has_photo ? 'Replace photo' : 'Take or choose photo'}</button>
+          ${data.user.has_photo ? '<button class="btn ghost" id="removeBtn">Remove</button>' : ''}
+        </div>
+        <p class="muted small" style="margin-top:12px">We crop it to a square and shrink it, so any photo works. Admins use it to make your ID card.</p>
+        <button class="btn block hidden" id="saveBtn" style="margin-top:8px">Save photo</button>
+        <a class="btn ghost block" href="#home" style="margin-top:8px">Back</a>
+      </div>`;
+    if (data.user.has_photo) loadAvatar('#photoPreview');
+    let pending = null;
+    $('#pickBtn').onclick = () => $('#photoInput').click();
+    $('#photoInput').onchange = async (e) => {
+        const file = e.target.files[0]; if (!file) return;
+        try { pending = await squareJpeg(file, 400); $('#photoPreview').innerHTML = `<img src="data:image/jpeg;base64,${pending}" style="width:100%;height:100%;object-fit:cover">`; $('#saveBtn').classList.remove('hidden'); }
+        catch (err) { Shell.toast('Could not read that image', 'error'); }
+    };
+    $('#saveBtn').onclick = async () => {
+        const btn = $('#saveBtn'); btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>';
+        try { const r = await Shell.api('upload-photo', { method: 'POST', body: { photo: pending } }); data.user = r.user; data.state = r.state; Shell.toast('Photo saved'); location.hash = '#home'; }
+        catch (err) { Shell.toast(err.message, 'error'); btn.disabled = false; btn.textContent = 'Save photo'; }
+    };
+    const rm = $('#removeBtn'); if (rm) rm.onclick = async () => {
+        try { const r = await Shell.api('delete-photo', { method: 'POST' }); data.user = r.user; data.state = r.state; renderPhoto(); } catch (err) { Shell.toast(err.message, 'error'); }
+    };
+}
+
+// Centre-crop to a square, resize, return base64 JPEG (no data: prefix). Quality steps down until under 280 KB.
+function squareJpeg(file, size) {
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => {
+            const side = Math.min(img.naturalWidth, img.naturalHeight);
+            const sx = (img.naturalWidth - side) / 2, sy = (img.naturalHeight - side) / 2;
+            const c = document.createElement('canvas'); c.width = size; c.height = size;
+            c.getContext('2d').drawImage(img, sx, sy, side, side, 0, 0, size, size);
+            let q = 0.85, b64;
+            do { b64 = c.toDataURL('image/jpeg', q).split(',')[1]; q -= 0.1; } while (b64.length * 0.75 > 280000 && q > 0.3);
+            URL.revokeObjectURL(img.src); resolve(b64);
+        };
+        img.onerror = () => reject(new Error('bad image'));
+        img.src = URL.createObjectURL(file);
+    });
+}
+
+async function renderPolicies() {
+    setHead('Policies', 'Read each one, then sign once at the bottom');
+    view.innerHTML = '<div class="empty">Loading policies…</div>';
+    try { const r = await Shell.api('policies'); policyBodies = r.policies; data.state = r.state; } catch (err) { view.innerHTML = `<div class="empty">${Shell.escape(err.message)}</div>`; return; }
+    const s = data.state;
+    const banner = s.signature_status === 'signed' ? `<div class="card" style="background:var(--ok-bg);border-color:#9AE6B4"><b>Signed on ${Shell.fmtDate(s.signature.signed_at)}</b><br><span class="small">Valid until ${Shell.fmtDate(s.signature.expires_at)}. You can still read the policies any time.</span></div>`
+        : s.signature_status === 'expired' ? `<div class="banner"><i class="fas fa-clock"></i><div><b>Your signature expired on ${Shell.fmtDate(s.signature.expires_at)}.</b> Please read and sign again.</div></div>`
+        : s.signature_status === 'outdated' ? `<div class="banner"><i class="fas fa-rotate"></i><div><b>Updated since you signed:</b> ${Shell.escape(s.outdated_policies.join(', '))}. Please read and sign again.</div></div>` : '';
+    view.innerHTML = `${banner}
+      <div id="policyList">${policyBodies.map(p => `<a class="step" href="#policy/${p.id}"><span class="ic" style="background:var(--mute-bg)"><i class="fas fa-file-lines"></i></span><div><b>${Shell.escape(p.title)}</b><small>Updated ${Shell.fmtDate(p.current_version.created_at)} · ${readMins(p.current_version.body_html)} min read${p.current_version.change_note ? ' · ' + Shell.escape(p.current_version.change_note) : ''}</small></div><i class="fas fa-chevron-right chev"></i></a>`).join('') || '<div class="empty">No policies have been published yet.</div>'}</div>
+      ${policyBodies.length && s.signature_status !== 'signed' ? `
+      <form class="card" id="signForm" style="margin-top:16px">
+        <h3>Declaration</h3>
+        <p class="small">I confirm that I have read and understood the ${policyBodies.length} policies listed above, and I agree to follow them while volunteering with Homeless Aid UK.</p>
+        <label class="field"><span>Type your full name to sign</span><input class="input" name="typed_name" placeholder="${Shell.escape(data.user.full_name)}" autocomplete="name" required></label>
+        <label class="small" style="display:flex;gap:10px;align-items:flex-start;margin-bottom:14px"><input type="checkbox" name="ack" required style="width:20px;height:20px;margin:0"> I understand this signature is valid for 12 months, or until a policy changes, and that it is recorded with the date and time.</label>
+        <button class="btn block" type="submit"><i class="fas fa-pen-nib"></i> Sign policies</button>
+      </form>` : ''}
+      <a class="btn ghost block" href="#home" style="margin-top:8px">Back</a>`;
+    const form = $('#signForm'); if (form) form.addEventListener('submit', async (e) => {
+        e.preventDefault(); const btn = form.querySelector('button'); btn.disabled = true;
+        try {
+            const r = await Shell.api('sign', { method: 'POST', body: { typed_name: form.typed_name.value, version_ids: policyBodies.map(p => p.current_version.id) } });
+            data.state = r.state; Shell.toast('Thank you, policies signed'); renderPolicies();
+        } catch (err) { Shell.toast(err.message, 'error'); if (err.status === 409) renderPolicies(); btn.disabled = false; }
+    });
+}
+
+function readMins(html) { return Math.max(1, Math.round(String(html || '').replace(/<[^>]+>/g, ' ').split(/\s+/).length / 200)); }
+
+async function renderPolicy(id) {
+    if (!policyBodies) { try { const r = await Shell.api('policies'); policyBodies = r.policies; data.state = r.state; } catch (err) { view.innerHTML = `<div class="empty">${Shell.escape(err.message)}</div>`; return; } }
+    const p = policyBodies.find(x => x.id === id);
+    if (!p) { location.hash = '#policies'; return; }
+    setHead(p.title, `Version ${p.current_version.version} · ${Shell.fmtDate(p.current_version.created_at)}`);
+    view.innerHTML = `<div class="card policy-body">${p.current_version.body_html}</div><a class="btn block" href="#policies"><i class="fas fa-arrow-left"></i> Back to policies</a>`;
+}
+
+load().catch(err => { view.innerHTML = `<div class="empty">${Shell.escape(err.message)}</div>`; });
+</script>
+</body>
+</html>

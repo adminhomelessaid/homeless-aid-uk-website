@@ -1,5 +1,6 @@
 const AuthUtils = require('../../utils/auth');
 const { createSupabaseClient } = require('../../utils/supabase');
+const { sendInvitationEmail } = require('../../utils/send-invitation-email');
 
 module.exports = async (req, res) => {
     // Enable CORS
@@ -189,24 +190,16 @@ module.exports = async (req, res) => {
         try {
             const invitationUrl = `${req.headers.origin || 'https://homelessaid.co.uk'}/Outreach/setup-password.html?token=${invitationToken}`;
             
-            // Call email API
-            const emailResponse = await fetch(`${req.headers.origin || 'https://homelessaid.co.uk'}/api/send-invitation-email`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    to: createdUser.email,
-                    name: createdUser.full_name,
-                    username: createdUser.username,
-                    role: createdUser.role,
-                    invitationUrl: invitationUrl,
-                    invitedBy: decoded.name
-                })
+            const emailResult = await sendInvitationEmail({
+                to: createdUser.email,
+                name: createdUser.full_name,
+                username: createdUser.username,
+                role: createdUser.role,
+                invitationUrl,
+                invitedBy: decoded.name
             });
-            
-            if (!emailResponse.ok) {
-                console.error('Failed to send invitation email');
+            if (!emailResult.success) {
+                console.error('Failed to send invitation email:', emailResult.message);
             }
         } catch (emailError) {
             console.error('Email sending error:', emailError);

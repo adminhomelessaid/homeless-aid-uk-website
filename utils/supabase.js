@@ -4,7 +4,8 @@ const { createClient } = require('@supabase/supabase-js');
 // Initialize Supabase client
 const createSupabaseClient = () => {
     const supabaseUrl = (process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || '').trim();
-    const supabaseKey = (process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '').trim();
+    // Server-side: prefer the service role key (lets RLS be enabled on every table); fall back to the anon key.
+    const supabaseKey = (process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '').trim();
     
     console.log('Supabase URL:', supabaseUrl ? 'Set' : 'Missing');
     console.log('Supabase Key:', supabaseKey ? `Set (${supabaseKey.length} chars)` : 'Missing');
