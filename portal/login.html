@@ -4,12 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Outreach Login - Homeless Aid UK</title>
-<link rel="manifest" href="/Outreach/manifest.json">
+<link rel="manifest" href="/portal/manifest.json">
 <meta name="theme-color" content="#1A2332">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<link rel="stylesheet" href="/Outreach/registration.css">
+<link rel="stylesheet" href="/portal/registration.css">
 <style>
   body { background: var(--navy); }
   .auth { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px 16px; }
@@ -38,7 +38,7 @@
   </form>
   <p class="foot">Need an account or forgotten your password? Ask an admin to send you a reset link.<br><a href="/">Back to homelessaid.co.uk</a></p>
 </main>
-<script src="/Outreach/registration-shell.js"></script>
+<script src="/portal/registration-shell.js"></script>
 <script>
 const existing = Shell.currentUser();
 if (existing) location.replace(Shell.landing(existing));

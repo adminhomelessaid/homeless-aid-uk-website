@@ -10,7 +10,7 @@ The Homeless Aid UK website is a comprehensive Progressive Web Application (PWA)
 
 ## 🚀 LIVE DEPLOYMENT STATUS
 - **Website**: https://homelessaid.co.uk (LIVE)
-- **Outreach Portal**: https://homelessaid.co.uk/Outreach/login.html (LIVE)
+- **Outreach Portal**: https://homelessaid.co.uk/portal/login.html (LIVE)
 - **Hosting**: Vercel (Auto-deployment from GitHub)
 - **Database**: Supabase PostgreSQL
 - **Email System**: Resend API with Office 365 integration
@@ -110,7 +110,7 @@ COMMIT;
 ```
 
 ### 3. Verify Everything Works
-1. Test login at https://homelessaid.co.uk/Outreach/login.html
+1. Test login at https://homelessaid.co.uk/portal/login.html
 2. Verify JWT tokens are properly signed
 3. Check attendance logging functionality
 4. Monitor for any authentication errors

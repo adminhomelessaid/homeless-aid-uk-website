@@ -4,12 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>My Registration - Homeless Aid UK</title>
-<link rel="manifest" href="/Outreach/manifest.json">
+<link rel="manifest" href="/portal/manifest.json">
 <meta name="theme-color" content="#1A2332">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<link rel="stylesheet" href="/Outreach/registration.css">
+<link rel="stylesheet" href="/portal/registration.css">
 </head>
 <body>
 <div class="app">
@@ -21,7 +21,7 @@
 </div>
 <div class="modal-bg" id="modal"><div class="modal" id="modalBody"></div></div>
 
-<script src="/Outreach/registration-shell.js"></script>
+<script src="/portal/registration-shell.js"></script>
 <script>
 const me = Shell.requireAuth();
 Shell.renderNav({ active: location.hash.startsWith('#polic') ? 'policies' : 'registration', user: me });
@@ -66,7 +66,7 @@ function renderHome() {
         <a class="step" href="#policies"><span class="ic ${state.signature_status === 'signed' ? 'done' : 'todo'}">${state.signature_status === 'signed' ? '✓' : '!'}</span><div><b>Read &amp; sign policies</b><small>${Shell.escape(sigReason)}</small></div><i class="fas fa-chevron-right chev"></i></a>
       </div>
       ${next ? `<a class="btn block" style="margin-top:16px" href="${next}">Continue</a>` : '<div class="card" style="margin-top:16px;text-align:center"><b>All done. Thank you!</b><br><span class="muted small">We will let you know when anything needs re-signing.</span></div>'}
-      <p class="small muted" style="margin-top:20px;text-align:center"><a href="/Outreach/account.html">Account settings</a> · <a href="#" onclick="Shell.logout();return false">Log out</a></p>`;
+      <p class="small muted" style="margin-top:20px;text-align:center"><a href="/portal/account.html">Account settings</a> · <a href="#" onclick="Shell.logout();return false">Log out</a></p>`;
     if (user.has_photo) loadAvatar('#homeAvatar');
 }
 

@@ -17,7 +17,7 @@ test('send-reset-link clears the password, issues a fresh token and emails the u
     assert.ok(row.invitation_sent_at);
     assert.equal(sent.length, 1);
     assert.equal(sent[0].to, 's@x.org');
-    assert.ok(sent[0].invitationUrl.startsWith('https://example.test/Outreach/setup-password.html?token='));
+    assert.ok(sent[0].invitationUrl.startsWith('https://example.test/portal/setup-password.html?token='));
     assert.equal(r.body.emailed, true);
 });
 

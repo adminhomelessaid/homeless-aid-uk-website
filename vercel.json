@@ -91,32 +91,36 @@
       "destination": "/FoodBanks.html"
     },
     {
-      "source": "/Outreach/setup-password",
-      "destination": "/Outreach/setup-password.html"
+      "source": "/portal/setup-password",
+      "destination": "/portal/setup-password.html"
     },
     {
-      "source": "/Outreach/login",
-      "destination": "/Outreach/login.html"
+      "source": "/portal/login",
+      "destination": "/portal/login.html"
     },
     {
-      "source": "/Outreach/dashboard",
-      "destination": "/Outreach/dashboard.html"
+      "source": "/portal/dashboard",
+      "destination": "/portal/dashboard.html"
     },
     {
       "source": "/api/registration/ping",
       "destination": "/api/registration?action=ping"
     },
     {
-      "source": "/Outreach/registration",
-      "destination": "/Outreach/registration.html"
+      "source": "/portal/registration",
+      "destination": "/portal/registration.html"
     },
     {
-      "source": "/Outreach/volunteers",
-      "destination": "/Outreach/volunteers.html"
+      "source": "/portal/volunteers",
+      "destination": "/portal/volunteers.html"
     },
     {
-      "source": "/Outreach/policies",
-      "destination": "/Outreach/policies-admin.html"
+      "source": "/portal/policies",
+      "destination": "/portal/policies-admin.html"
+    },
+    {
+      "source": "/portal",
+      "destination": "/portal/login.html"
     }
   ],
   "redirects": [
@@ -163,6 +167,16 @@
     {
       "source": "/FoodBanks.html",
       "destination": "/FoodBanks",
+      "permanent": true
+    },
+    {
+      "source": "/Outreach",
+      "destination": "/portal",
+      "permanent": true
+    },
+    {
+      "source": "/Outreach/:path*",
+      "destination": "/portal/:path*",
       "permanent": true
     }
   ],

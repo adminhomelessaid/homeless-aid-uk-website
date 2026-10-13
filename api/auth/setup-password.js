@@ -118,7 +118,7 @@ module.exports = async (req, res) => {
         return res.status(200).json({
             success: true,
             message: 'Password set successfully. You can now log in.',
-            redirect: '/Outreach/login.html'
+            redirect: '/portal/login.html'
         });
         
     } catch (error) {

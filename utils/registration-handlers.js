@@ -393,7 +393,7 @@ async function sendResetLink(ctx) {
     const token = require('crypto').randomBytes(32).toString('hex');
     await ctx.db.updateUser(user_id, { password_hash: null, invitation_token: token, invitation_sent_at: ctx.now.toISOString() });
     const origin = ctx.origin || 'https://homelessaid.co.uk';
-    const setup_url = `${origin}/Outreach/setup-password.html?token=${token}`;
+    const setup_url = `${origin}/portal/setup-password.html?token=${token}`;
     const send = ctx.sendInvitation || require('./send-invitation-email').sendInvitationEmail;
     let emailed = false;
     try {

@@ -54,7 +54,7 @@ git push
 
 #### Step 4: Verify JWT Secret is Active
 1. Wait for deployment to complete (2-3 minutes)
-2. Test login at: https://homelessaid.co.uk/Outreach/login.html
+2. Test login at: https://homelessaid.co.uk/portal/login.html
 3. Check Vercel Functions logs for any JWT errors
 4. Confirm authentication still works with BenAdmin account
 
@@ -96,7 +96,7 @@ ROLLBACK;
 ```
 
 #### Step 4: Test Authentication Flow
-1. **Test Login**: https://homelessaid.co.uk/Outreach/login.html
+1. **Test Login**: https://homelessaid.co.uk/portal/login.html
 2. **Test Token Verification**: Check if dashboard loads
 3. **Test Attendance Logging**: Create a test entry
 4. **Test Admin Functions**: If applicable

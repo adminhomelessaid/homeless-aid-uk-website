@@ -4,12 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Log Attendance - Homeless Aid UK</title>
-<link rel="manifest" href="/Outreach/manifest.json">
+<link rel="manifest" href="/portal/manifest.json">
 <meta name="theme-color" content="#1A2332">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<link rel="stylesheet" href="/Outreach/registration.css">
+<link rel="stylesheet" href="/portal/registration.css">
 <style>
   .grid2 { display: grid; gap: 12px; }
   @media (min-width: 900px) { .grid2 { grid-template-columns: 1.1fr 0.9fr; align-items: start; } }
@@ -51,13 +51,13 @@
         </form>
         <div>
           <div class="card today-list"><h3>Logged today</h3><div id="todayList"><p class="muted small">Nothing logged yet today.</p></div></div>
-          <div class="card"><h3>Recent entries</h3><div id="recent"><p class="muted small">Loading…</p></div><a class="btn ghost block sm" href="/Outreach/events-overview.html" style="margin-top:10px">See all attendances</a></div>
+          <div class="card"><h3>Recent entries</h3><div id="recent"><p class="muted small">Loading…</p></div><a class="btn ghost block sm" href="/portal/events-overview.html" style="margin-top:10px">See all attendances</a></div>
         </div>
       </div>
     </main>
   </div>
 </div>
-<script src="/Outreach/registration-shell.js"></script>
+<script src="/portal/registration-shell.js"></script>
 <script>
 const me = Shell.requireAuth();
 if (!Shell.isStaff(me)) { location.replace(Shell.landing(me)); throw new Error('redirecting'); }
@@ -125,7 +125,7 @@ form.addEventListener('submit', async (e) => {
 });
 
 (async () => {
-    try { const m = await Shell.api('me'); if (!m.state.registration_complete) $('#banner').innerHTML = `<div class="banner"><i class="fas fa-triangle-exclamation"></i><div style="flex:1"><b>Your registration is incomplete.</b></div><a class="btn sm" href="/Outreach/registration">Complete now</a></div>`; } catch {}
+    try { const m = await Shell.api('me'); if (!m.state.registration_complete) $('#banner').innerHTML = `<div class="banner"><i class="fas fa-triangle-exclamation"></i><div style="flex:1"><b>Your registration is incomplete.</b></div><a class="btn sm" href="/portal/registration">Complete now</a></div>`; } catch {}
 })();
 loadEvents().catch(e => Shell.toast('Could not load the session list', 'error'));
 loadStats(); loadRecent();

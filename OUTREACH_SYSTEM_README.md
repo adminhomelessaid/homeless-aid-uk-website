@@ -6,13 +6,13 @@ This secure attendance logging system allows designated lead volunteers to log a
 ## System Components
 
 ### 1. Authentication System
-- **Login Page**: `/Outreach/login.html`
+- **Login Page**: `/portal/login.html`
 - **JWT-based authentication** with 4-hour token expiration
 - **Rate limiting**: 5 attempts per 15 minutes
 - **Secure password handling**
 
 ### 2. Attendance Dashboard
-- **Protected Dashboard**: `/Outreach/dashboard.html`
+- **Protected Dashboard**: `/portal/dashboard.html`
 - **Features**:
   - Event selection from existing feed locations
   - Date selection (cannot log future dates)
@@ -83,7 +83,7 @@ git push origin main
 ### For Lead Volunteers
 
 1. **Access the System**
-   - Navigate to: `https://homelessaid.co.uk/Outreach/login.html`
+   - Navigate to: `https://homelessaid.co.uk/portal/login.html`
    - Enter your username and password
    - Click "Sign In"
 
@@ -203,7 +203,7 @@ Name: Test Volunteer
 ```
 
 ### Test Flow
-1. Login at `/Outreach/login.html`
+1. Login at `/portal/login.html`
 2. Submit test attendance entry
 3. View in dashboard
 4. Check admin panel

@@ -4,12 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Volunteers - Homeless Aid UK</title>
-<link rel="manifest" href="/Outreach/manifest.json">
+<link rel="manifest" href="/portal/manifest.json">
 <meta name="theme-color" content="#1A2332">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<link rel="stylesheet" href="/Outreach/registration.css">
+<link rel="stylesheet" href="/portal/registration.css">
 </head>
 <body>
 <div class="app">
@@ -24,10 +24,10 @@
 </div>
 <div class="modal-bg" id="modal"><div class="modal" id="modalBody"></div></div>
 
-<script src="/Outreach/registration-shell.js"></script>
+<script src="/portal/registration-shell.js"></script>
 <script>
 const me = Shell.requireAuth();
-if (!['admin', 'team_lead'].includes(me.role)) location.href = '/Outreach/registration';
+if (!['admin', 'team_lead'].includes(me.role)) location.href = '/portal/registration';
 Shell.renderNav({ active: 'volunteers', user: me });
 const isAdmin = me.role === 'admin';
 const $ = (s) => document.querySelector(s);
@@ -44,7 +44,7 @@ function route() {
 window.addEventListener('hashchange', route);
 
 async function renderList() {
-    setHead('Volunteers', '', isAdmin ? `<button class="btn ghost sm" id="exportBtn"><i class="fas fa-download"></i> Export CSV</button><a class="btn sm" href="/Outreach/admin.html"><i class="fas fa-plus"></i> Invite</a>` : '');
+    setHead('Volunteers', '', isAdmin ? `<button class="btn ghost sm" id="exportBtn"><i class="fas fa-download"></i> Export CSV</button><a class="btn sm" href="/portal/admin.html"><i class="fas fa-plus"></i> Invite</a>` : '');
     if (!listCache) view.innerHTML = '<div class="empty">Loading…</div>';
     let r;
     try { r = await Shell.api('volunteers', { query: filters }); } catch (err) { view.innerHTML = `<div class="empty">${Shell.escape(err.message)}</div>`; return; }

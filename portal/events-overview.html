@@ -4,12 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Attendances - Homeless Aid UK</title>
-<link rel="manifest" href="/Outreach/manifest.json">
+<link rel="manifest" href="/portal/manifest.json">
 <meta name="theme-color" content="#1A2332">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<link rel="stylesheet" href="/Outreach/registration.css">
+<link rel="stylesheet" href="/portal/registration.css">
 <style>
   .filters { display: grid; gap: 8px; grid-template-columns: 1fr 1fr; margin-bottom: 12px; }
   @media (min-width: 900px) { .filters { grid-template-columns: 2fr 1fr 1fr 1fr auto; align-items: end; } }
@@ -29,7 +29,7 @@
   <div style="flex:1;min-width:0;display:flex;flex-direction:column">
     <header class="topbar" style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
       <div><h1>Attendances</h1><p id="subtitle">Every logged session</p></div>
-      <div class="actions"><a class="btn sm" href="/Outreach/dashboard.html"><i class="fas fa-plus"></i> Log attendance</a><button class="btn ghost sm" id="csvBtn"><i class="fas fa-download"></i> CSV</button></div>
+      <div class="actions"><a class="btn sm" href="/portal/dashboard.html"><i class="fas fa-plus"></i> Log attendance</a><button class="btn ghost sm" id="csvBtn"><i class="fas fa-download"></i> CSV</button></div>
     </header>
     <main class="main">
       <div class="kpis">
@@ -57,7 +57,7 @@
     </main>
   </div>
 </div>
-<script src="/Outreach/registration-shell.js"></script>
+<script src="/portal/registration-shell.js"></script>
 <script>
 const me = Shell.requireAuth();
 if (!Shell.isStaff(me)) { location.replace(Shell.landing(me)); throw new Error('redirecting'); }

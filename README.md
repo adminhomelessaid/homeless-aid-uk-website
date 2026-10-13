@@ -4,7 +4,7 @@ A comprehensive website for Homeless Aid UK, featuring public information pages 
 
 ## 🌐 Live Website
 - **Main Site**: https://www.homelessaid.co.uk
-- **Outreach Portal**: https://www.homelessaid.co.uk/Outreach/login.html
+- **Outreach Portal**: https://www.homelessaid.co.uk/portal/login.html
 
 ## 📋 Project Overview
 
@@ -22,7 +22,7 @@ Secure volunteer management system with:
 - User management (Admin only)
 
 ### Volunteer Registration
-Volunteers complete their details, upload a photo and sign all policies with one signature at `/Outreach/registration`. Team Leads and Admins see everyone at `/Outreach/volunteers`; Admins edit policies at `/Outreach/policies`. Signatures expire after 12 months or when any policy changes. See `docs/superpowers/specs/2026-10-13-volunteer-registration-design.md`. Run `npm test` for the unit tests and `npm run dev` for a local server (needs `.env`).
+Volunteers complete their details, upload a photo and sign all policies with one signature at `/portal/registration`. Team Leads and Admins see everyone at `/portal/volunteers`; Admins edit policies at `/portal/policies`. Signatures expire after 12 months or when any policy changes. See `docs/superpowers/specs/2026-10-13-volunteer-registration-design.md`. Run `npm test` for the unit tests and `npm run dev` for a local server (needs `.env`).
 
 ## 🔐 Authentication System
 

@@ -20,7 +20,7 @@ Complete user authentication system implemented for the Outreach portal with rol
 - **logout.js & verify.js**: Session management
 
 ### 3. Frontend Pages
-**Location**: `/Outreach/`
+**Location**: `/portal/`
 - **login.html**: Professional login interface with JWT authentication
 - **setup-password.html**: Password setup page with real-time validation
 - **dashboard.html**: Main Outreach portal (existing)
@@ -62,7 +62,7 @@ JWT_SECRET=-.]9KLLv:SpUf[P9-DNmpk%@F7nMSi!r
 ### ✅ Working Components
 - **Database schema**: Fully implemented and deployed
 - **Admin user**: Created (BenAdmin) with hashed password
-- **Login page**: Accessible at `/Outreach/login.html`
+- **Login page**: Accessible at `/portal/login.html`
 - **Authentication APIs**: Deployed and configured
 - **Password hashing**: bcrypt with proper security
 
@@ -87,7 +87,7 @@ JWT_SECRET=-.]9KLLv:SpUf[P9-DNmpk%@F7nMSi!r
 4. Redeploy the project
 
 ### Test Authentication Flow
-1. **Test login**: https://www.homelessaid.co.uk/Outreach/login.html
+1. **Test login**: https://www.homelessaid.co.uk/portal/login.html
    - Username: `BenAdmin`
    - Password: `BenAdmin123!`
 

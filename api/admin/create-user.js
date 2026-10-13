@@ -188,7 +188,7 @@ module.exports = async (req, res) => {
         
         // Send invitation email
         try {
-            const invitationUrl = `${req.headers.origin || 'https://homelessaid.co.uk'}/Outreach/setup-password.html?token=${invitationToken}`;
+            const invitationUrl = `${req.headers.origin || 'https://homelessaid.co.uk'}/portal/setup-password.html?token=${invitationToken}`;
             
             const emailResult = await sendInvitationEmail({
                 to: createdUser.email,

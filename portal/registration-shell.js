@@ -1,5 +1,5 @@
 (function () {
-    const LOGIN = '/Outreach/login.html';
+    const LOGIN = '/portal/login.html';
     const TOKEN_KEYS = ['outreachToken', 'outreach_token'];
 
     function getToken() { return TOKEN_KEYS.map(k => localStorage.getItem(k)).find(Boolean) || null; }
@@ -75,19 +75,19 @@
     function navItems(user) {
         return [
             ...(isStaff(user) ? [
-                { key: 'volunteers', href: '/Outreach/volunteers', icon: 'fa-users', label: 'Volunteers' },
-                { key: 'log', href: '/Outreach/dashboard.html', icon: 'fa-clipboard-check', label: 'Log attendance' },
-                { key: 'attendances', href: '/Outreach/events-overview.html', icon: 'fa-list-check', label: 'Attendances' }
+                { key: 'volunteers', href: '/portal/volunteers', icon: 'fa-users', label: 'Volunteers' },
+                { key: 'log', href: '/portal/dashboard.html', icon: 'fa-clipboard-check', label: 'Log attendance' },
+                { key: 'attendances', href: '/portal/events-overview.html', icon: 'fa-list-check', label: 'Attendances' }
             ] : []),
-            { key: 'registration', href: '/Outreach/registration', icon: 'fa-user-check', label: 'My registration' },
-            { key: 'policies', href: '/Outreach/registration#policies', icon: 'fa-file-signature', label: 'Policies' },
-            ...(user.role === 'admin' ? [{ key: 'users', href: '/Outreach/admin.html', icon: 'fa-user-gear', label: 'Users' }] : []),
-            ...(user.role === 'admin' ? [{ key: 'policies-admin', href: '/Outreach/policies', icon: 'fa-pen-to-square', label: 'Edit policies' }] : []),
-            { key: 'account', href: '/Outreach/account.html', icon: 'fa-circle-user', label: 'Account' }
+            { key: 'registration', href: '/portal/registration', icon: 'fa-user-check', label: 'My registration' },
+            { key: 'policies', href: '/portal/registration#policies', icon: 'fa-file-signature', label: 'Policies' },
+            ...(user.role === 'admin' ? [{ key: 'users', href: '/portal/admin.html', icon: 'fa-user-gear', label: 'Users' }] : []),
+            ...(user.role === 'admin' ? [{ key: 'policies-admin', href: '/portal/policies', icon: 'fa-pen-to-square', label: 'Edit policies' }] : []),
+            { key: 'account', href: '/portal/account.html', icon: 'fa-circle-user', label: 'Account' }
         ];
     }
     // Where a user goes after login: staff to Volunteers, everyone else to My Registration.
-    function landing(user) { return isStaff(user) ? '/Outreach/volunteers' : '/Outreach/registration'; }
+    function landing(user) { return isStaff(user) ? '/portal/volunteers' : '/portal/registration'; }
     // Generic call for the older endpoints (auth, admin, attendance): same token handling as api().
     async function call(path, { method = 'GET', body } = {}) {
         const res = await fetch(path, {
