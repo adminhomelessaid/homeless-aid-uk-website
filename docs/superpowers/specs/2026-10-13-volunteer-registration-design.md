@@ -10,7 +10,7 @@ Homeless Aid UK needs a simple, auditable record of each volunteer and
 confirmation that they have read and agreed to the organisation's policies.
 This is not a full volunteer management system. It covers:
 
-- Volunteer details: full name, date of birth, next of kin name and phone.
+- Volunteer details: full name, date of birth, mobile number, team, next of kin name and phone.
 - A profile photo, which admins download to produce ID cards offline.
 - A list of policies that volunteers can read in the portal.
 - One signature per volunteer that covers all current policies, valid for
@@ -60,6 +60,8 @@ block or delete their own account.
 | `date_of_birth` | date | nullable |
 | `next_of_kin_name` | varchar(100) | nullable |
 | `next_of_kin_phone` | varchar(30) | nullable |
+| `mobile_phone` | varchar(30) | nullable |
+| `team` | varchar(60) | nullable. Dropdown: Bolton, Manchester, Bury, Liverpool, Wigan, Oldham, Glasgow, Leigh, Other. List lives in one constant in the shell script |
 | `photo_data` | text | base64 JPEG, 400x400 max, nullable |
 | `photo_updated_at` | timestamptz | nullable |
 | `volunteer_number` | integer | generated once, unique, for display |
@@ -112,7 +114,7 @@ One row per signing event.
 
 For a volunteer:
 
-- `details_complete`: date of birth, next of kin name and phone all present.
+- `details_complete`: date of birth, mobile number, team, next of kin name and phone all present.
 - `photo_complete`: `photo_data` present.
 - `signature_status`, one of:
   - `signed`: latest signature exists, `expires_at` is in the future, and
@@ -139,7 +141,7 @@ The existing `api/send-invitation-email.js` moves to
 | Action | Method | Purpose |
 |---|---|---|
 | `me` | GET | Own profile, photo flag, registration state, policy list with status |
-| `update-me` | POST | Update date of birth, next of kin name and phone |
+| `update-me` | POST | Update date of birth, mobile number, team, next of kin name and phone |
 | `upload-photo` | POST | Body is `{ photo: "<base64 jpeg>" }`. Rejects over 300 KB, non-JPEG, or non-square |
 | `delete-photo` | POST | Clears own photo |
 | `policies` | GET | Active policies with current version id, title, updated date, body |
@@ -185,7 +187,7 @@ Routes by hash so it is one file:
 - `#home`: greeting, progress bar, three step cards (details, photo,
   policies) with done or to-do state, one primary Continue button for the next
   incomplete step.
-- `#details`: form for date of birth, next of kin name, next of kin phone.
+- `#details`: form for date of birth, mobile number, team (dropdown), next of kin name, next of kin phone.
 - `#photo`: pick or take a photo, client-side crop to square and resize to
   400x400 JPEG at quality 0.85, preview, upload.
 - `#policies`: list of active policies. Tapping one opens it full screen with
