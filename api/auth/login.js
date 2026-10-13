@@ -27,9 +27,8 @@ module.exports = async (req, res) => {
             // Find user in database
             const { data: user, error } = await supabase
                 .from('outreach_users')
-                .select('id, username, email, full_name, password_hash, role, is_active')
-                .ilike('username', String(username).trim().replace(/[%_\\]/g, '\\$&')) // case-insensitive exact match, wildcards escaped
-                .eq('is_active', true)
+                .select('*') // server-side only; tolerates the approval columns not existing yet
+                .ilike(String(username).includes('@') ? 'email' : 'username', String(username).trim().replace(/[%_\\]/g, '\\$&')) // email or username, case-insensitive, wildcards escaped
                 .single();
             
             if (error || !user || !user.password_hash) {
@@ -41,6 +40,12 @@ module.exports = async (req, res) => {
             
             if (!isValidPassword) {
                 return res.status(401).json({ success: false, message: 'Invalid credentials' });
+            }
+            if (user.approval_status === 'pending') {
+                return res.status(403).json({ success: false, message: 'Your sign-up is waiting for approval by a team lead. You will get an email when it is approved.' });
+            }
+            if (!user.is_active) {
+                return res.status(403).json({ success: false, message: 'This account is blocked. Please contact an administrator.' });
             }
             
             // Generate JWT for database user

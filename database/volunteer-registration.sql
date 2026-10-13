@@ -78,3 +78,17 @@ ALTER TABLE policy_signatures DISABLE ROW LEVEL SECURITY;
 
 -- 6. Teams are a comma-separated list now, which can exceed 60 characters
 ALTER TABLE outreach_users ALTER COLUMN team TYPE text;
+
+-- 7. Self sign-up with approval
+ALTER TABLE outreach_users
+  ADD COLUMN IF NOT EXISTS approval_status varchar(20) NOT NULL DEFAULT 'approved',
+  ADD COLUMN IF NOT EXISTS approved_by uuid REFERENCES outreach_users(id) ON DELETE SET NULL,
+  ADD COLUMN IF NOT EXISTS approved_at timestamptz;
+CREATE INDEX IF NOT EXISTS idx_outreach_users_approval ON outreach_users(approval_status);
+
+-- 7. Self sign-up with approval
+ALTER TABLE outreach_users
+  ADD COLUMN IF NOT EXISTS approval_status varchar(20) NOT NULL DEFAULT 'approved',
+  ADD COLUMN IF NOT EXISTS approved_by uuid REFERENCES outreach_users(id) ON DELETE SET NULL,
+  ADD COLUMN IF NOT EXISTS approved_at timestamptz;
+CREATE INDEX IF NOT EXISTS idx_outreach_users_approval ON outreach_users(approval_status);

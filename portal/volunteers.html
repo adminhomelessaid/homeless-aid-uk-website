@@ -55,6 +55,7 @@ async function renderList() {
     const rowDesc = (v) => `${Shell.roleLabel(v.role)}${v.team ? ' · ' + Shell.escape(v.team) : ''}`;
     const progBar = (s) => { const n = [s.details_complete, s.photo_complete, s.signature_status === 'signed'].filter(Boolean).length; return `<span title="${n}/3 steps" style="display:inline-flex;gap:3px">${[0, 1, 2].map(i => `<i style="width:16px;height:6px;border-radius:3px;background:${i < n ? '#48BB78' : '#E2E8F0'};display:inline-block"></i>`).join('')}</span>`; };
     view.innerHTML = `
+      <div id="pendingStrip"></div>
       <div class="kpis">
         <div class="kpi" data-status=""><div class="l">Total</div><div class="v">${c.total}</div></div>
         <div class="kpi" data-status="complete"><div class="l">Fully registered</div><div class="v ok">${c.complete}</div></div>
@@ -68,10 +69,38 @@ async function renderList() {
       <table class="table"><thead><tr><th>Volunteer</th><th>Role</th><th>Team</th><th>Registration</th><th>Policies</th><th>Status</th></tr></thead><tbody>
         ${r.volunteers.map(v => `<tr data-id="${v.id}" style="${v.is_active ? '' : 'opacity:.55'}"><td><div class="person"><span class="avatar">${Shell.escape(Shell.initials(v.full_name))}</span><div><b>${Shell.escape(v.full_name)}</b><small>${Shell.escape(v.email)}</small></div></div></td><td>${Shell.roleLabel(v.role)}</td><td>${Shell.escape(v.team || '—')}</td><td>${progBar(v.state)}</td><td>${Shell.statusChip(v.state)}</td><td>${v.is_active ? '<span class="st ok">Active</span>' : '<span class="st bad">Blocked</span>'}</td></tr>`).join('')}
       </tbody></table>`;
+    renderPending();
     let t; $('#search').addEventListener('input', (e) => { clearTimeout(t); t = setTimeout(() => { filters.q = e.target.value.trim(); renderList(); }, 250); });
     view.querySelectorAll('[data-status]').forEach(el => el.addEventListener('click', () => { filters.status = el.dataset.status; renderList(); }));
     view.querySelectorAll('tr[data-id]').forEach(tr => tr.addEventListener('click', () => { location.hash = `#volunteer/${tr.dataset.id}`; }));
     const ex = $('#exportBtn'); if (ex) ex.onclick = () => Shell.download('export', {}, `volunteers-${new Date().toISOString().slice(0, 10)}.csv`).catch(e => Shell.toast(e.message, 'error'));
+}
+
+// Sign-ups waiting for approval: team leads see their own teams, admins see everyone.
+async function renderPending() {
+    const host = $('#pendingStrip'); if (!host) return;
+    let pending = [];
+    try { pending = (await Shell.api('pending-signups')).pending; } catch (err) { host.innerHTML = ''; return; }
+    if (pending.length === 0) { host.innerHTML = ''; return; }
+    host.innerHTML = `<div class="card" style="background:var(--warn-bg);border-color:#F6AD55">
+      <h3 style="color:var(--warn)"><i class="fas fa-user-clock"></i> ${pending.length} sign-up${pending.length === 1 ? '' : 's'} waiting for approval</h3>
+      ${pending.map(p => `<div style="display:flex;gap:12px;align-items:center;padding:10px 0;border-top:1px solid #FBD38D;flex-wrap:wrap">
+        <span class="avatar">${Shell.escape(Shell.initials(p.full_name))}</span>
+        <div style="flex:1;min-width:160px"><b>${Shell.escape(p.full_name)}</b><br><span class="small muted">${Shell.escape(p.email)} · ${Shell.escape(p.team || '')} · signed up ${Shell.fmtDate(p.created_at)}</span></div>
+        <div class="actions"><button class="btn sm" data-approve="${Shell.escape(p.id)}"><i class="fas fa-check"></i> Approve</button><button class="btn ghost sm" data-reject="${Shell.escape(p.id)}">Reject</button></div>
+      </div>`).join('')}</div>`;
+    host.querySelectorAll('[data-approve]').forEach(b => b.onclick = async () => {
+        b.disabled = true;
+        try { const r = await Shell.api('approve-signup', { method: 'POST', body: { user_id: b.dataset.approve } }); Shell.toast(r.emailed ? 'Approved and emailed' : 'Approved. Email could not be sent, so let them know.'); listCache = null; renderList(); }
+        catch (err) { Shell.toast(err.message, 'error'); b.disabled = false; }
+    });
+    host.querySelectorAll('[data-reject]').forEach(b => b.onclick = async () => {
+        const p = pending.find(x => x.id === b.dataset.reject);
+        if (!window.confirm(`Reject ${p.full_name}'s sign-up? This removes it; they can sign up again.`)) return;
+        b.disabled = true;
+        try { await Shell.api('reject-signup', { method: 'POST', body: { user_id: b.dataset.reject } }); Shell.toast('Sign-up rejected'); renderPending(); }
+        catch (err) { Shell.toast(err.message, 'error'); b.disabled = false; }
+    });
 }
 
 async function renderRecord(id) {

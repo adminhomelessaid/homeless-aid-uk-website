@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Volunteer Portal - Homeless Aid UK</title>
+<link rel="manifest" href="/portal/manifest.json">
+<meta name="theme-color" content="#1A2332">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="/portal/registration.css">
+<style>
+  body { background: var(--navy); }
+  .auth { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px 16px; }
+  .auth .logo { width: 72px; height: 72px; border-radius: 18px; background: #fff; padding: 6px; margin-bottom: 14px; }
+  .auth h1 { color: #fff; font-size: 22px; margin-bottom: 4px; }
+  .auth .sub { color: #a0aec0; font-size: 14px; margin: 0 0 18px; text-align: center; }
+  .auth .card { width: 100%; max-width: 420px; padding: 18px 20px 22px; margin: 0; }
+  .tabs { display: flex; background: var(--mute-bg); border-radius: 12px; padding: 4px; margin-bottom: 16px; }
+  .tabs button { flex: 1; border: 0; background: transparent; padding: 10px; border-radius: 9px; font: inherit; font-weight: 700; color: var(--muted); cursor: pointer; }
+  .tabs button.on { background: #fff; color: var(--navy); box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+  .pw { position: relative; } .pw .input { padding-right: 44px; }
+  .pw button { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: none; border: 0; color: var(--muted); font-size: 16px; cursor: pointer; padding: 8px; }
+  .msg { border-radius: 12px; padding: 10px 12px; font-size: 14px; margin-bottom: 12px; display: none; }
+  .msg.err { background: var(--bad-bg); color: var(--bad); border: 1px solid #FEB2B2; }
+  .msg.ok { background: var(--ok-bg); color: var(--ok); border: 1px solid #9AE6B4; }
+  .rules { list-style: none; padding: 0; margin: -6px 0 12px; font-size: 12px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 4px 12px; }
+  .rules li.ok { color: var(--ok); }
+  .foot { color: #a0aec0; font-size: 13px; margin-top: 18px; text-align: center; line-height: 1.6; } .foot a { color: #cbd5e0; }
+  .hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+  .done { text-align: center; padding: 10px 0; } .done .ic { width: 56px; height: 56px; border-radius: 50%; background: var(--ok-bg); color: var(--ok); display: inline-flex; align-items: center; justify-content: center; font-size: 24px; margin-bottom: 10px; }
+</style>
+</head>
+<body>
+<main class="auth">
+  <img class="logo" src="/Branding/HomelessAidUKLogo.png" alt="Homeless Aid UK">
+  <h1>Volunteer Portal</h1>
+  <p class="sub">Sign in, or sign up to join the team</p>
+  <div class="card">
+    <div class="tabs" role="tablist"><button type="button" class="on" data-tab="in">Sign in</button><button type="button" data-tab="up">Sign up</button></div>
+
+    <form id="loginForm" novalidate>
+      <div class="msg err" id="loginErr" role="alert"></div>
+      <label class="field"><span>Email or username</span><input class="input" name="username" autocomplete="username" autocapitalize="none" spellcheck="false" required></label>
+      <label class="field"><span>Password</span><div class="pw"><input class="input" name="password" type="password" autocomplete="current-password" required><button type="button" data-eye aria-label="Show password"><i class="fas fa-eye"></i></button></div></label>
+      <button class="btn block" type="submit"><i class="fas fa-right-to-bracket"></i> Sign in</button>
+      <p class="small muted" style="text-align:center;margin:12px 0 0">Forgotten your password? Ask a team lead or admin for a reset link.</p>
+    </form>
+
+    <form id="signupForm" class="hidden" novalidate>
+      <div class="msg err" id="signupErr" role="alert"></div>
+      <label class="field"><span>Full name</span><input class="input" name="full_name" autocomplete="name" required maxlength="100"></label>
+      <label class="field"><span>Email address</span><input class="input" type="email" name="email" autocomplete="email" required></label>
+      <div class="field"><span>Which team(s) will you help with?</span><div class="chips" id="teamChips" style="flex-wrap:wrap"></div></div>
+      <label class="field"><span>Choose a password</span><div class="pw"><input class="input" name="password" type="password" autocomplete="new-password" required><button type="button" data-eye aria-label="Show password"><i class="fas fa-eye"></i></button></div></label>
+      <ul class="rules"><li data-rule="len">8+ characters</li><li data-rule="upper">Uppercase</li><li data-rule="lower">Lowercase</li><li data-rule="num">Number</li><li data-rule="sym">Symbol</li></ul>
+      <label class="hp" aria-hidden="true">Website<input name="website" tabindex="-1" autocomplete="off"></label>
+      <button class="btn block" type="submit"><i class="fas fa-user-plus"></i> Sign up</button>
+      <p class="small muted" style="text-align:center;margin:12px 0 0">A team lead will approve your sign-up. You'll get an email when you're in.</p>
+    </form>
+
+    <div id="signupDone" class="done hidden">
+      <div class="ic"><i class="fas fa-check"></i></div>
+      <h2>Thanks, you're nearly in</h2>
+      <p class="small muted">A team lead will approve your sign-up, usually within a day or two. We'll email <b id="doneEmail"></b> when you can sign in.</p>
+      <button class="btn ghost block" type="button" id="backToLogin" style="margin-top:12px">Back to sign in</button>
+    </div>
+  </div>
+  <p class="foot"><a href="/">Back to homelessaid.co.uk</a></p>
+</main>
+<script src="/portal/registration-shell.js"></script>
+<script>
+const TEAMS = ['Bolton', 'Manchester', 'Bury', 'Liverpool', 'Wigan', 'Oldham', 'Glasgow', 'Other'];
+const existing = Shell.currentUser();
+if (existing) location.replace(Shell.landing(existing));
+const $ = (s) => document.querySelector(s);
+const loginForm = $('#loginForm'), signupForm = $('#signupForm');
+const show = (el, msg) => { el.textContent = msg; el.style.display = 'block'; };
+const hide = (el) => { el.style.display = 'none'; };
+
+document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => switchTab(b.dataset.tab));
+function switchTab(tab) {
+    document.querySelectorAll('.tabs button').forEach(x => x.classList.toggle('on', x.dataset.tab === tab));
+    loginForm.classList.toggle('hidden', tab !== 'in'); signupForm.classList.toggle('hidden', tab !== 'up'); $('#signupDone').classList.add('hidden');
+    history.replaceState(null, '', tab === 'up' ? '#signup' : '#');
+}
+if (location.hash === '#signup') switchTab('up');
+document.querySelectorAll('[data-eye]').forEach(b => b.onclick = () => { const i = b.parentElement.querySelector('input'); i.type = i.type === 'password' ? 'text' : 'password'; });
+
+$('#teamChips').innerHTML = TEAMS.map(t => `<label class="chip" style="user-select:none"><input type="checkbox" name="team" value="${t}" style="display:none">${t}</label>`).join('');
+$('#teamChips').querySelectorAll('input').forEach(cb => cb.addEventListener('change', () => cb.parentElement.classList.toggle('on', cb.checked)));
+
+const checks = { len: p => p.length >= 8, upper: p => /[A-Z]/.test(p), lower: p => /[a-z]/.test(p), num: p => /[0-9]/.test(p), sym: p => /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(p) };
+signupForm.password.addEventListener('input', () => { for (const [k, fn] of Object.entries(checks)) signupForm.querySelector(`[data-rule="${k}"]`).classList.toggle('ok', fn(signupForm.password.value)); });
+
+loginForm.addEventListener('submit', async (e) => {
+    e.preventDefault(); hide($('#loginErr'));
+    const btn = loginForm.querySelector('button[type=submit]'); btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>';
+    try {
+        const res = await fetch('/api/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: loginForm.username.value.trim(), password: loginForm.password.value }) });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok || !data.success || !data.token) throw new Error(data.message || 'Sign in failed');
+        Shell.storeSession(data.token, data.user);
+        location.replace(Shell.landing(data.user));
+    } catch (ex) {
+        show($('#loginErr'), ex.message === 'Failed to fetch' ? 'Could not reach the server. Check your connection and try again.' : ex.message);
+        btn.disabled = false; btn.innerHTML = '<i class="fas fa-right-to-bracket"></i> Sign in';
+    }
+});
+
+signupForm.addEventListener('submit', async (e) => {
+    e.preventDefault(); hide($('#signupErr'));
+    const teams = [...signupForm.querySelectorAll('input[name=team]:checked')].map(i => i.value);
+    if (!signupForm.full_name.value.trim()) return show($('#signupErr'), 'Please enter your full name');
+    if (!signupForm.email.value.trim()) return show($('#signupErr'), 'Please enter your email address');
+    if (teams.length === 0) return show($('#signupErr'), 'Pick at least one team');
+    if (!Object.values(checks).every(fn => fn(signupForm.password.value))) return show($('#signupErr'), 'Your password needs 8+ characters with uppercase, lowercase, a number and a symbol');
+    const btn = signupForm.querySelector('button[type=submit]'); btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>';
+    try {
+        const res = await fetch('/api/registration?action=signup', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ full_name: signupForm.full_name.value.trim(), email: signupForm.email.value.trim(), team: teams, password: signupForm.password.value, website: signupForm.website.value }) });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok || !data.success) throw new Error(data.message || 'Sign up failed');
+        $('#doneEmail').textContent = signupForm.email.value.trim();
+        signupForm.classList.add('hidden'); $('#signupDone').classList.remove('hidden'); signupForm.reset();
+        signupForm.querySelectorAll('.chip').forEach(c => c.classList.remove('on'));
+    } catch (ex) { show($('#signupErr'), ex.message); }
+    finally { btn.disabled = false; btn.innerHTML = '<i class="fas fa-user-plus"></i> Sign up'; }
+});
+$('#backToLogin').onclick = () => switchTab('in');
+</script>
+</body>
+</html>

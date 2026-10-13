@@ -29,6 +29,12 @@ function createFakeDb(seed = {}) {
         },
         async listUsers() { return [...users.values()].map(u => publicUser(u, false)); },
         async deleteUser(id) { this.calls.push(['deleteUser', id]); users.delete(id); },
+        async findUserByEmail(email) { const e = String(email).toLowerCase(); return publicUser([...users.values()].find(u => String(u.email).toLowerCase() === e), false); },
+        async findUserByUsername(username) { const n = String(username).toLowerCase(); return publicUser([...users.values()].find(u => String(u.username).toLowerCase() === n), false); },
+        async insertUser(fields) {
+            const row = { id: nextId(), created_at: new Date().toISOString(), volunteer_number: users.size + 1, ...fields };
+            users.set(row.id, row); return publicUser(row, false);
+        },
         async listActivePolicies() { return sortPolicies([...policies.values()].filter(p => p.is_active).map(withVersion)); },
         async listAllPolicies() { return sortPolicies([...policies.values()].map(withVersion)); },
         async getPolicyById(id) { const p = policies.get(id); return p ? withVersion(p) : null; },

@@ -188,4 +188,21 @@ The invitation will expire automatically in 7 days.
     return { success: false, message: 'Failed to send invitation email' };
 }
 
-module.exports = { sendInvitationEmail };
+async function sendApprovalEmail({ to, name, loginUrl, approvedBy }) {
+    if (!to || !loginUrl) return { success: false, message: 'Missing required fields' };
+    const subject = 'Your Homeless Aid UK volunteer account is approved';
+    const text = `Hello ${name || ''},\n\nYour sign-up has been approved${approvedBy ? ' by ' + approvedBy : ''}. You can now sign in with your email address and the password you chose:\n${loginUrl}\n\nOnce in, please complete your registration: your details, a photo, and the policies to read and sign.\n\nThank you for volunteering with Homeless Aid UK.`;
+    const html = `<p>Hello ${name || ''},</p><p>Your sign-up has been approved${approvedBy ? ' by ' + approvedBy : ''}. You can now sign in with your email address and the password you chose:</p><p><a href="${loginUrl}" style="display:inline-block;background:#1A2332;color:#fff;padding:12px 18px;border-radius:10px;text-decoration:none;font-weight:600">Sign in to the volunteer portal</a></p><p>Once in, please complete your registration: your details, a photo, and the policies to read and sign.</p><p>Thank you for volunteering with Homeless Aid UK.</p>`;
+    try {
+        const res = await fetch('https://api.resend.com/emails', {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${process.env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ from: 'Homeless Aid UK <noreply@homelessaid.co.uk>', to: [to], subject, html, text })
+        });
+        if (res.ok) return { success: true, provider: 'resend' };
+        console.error('Resend responded', res.status);
+    } catch (e) { console.error('Resend API error:', e); }
+    return { success: false, message: 'Failed to send approval email' };
+}
+
+module.exports = { sendInvitationEmail, sendApprovalEmail };
