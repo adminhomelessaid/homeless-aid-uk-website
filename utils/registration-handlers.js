@@ -371,4 +371,28 @@ async function dispatch(action, ctx) {
     return handler(ctx);
 }
 
+// Admin: put an account back into "set your password" state and email a fresh link.
+// Used for forgotten passwords; the old invitation flow refuses accounts that already have a password.
+async function sendResetLink(ctx) {
+    const m = requirePost(ctx); if (m) return m;
+    const r = requireRole(ctx, ['admin']); if (r) return r;
+    const { user_id } = ctx.body || {};
+    if (!user_id) return fail(400, 'user_id is required');
+    if (user_id === ctx.user.id) return fail(400, 'Use the Account page to change your own password');
+    const target = await ctx.db.getUserById(user_id);
+    if (!target) return fail(404, 'User not found');
+    const token = require('crypto').randomBytes(32).toString('hex');
+    await ctx.db.updateUser(user_id, { password_hash: null, invitation_token: token, invitation_sent_at: ctx.now.toISOString() });
+    const origin = ctx.origin || 'https://homelessaid.co.uk';
+    const setup_url = `${origin}/Outreach/setup-password.html?token=${token}`;
+    const send = ctx.sendInvitation || require('./send-invitation-email').sendInvitationEmail;
+    let emailed = false;
+    try {
+        const res = await send({ to: target.email, name: target.full_name, username: target.username, role: target.role, invitationUrl: setup_url, invitedBy: ctx.user.name });
+        emailed = Boolean(res && res.success);
+    } catch (e) { console.error('Reset email failed:', e); }
+    return ok({ emailed, setup_url: emailed ? undefined : setup_url });
+}
+handlers['send-reset-link'] = sendResetLink;
+
 module.exports = { handlers, dispatch, resolveAction, TEAMS, ROLES, ok, fail, requirePost, requireRole, policySummary, stateFor, validateDetails, normaliseName, addMonths, sanitizeHtml, validatePhoto };

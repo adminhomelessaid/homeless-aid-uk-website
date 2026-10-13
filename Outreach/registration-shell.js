@@ -56,13 +56,9 @@
     }
     function logout() { clearAuth(); location.href = LOGIN; }
     function renderNav({ active, user }) {
-        const items = [
-            { key: 'registration', href: '/Outreach/registration', icon: 'fa-user-check', label: 'My registration' },
-            { key: 'policies', href: '/Outreach/registration#policies', icon: 'fa-file-signature', label: 'Policies' },
-            ...(['admin', 'team_lead'].includes(user.role) ? [{ key: 'volunteers', href: '/Outreach/volunteers', icon: 'fa-users', label: 'Volunteers' }] : []),
-            ...(user.role === 'admin' ? [{ key: 'policies-admin', href: '/Outreach/policies', icon: 'fa-pen-to-square', label: 'Edit policies' }] : []),
-            { key: 'dashboard', href: '/Outreach/dashboard.html', icon: 'fa-clipboard-list', label: 'Attendance' }
-        ];
+        const items = navItems(user);
+        // Phone tab bar: the first three role-appropriate items plus Account, which links to the rest.
+        const tabs = [...items.filter(i => i.key !== 'account').slice(0, 3), items.find(i => i.key === 'account')];
         const link = (i, cls) => `<a class="${cls}${i.key === active ? ' on' : ''}" href="${i.href}"><i class="fas ${i.icon}"></i><span>${i.label}</span></a>`;
         const host = document.getElementById('shellNav'); if (!host) return;
         host.innerHTML = `
@@ -72,8 +68,41 @@
             <div class="me"><span class="avatar">${escape(initials(user.name))}</span><div>${escape(user.name)}<small>${escape(roleLabel(user.role))}</small></div></div>
             <a class="logout" href="#" data-logout><i class="fas fa-right-from-bracket"></i> Log out</a>
           </nav>
-          <nav class="tabbar">${items.slice(0, 4).map(i => link(i, '')).join('')}</nav>`;
+          <nav class="tabbar">${tabs.map(i => link(i, '')).join('')}</nav>`;
         host.querySelector('[data-logout]').addEventListener('click', (e) => { e.preventDefault(); logout(); });
     }
-    window.Shell = { requireAuth, api, apiUrl, download, renderNav, toast, logout, fmtDate, statusChip, escape, initials, roleLabel, getToken };
+    function isStaff(user) { return ['admin', 'team_lead'].includes(user && user.role); }
+    function navItems(user) {
+        return [
+            ...(isStaff(user) ? [{ key: 'volunteers', href: '/Outreach/volunteers', icon: 'fa-users', label: 'Volunteers' }] : []),
+            { key: 'log', href: '/Outreach/dashboard.html', icon: 'fa-clipboard-check', label: 'Log attendance' },
+            { key: 'attendances', href: '/Outreach/events-overview.html', icon: 'fa-list-check', label: 'Attendances' },
+            { key: 'registration', href: '/Outreach/registration', icon: 'fa-user-check', label: 'My registration' },
+            { key: 'policies', href: '/Outreach/registration#policies', icon: 'fa-file-signature', label: 'Policies' },
+            ...(user.role === 'admin' ? [{ key: 'users', href: '/Outreach/admin.html', icon: 'fa-user-gear', label: 'Users' }] : []),
+            ...(user.role === 'admin' ? [{ key: 'policies-admin', href: '/Outreach/policies', icon: 'fa-pen-to-square', label: 'Edit policies' }] : []),
+            { key: 'account', href: '/Outreach/account.html', icon: 'fa-circle-user', label: 'Account' }
+        ];
+    }
+    // Where a user goes after login: staff to Volunteers, everyone else to My Registration.
+    function landing(user) { return isStaff(user) ? '/Outreach/volunteers' : '/Outreach/registration'; }
+    // Generic call for the older endpoints (auth, admin, attendance): same token handling as api().
+    async function call(path, { method = 'GET', body } = {}) {
+        const res = await fetch(path, {
+            method, headers: { 'Authorization': `Bearer ${getToken()}`, ...(body ? { 'Content-Type': 'application/json' } : {}) },
+            body: body ? JSON.stringify(body) : undefined
+        });
+        let data = {};
+        try { data = await res.json(); } catch { /* non-json */ }
+        if (res.status === 401) { clearAuth(); location.href = LOGIN; throw new Error('Session expired'); }
+        if (!res.ok || data.success === false) { const e = new Error(data.message || `Request failed (${res.status})`); e.status = res.status; e.data = data; throw e; }
+        return data;
+    }
+    function storeSession(token, user) {
+        localStorage.setItem('outreachToken', token);
+        localStorage.setItem('outreach_token', token);
+        localStorage.setItem('outreach_user', JSON.stringify(user || {}));
+    }
+    function currentUser() { const t = getToken(); const p = t && decode(t); return p && p.id && (!p.exp || p.exp * 1000 > Date.now()) ? { id: p.id, role: p.role, name: p.name, username: p.username, email: p.email } : null; }
+    window.Shell = { requireAuth, api, apiUrl, download, renderNav, toast, logout, fmtDate, statusChip, escape, initials, roleLabel, getToken, isStaff, navItems, landing, call, storeSession, currentUser, clearAuth };
 })();
