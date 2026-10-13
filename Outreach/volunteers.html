@@ -120,7 +120,7 @@ function openModal(html) { $('#modalBody').innerHTML = html; $('#modal').classLi
 function closeModal() { $('#modal').classList.remove('open'); }
 $('#modal').addEventListener('click', (e) => { if (e.target.id === 'modal') closeModal(); });
 
-const TEAMS = ['Bolton', 'Manchester', 'Bury', 'Liverpool', 'Wigan', 'Oldham', 'Glasgow', 'Leigh', 'Other'];
+const TEAMS = ['Bolton', 'Manchester', 'Bury', 'Liverpool', 'Wigan', 'Oldham', 'Glasgow', 'Other'];
 function openEdit(u) {
     openModal(`<form id="editForm"><h2>Edit ${Shell.escape(u.full_name)}</h2>
       <label class="field"><span>Full name</span><input class="input" name="full_name" value="${Shell.escape(u.full_name)}" required></label>
@@ -128,15 +128,18 @@ function openEdit(u) {
       <label class="field"><span>Role</span><select class="select" name="role">${['volunteer', 'team_lead', 'admin'].map(r => `<option value="${r}" ${u.role === r ? 'selected' : ''}>${Shell.roleLabel(r)}</option>`).join('')}</select></label>
       <label class="field"><span>Date of birth</span><input class="input" type="date" name="date_of_birth" value="${Shell.escape(u.date_of_birth || '')}"></label>
       <label class="field"><span>Mobile</span><input class="input" type="tel" name="mobile_phone" value="${Shell.escape(u.mobile_phone || '')}"></label>
-      <label class="field"><span>Team</span><select class="select" name="team"><option value="">—</option>${TEAMS.map(t => `<option ${u.team === t ? 'selected' : ''}>${t}</option>`).join('')}</select></label>
+      <div class="field"><span>Teams</span><div class="chips" style="flex-wrap:wrap">${TEAMS.map(t => `<label class="chip ${(u.teams || []).includes(t) ? 'on' : ''}" style="user-select:none"><input type="checkbox" name="team" value="${t}" ${(u.teams || []).includes(t) ? 'checked' : ''} style="display:none">${t}</label>`).join('')}</div></div>
       <label class="field"><span>Next of kin name</span><input class="input" name="next_of_kin_name" value="${Shell.escape(u.next_of_kin_name || '')}"></label>
       <label class="field"><span>Next of kin phone</span><input class="input" type="tel" name="next_of_kin_phone" value="${Shell.escape(u.next_of_kin_phone || '')}"></label>
       <div class="actions"><button class="btn" type="submit">Save</button><button class="btn ghost" type="button" id="cancelEdit">Cancel</button></div></form>`);
     $('#cancelEdit').onclick = closeModal;
+    $('#editForm').querySelectorAll('input[name="team"]').forEach(cb => cb.addEventListener('change', () => cb.parentElement.classList.toggle('on', cb.checked)));
     $('#editForm').onsubmit = async (e) => {
         e.preventDefault();
         const body = { user_id: u.id };
-        for (const [k, v] of new FormData(e.target).entries()) { if (v !== '' || ['full_name', 'email', 'role'].includes(k)) body[k] = v; }
+        const fd = new FormData(e.target);
+        for (const [k, v] of fd.entries()) { if (k !== 'team' && (v !== '' || ['full_name', 'email', 'role'].includes(k))) body[k] = v; }
+        const teams = fd.getAll('team'); if (teams.length) body.team = teams;
         try { await Shell.api('admin-update-volunteer', { method: 'POST', body }); closeModal(); Shell.toast('Saved'); listCache = null; renderRecord(u.id); } catch (err) { Shell.toast(err.message, 'error'); }
     };
 }

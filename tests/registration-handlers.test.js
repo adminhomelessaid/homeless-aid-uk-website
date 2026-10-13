@@ -22,7 +22,7 @@ test('me returns own profile, state and policies, ignoring ?id', async () => {
     assert.equal(r.body.policies.length, 1);
     assert.equal(r.body.policies[0].current_version.id, 'v1');
     assert.equal(r.body.policies[0].current_version.body_html, undefined, 'me does not send bodies');
-    assert.deepEqual(r.body.teams, ['Bolton','Manchester','Bury','Liverpool','Wigan','Oldham','Glasgow','Leigh','Other']);
+    assert.deepEqual(r.body.teams, ['Bolton','Manchester','Bury','Liverpool','Wigan','Oldham','Glasgow','Other']);
 });
 
 test('update-me writes only allowed fields to own record', async () => {

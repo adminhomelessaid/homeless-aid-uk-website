@@ -87,17 +87,23 @@ function renderDetails() {
         <label class="field"><span>Full name</span><input class="input" value="${Shell.escape(u.full_name)}" disabled><span class="muted small" style="font-weight:400">Ask an admin to change your name.</span></label>
         <label class="field"><span>Date of birth</span><input class="input" type="date" name="date_of_birth" required max="${new Date().toISOString().slice(0, 10)}" value="${Shell.escape(u.date_of_birth || '')}"></label>
         <label class="field"><span>Mobile number</span><input class="input" type="tel" name="mobile_phone" required autocomplete="tel" inputmode="tel" value="${Shell.escape(u.mobile_phone || '')}"></label>
-        <label class="field"><span>Team</span><select class="select" name="team" required><option value="">Choose your team…</option>${data.teams.map(t => `<option ${u.team === t ? 'selected' : ''}>${Shell.escape(t)}</option>`).join('')}</select></label>
+        <div class="field"><span>Teams <span class="muted" style="font-weight:400">(pick every one you help with)</span></span>
+          <div class="chips" style="flex-wrap:wrap">${data.teams.map(t => `<label class="chip ${(u.teams || []).includes(t) ? 'on' : ''}" style="user-select:none"><input type="checkbox" name="team" value="${Shell.escape(t)}" ${(u.teams || []).includes(t) ? 'checked' : ''} style="display:none">${Shell.escape(t)}</label>`).join('')}</div>
+        </div>
         <h3 style="margin-top:8px">Next of kin</h3>
         <label class="field"><span>Name</span><input class="input" name="next_of_kin_name" required value="${Shell.escape(u.next_of_kin_name || '')}"></label>
         <label class="field"><span>Phone</span><input class="input" type="tel" name="next_of_kin_phone" required inputmode="tel" value="${Shell.escape(u.next_of_kin_phone || '')}"></label>
         <button class="btn block" type="submit">Save details</button>
         <a class="btn ghost block" href="#home" style="margin-top:8px">Back</a>
       </form>`;
+    $('#detailsForm').querySelectorAll('input[name="team"]').forEach(cb => cb.addEventListener('change', () => cb.parentElement.classList.toggle('on', cb.checked)));
     $('#detailsForm').addEventListener('submit', async (e) => {
         e.preventDefault(); const btn = e.target.querySelector('button'); btn.disabled = true;
         try {
-            const body = Object.fromEntries(new FormData(e.target).entries());
+            const fd = new FormData(e.target);
+            const body = Object.fromEntries([...fd.entries()].filter(([k]) => k !== 'team'));
+            body.team = fd.getAll('team');
+            if (body.team.length === 0) throw new Error('Pick at least one team');
             const r = await Shell.api('update-me', { method: 'POST', body });
             data.user = r.user; data.state = r.state; Shell.toast('Details saved'); location.hash = '#home';
         } catch (err) { Shell.toast(err.message, 'error'); } finally { btn.disabled = false; }

@@ -75,3 +75,6 @@ ALTER TABLE attendance_logs
 ALTER TABLE policies DISABLE ROW LEVEL SECURITY;
 ALTER TABLE policy_versions DISABLE ROW LEVEL SECURITY;
 ALTER TABLE policy_signatures DISABLE ROW LEVEL SECURITY;
+
+-- 6. Teams are a comma-separated list now, which can exceed 60 characters
+ALTER TABLE outreach_users ALTER COLUMN team TYPE text;

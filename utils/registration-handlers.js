@@ -2,7 +2,16 @@ const { computeRegistrationState, normaliseName, addMonths } = require('./regist
 const { sanitizeHtml } = require('./sanitize-html');
 const { validatePhoto } = require('./jpeg');
 
-const TEAMS = ['Bolton', 'Manchester', 'Bury', 'Liverpool', 'Wigan', 'Oldham', 'Glasgow', 'Leigh', 'Other'];
+const TEAMS = ['Bolton', 'Manchester', 'Bury', 'Liverpool', 'Wigan', 'Oldham', 'Glasgow', 'Other'];
+
+// A volunteer can belong to several teams. Stored as a comma list in outreach_users.team; exposed as `teams`.
+function parseTeams(input) {
+    const raw = Array.isArray(input) ? input : String(input || '').split(',');
+    const names = raw.map(t => String(t || '').trim()).filter(Boolean);
+    if (names.some(t => !TEAMS.includes(t))) return null;
+    return [...new Set(names)].sort((a, b) => TEAMS.indexOf(a) - TEAMS.indexOf(b));
+}
+function withTeams(user) { return user ? { ...user, teams: parseTeams(user.team) || [] } : user; }
 const ROLES = ['admin', 'team_lead', 'volunteer'];
 
 const ok = (body) => ({ status: 200, body: { success: true, ...body } });
@@ -38,8 +47,8 @@ function validateDetails(body) {
     const nokPhone = phone(body.next_of_kin_phone);
     if (!phoneOk(nokPhone)) errors.push('Next of kin phone must be a valid phone number'); else out.next_of_kin_phone = nokPhone;
 
-    const team = String(body.team || '').trim();
-    if (!TEAMS.includes(team)) errors.push('Please choose a team'); else out.team = team;
+    const teams = parseTeams(body.team);
+    if (!teams || teams.length === 0) errors.push('Please choose at least one team'); else out.team = teams.join(', ');
 
     const nok = String(body.next_of_kin_name || '').trim();
     if (nok.length < 2 || nok.length > 100) errors.push('Next of kin name is required'); else out.next_of_kin_name = nok;
@@ -57,7 +66,7 @@ const handlers = {
         const user = await ctx.db.getUserById(ctx.user.id);
         if (!user) return fail(404, 'User not found');
         const { policies, state } = await stateFor(ctx.db, user, ctx.now);
-        return ok({ user, state, policies: policies.map(policySummary), teams: TEAMS });
+        return ok({ user: withTeams(user), state, policies: policies.map(policySummary), teams: TEAMS });
     },
 
     async 'update-me'(ctx) {
@@ -66,7 +75,7 @@ const handlers = {
         if (errors.length) return fail(400, errors.join('. '));
         const user = await ctx.db.updateUser(ctx.user.id, fields);
         const { state } = await stateFor(ctx.db, user, ctx.now);
-        return ok({ user, state });
+        return ok({ user: withTeams(user), state });
     }
 };
 
@@ -161,7 +170,7 @@ Object.assign(handlers, {
 async function listWithState(db, now) {
     const [users, policies, latest] = await Promise.all([db.listUsers(), db.listActivePolicies(), db.listLatestSignaturesByUser()]);
     const active = policies.filter(p => p.current_version);
-    return users.map(u => ({ ...u, state: computeRegistrationState(u, latest.get(u.id) || null, active, now) }));
+    return users.map(u => ({ ...withTeams(u), state: computeRegistrationState(u, latest.get(u.id) || null, active, now) }));
 }
 
 function csvCell(v, { phone = false } = {}) {
@@ -216,7 +225,7 @@ Object.assign(handlers, {
         const user = await ctx.db.getUserById(ctx.query.id);
         if (!user) return fail(404, 'Volunteer not found');
         const [{ policies, state }, signatures] = await Promise.all([stateFor(ctx.db, user, ctx.now), ctx.db.listSignatures(user.id)]);
-        return ok({ user, state, policies: policies.map(policySummary), signatures });
+        return ok({ user: withTeams(user), state, policies: policies.map(policySummary), signatures });
     },
 
     async 'admin-update-volunteer'(ctx) {
@@ -241,7 +250,7 @@ Object.assign(handlers, {
         if (Object.keys(fields).length === 0) return fail(400, 'Nothing to update');
         const user = await ctx.db.updateUser(target.id, fields);
         const { state } = await stateFor(ctx.db, user, ctx.now);
-        return ok({ user, state });
+        return ok({ user: withTeams(user), state });
     },
 
     async block(ctx) { return setActive(ctx, false); },
@@ -395,4 +404,4 @@ async function sendResetLink(ctx) {
 }
 handlers['send-reset-link'] = sendResetLink;
 
-module.exports = { handlers, dispatch, resolveAction, TEAMS, ROLES, ok, fail, requirePost, requireRole, policySummary, stateFor, validateDetails, normaliseName, addMonths, sanitizeHtml, validatePhoto };
+module.exports = { handlers, dispatch, resolveAction, parseTeams, withTeams, TEAMS, ROLES, ok, fail, requirePost, requireRole, policySummary, stateFor, validateDetails, normaliseName, addMonths, sanitizeHtml, validatePhoto };
