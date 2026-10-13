@@ -722,6 +722,8 @@
             <div class="header-right">
                 <!-- Navigation Menu -->
                 <div class="nav-links" id="navLinks">
+                    <a href="/Outreach/registration"><i class="fas fa-user-check"></i> My Registration</a>
+                    <a href="/Outreach/volunteers" id="navVolunteers" style="display:none"><i class="fas fa-users"></i> Volunteers</a>
                     <a href="/" title="Home">
                         <i class="fas fa-home"></i> <span>Home</span>
                     </a>
@@ -755,6 +757,11 @@
     
     <!-- Main Dashboard Content -->
     <div class="dashboard-container">
+        <div id="registrationBanner" style="display:none;background:#FFFAF0;border:1px solid #F6AD55;color:#C05621;border-radius:12px;padding:12px 14px;margin-bottom:16px;align-items:center;gap:10px">
+            <i class="fas fa-triangle-exclamation"></i>
+            <div style="flex:1"><b>Your registration is incomplete.</b> <span id="registrationBannerText"></span></div>
+            <a href="/Outreach/registration" style="background:#1A2332;color:#fff;padding:8px 12px;border-radius:10px;text-decoration:none;font-weight:600;white-space:nowrap">Complete now</a>
+        </div>
         <div class="dashboard-grid">
             <!-- Attendance Form Card -->
             <div class="dashboard-card">
@@ -1562,5 +1569,26 @@
             }
         });
     </script>
+<script>
+(async function () {
+    const token = localStorage.getItem('outreachToken') || localStorage.getItem('outreach_token');
+    if (!token) return;
+    try {
+        const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+        if (['admin', 'team_lead'].includes(payload.role)) document.getElementById('navVolunteers').style.display = '';
+        const res = await fetch('/api/registration?action=me', { headers: { Authorization: 'Bearer ' + token } });
+        if (!res.ok) return;
+        const data = await res.json();
+        const s = data.state;
+        if (s.registration_complete) return;
+        const missing = [];
+        if (!s.details_complete) missing.push('your details');
+        if (!s.photo_complete) missing.push('a photo');
+        if (s.signature_status !== 'signed') missing.push(s.signature_status === 'none' ? 'policy signature' : 'policy re-signing');
+        document.getElementById('registrationBannerText').textContent = 'Still needed: ' + missing.join(', ') + '.';
+        document.getElementById('registrationBanner').style.display = 'flex';
+    } catch (e) { console.warn('Registration banner skipped', e); }
+})();
+</script>
 </body>
 </html>
