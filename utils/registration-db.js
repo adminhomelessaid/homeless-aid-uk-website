@@ -1,4 +1,4 @@
-const USER_PUBLIC_FIELDS = 'id, username, email, full_name, role, is_active, email_verified, created_at, last_login, date_of_birth, mobile_phone, team, next_of_kin_name, next_of_kin_phone, photo_updated_at, volunteer_number';
+const USER_PUBLIC_FIELDS = 'id, username, email, full_name, role, is_active, email_verified, created_at, last_login, date_of_birth, mobile_phone, team, next_of_kin_name, next_of_kin_phone, photo_updated_at, volunteer_number, approval_status, approved_at';
 const POLICY_FIELDS = 'id, slug, title, sort_order, is_active, created_at';
 const VERSION_FIELDS = 'id, policy_id, version, body_html, change_note, created_at, created_by';
 const SIGNATURE_FIELDS = 'id, user_id, typed_name, signed_at, expires_at, version_ids, ip_address, user_agent';
@@ -71,6 +71,18 @@ function createRegistrationDb(supabase) {
             return must(await supabase.from('policy_signatures').select(SIGNATURE_FIELDS).eq('user_id', userId).order('signed_at', { ascending: false }));
         },
         async insertSignature(fields) { return must(await supabase.from('policy_signatures').insert([fields]).select(SIGNATURE_FIELDS).single()); },
+        async findUserByEmail(email) {
+            const rows = must(await supabase.from('outreach_users').select(USER_PUBLIC_FIELDS).ilike('email', String(email).replace(/[%_\\]/g, '\\        async listLatestSignaturesByUser() {')).limit(1));
+            return shapeUser(rows[0], false);
+        },
+        async findUserByUsername(username) {
+            const rows = must(await supabase.from('outreach_users').select(USER_PUBLIC_FIELDS).ilike('username', String(username).replace(/[%_\\]/g, '\\        async listLatestSignaturesByUser() {')).limit(1));
+            return shapeUser(rows[0], false);
+        },
+        async insertUser(fields) {
+            const data = must(await supabase.from('outreach_users').insert([fields]).select(USER_PUBLIC_FIELDS).single());
+            return shapeUser(data, false);
+        },
         async listLatestSignaturesByUser() {
             const rows = must(await supabase.from('policy_signatures').select('user_id, signed_at, expires_at, version_ids').order('signed_at', { ascending: false }));
             const m = new Map();

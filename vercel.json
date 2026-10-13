@@ -120,7 +120,11 @@
     },
     {
       "source": "/portal",
-      "destination": "/portal/login.html"
+      "destination": "/portal/index.html"
+    },
+    {
+      "source": "/portal/",
+      "destination": "/portal/index.html"
     }
   ],
   "redirects": [

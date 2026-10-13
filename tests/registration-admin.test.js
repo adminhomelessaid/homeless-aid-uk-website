@@ -23,7 +23,7 @@ test('volunteers: team lead gets list with state and counts; volunteer is refuse
     const sarah = r.body.volunteers.find(v => v.id === 'u1');
     assert.equal(sarah.state.registration_complete, true);
     assert.equal(sarah.photo_data, undefined);
-    assert.deepEqual(r.body.counts, { total: 5, complete: 1, needs_signing: 4, incomplete: 4, blocked: 1 });
+    assert.deepEqual(r.body.counts, { pending: 0, total: 5, complete: 1, needs_signing: 4, incomplete: 4, blocked: 1 });
     const denied = await handlers.volunteers({ ...ctxFor(vol), db });
     assert.equal(denied.status, 403);
 });

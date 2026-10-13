@@ -1,7 +1,7 @@
 const AuthUtils = require('../../utils/auth');
 const { createSupabaseClient } = require('../../utils/supabase');
 const { createRegistrationDb } = require('../../utils/registration-db');
-const { handlers, dispatch, resolveAction } = require('../../utils/registration-handlers');
+const { handlers, dispatch, resolveAction, PUBLIC_ACTIONS } = require('../../utils/registration-handlers');
 
 module.exports = async (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -18,7 +18,7 @@ module.exports = async (req, res) => {
     if (!handler) return res.status(404).json({ success: false, message: `Unknown action: ${action}` });
 
     let user = null;
-    if (action !== 'ping') {
+    if (!PUBLIC_ACTIONS.has(action)) {
         const authHeader = req.headers.authorization || '';
         if (!authHeader.startsWith('Bearer ')) return res.status(401).json({ success: false, message: 'No token provided' });
         try {

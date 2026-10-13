@@ -197,8 +197,10 @@ function validatePartialDetails(body) {
 Object.assign(handlers, {
     async volunteers(ctx) {
         const r = requireRole(ctx, ['admin', 'team_lead']); if (r) return r;
-        const all = await listWithState(ctx.db, ctx.now);
+        const everyone = await listWithState(ctx.db, ctx.now);
+        const all = everyone.filter(v => v.approval_status !== 'pending');
         const counts = {
+            pending: everyone.length - all.length,
             total: all.length,
             complete: all.filter(v => v.state.registration_complete).length,
             needs_signing: all.filter(v => v.state.signature_status !== 'signed').length,
@@ -357,6 +359,82 @@ Object.assign(handlers, {
     }
 });
 
+// Actions that need no login.
+const PUBLIC_ACTIONS = new Set(['ping', 'signup']);
+
+function usernameFromEmail(email, isTaken) {
+    const base = String(email || '').split('@')[0].toLowerCase().replace(/\s+/g, '').replace(/[^a-z0-9._-]+/g, '-').replace(/^[-.]+|[-.]+$/g, '').slice(0, 40) || 'volunteer';
+    let candidate = base, n = 1;
+    while (isTaken(candidate)) candidate = base + (++n);
+    return candidate;
+}
+
+function teamsOverlap(a, b) { const x = parseTeams(a) || []; return (parseTeams(b) || []).some(t => x.includes(t)); }
+
+// Self sign-up: creates a pending, inactive volunteer. Nothing about the account is returned.
+async function signup(ctx) {
+    const m = requirePost(ctx); if (m) return m;
+    const body = ctx.body || {};
+    if (String(body.website || '').trim()) return ok({ pending: true }); // honeypot: pretend success
+    const errors = [];
+    const full_name = String(body.full_name || '').trim().replace(/\s+/g, ' ');
+    if (full_name.length < 2 || full_name.length > 100) errors.push('Please enter your full name');
+    const email = String(body.email || '').trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 100) errors.push('Please enter a valid email address');
+    const teams = parseTeams(body.team);
+    if (!teams || teams.length === 0) errors.push('Please choose at least one team');
+    const AuthUtils = require('./auth');
+    const pw = AuthUtils.validatePassword(String(body.password || ''));
+    if (!pw.valid) errors.push(...pw.errors);
+    if (errors.length) return fail(400, errors.join('. '));
+    if (await ctx.db.findUserByEmail(email)) return fail(409, 'That email address is already registered. Try signing in, or ask an admin for a password reset.');
+    const taken = new Set((await ctx.db.listUsers()).map(u => String(u.username).toLowerCase()));
+    const username = usernameFromEmail(email, u => taken.has(u));
+    const hashPassword = ctx.hashPassword || AuthUtils.hashPassword;
+    await ctx.db.insertUser({ username, email, full_name, role: 'volunteer', is_active: false, approval_status: 'pending', email_verified: false, password_hash: await hashPassword(String(body.password)), password_set_at: ctx.now.toISOString(), team: teams.join(', ') });
+    console.log(`Sign-up pending approval: ${username} (${teams.join(', ')})`);
+    return ok({ pending: true });
+}
+
+async function pendingFor(ctx) {
+    const r = requireRole(ctx, ['admin', 'team_lead']); if (r) return { error: r };
+    const me = ctx.user.role === 'admin' ? null : await ctx.db.getUserById(ctx.user.id);
+    const all = (await ctx.db.listUsers()).filter(u => u.approval_status === 'pending');
+    const visible = me ? all.filter(u => teamsOverlap(me.team, u.team)) : all;
+    return { pending: visible.sort((a, b) => String(a.created_at).localeCompare(String(b.created_at))).map(withTeams) };
+}
+
+async function pendingTarget(ctx) {
+    const m = requirePost(ctx); if (m) return { error: m };
+    const { pending, error } = await pendingFor(ctx); if (error) return { error };
+    const target = await ctx.db.getUserById(ctx.body && ctx.body.user_id);
+    if (!target) return { error: fail(404, 'Sign-up not found') };
+    if (target.approval_status !== 'pending') return { error: fail(400, 'That sign-up has already been dealt with') };
+    if (!pending.some(p => p.id === target.id)) return { error: fail(403, 'That sign-up is for a team you do not lead') };
+    return { target };
+}
+
+Object.assign(handlers, {
+    signup,
+    async 'pending-signups'(ctx) { const { pending, error } = await pendingFor(ctx); return error || ok({ pending }); },
+    async 'approve-signup'(ctx) {
+        const { target, error } = await pendingTarget(ctx); if (error) return error;
+        const user = await ctx.db.updateUser(target.id, { is_active: true, approval_status: 'approved', approved_by: ctx.user.id, approved_at: ctx.now.toISOString() });
+        const origin = ctx.origin || 'https://homelessaid.co.uk';
+        const send = ctx.sendApproval || require('./send-invitation-email').sendApprovalEmail;
+        let emailed = false;
+        try { const res = await send({ to: target.email, name: target.full_name, loginUrl: `${origin}/portal`, approvedBy: ctx.user.name }); emailed = Boolean(res && res.success); }
+        catch (e) { console.error('Approval email failed:', e); }
+        return ok({ user: withTeams(user), emailed });
+    },
+    async 'reject-signup'(ctx) {
+        const { target, error } = await pendingTarget(ctx); if (error) return error;
+        await ctx.db.deleteUser(target.id);
+        console.log(`Sign-up rejected: ${target.username} by ${ctx.user.username}`);
+        return ok({});
+    }
+});
+
 // Single entry point used by the API function: unknown actions 404, blocked or deleted users are refused
 // on every action except ping, then the handler runs.
 // Vercel merges rewrite query params into req.query but may leave req.url as the original path,
@@ -370,7 +448,7 @@ function resolveAction(req, query, body) {
 async function dispatch(action, ctx) {
     const handler = Object.prototype.hasOwnProperty.call(handlers, action) ? handlers[action] : null;
     if (!handler) return fail(404, `Unknown action: ${action}`);
-    if (action !== "ping") {
+    if (!PUBLIC_ACTIONS.has(action)) {
         const row = await ctx.db.getUserById(ctx.user.id);
         if (!row) return fail(401, "This account no longer exists. Please log in again.");
         if (!row.is_active) return fail(403, "This account is blocked. Please contact an administrator.");
@@ -404,4 +482,4 @@ async function sendResetLink(ctx) {
 }
 handlers['send-reset-link'] = sendResetLink;
 
-module.exports = { handlers, dispatch, resolveAction, parseTeams, withTeams, TEAMS, ROLES, ok, fail, requirePost, requireRole, policySummary, stateFor, validateDetails, normaliseName, addMonths, sanitizeHtml, validatePhoto };
+module.exports = { handlers, dispatch, resolveAction, parseTeams, withTeams, usernameFromEmail, PUBLIC_ACTIONS, TEAMS, ROLES, ok, fail, requirePost, requireRole, policySummary, stateFor, validateDetails, normaliseName, addMonths, sanitizeHtml, validatePhoto };

@@ -2,65 +2,9 @@
 <html lang="en-GB">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Outreach Login - Homeless Aid UK</title>
-<link rel="manifest" href="/portal/manifest.json">
-<meta name="theme-color" content="#1A2332">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<link rel="stylesheet" href="/portal/registration.css">
-<style>
-  body { background: var(--navy); }
-  .auth { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px 16px; }
-  .auth .logo { width: 72px; height: 72px; border-radius: 18px; background: #fff; padding: 6px; margin-bottom: 14px; }
-  .auth h1 { color: #fff; font-size: 22px; margin-bottom: 4px; }
-  .auth .sub { color: #a0aec0; font-size: 14px; margin: 0 0 22px; text-align: center; }
-  .auth .card { width: 100%; max-width: 400px; padding: 22px 20px; margin: 0; }
-  .auth .pw { position: relative; }
-  .auth .pw button { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: none; border: 0; color: var(--muted); font-size: 16px; cursor: pointer; padding: 8px; }
-  .auth .pw .input { padding-right: 44px; }
-  .auth .err { background: var(--bad-bg); color: var(--bad); border: 1px solid #FEB2B2; border-radius: 12px; padding: 10px 12px; font-size: 14px; margin-bottom: 12px; display: none; }
-  .auth .foot { color: #a0aec0; font-size: 13px; margin-top: 18px; text-align: center; line-height: 1.6; }
-  .auth .foot a { color: #cbd5e0; }
-</style>
+<meta http-equiv="refresh" content="0; url=/portal">
+<title>Redirecting…</title>
+<script>location.replace('/portal' + (location.search || '') + (location.hash || ''));</script>
 </head>
-<body>
-<main class="auth">
-  <img class="logo" src="/Branding/HomelessAidUKLogo.png" alt="Homeless Aid UK">
-  <h1>Outreach Portal</h1>
-  <p class="sub">Sign in to log attendance and manage your registration</p>
-  <form class="card" id="loginForm" novalidate>
-    <div class="err" id="err" role="alert"></div>
-    <label class="field"><span>Username</span><input class="input" name="username" autocomplete="username" autocapitalize="none" spellcheck="false" required autofocus></label>
-    <label class="field"><span>Password</span><div class="pw"><input class="input" name="password" type="password" autocomplete="current-password" required><button type="button" id="togglePw" aria-label="Show password"><i class="fas fa-eye"></i></button></div></label>
-    <button class="btn block" type="submit" id="submitBtn"><i class="fas fa-right-to-bracket"></i> Sign in</button>
-  </form>
-  <p class="foot">Need an account or forgotten your password? Ask an admin to send you a reset link.<br><a href="/">Back to homelessaid.co.uk</a></p>
-</main>
-<script src="/portal/registration-shell.js"></script>
-<script>
-const existing = Shell.currentUser();
-if (existing) location.replace(Shell.landing(existing));
-const form = document.getElementById('loginForm');
-const err = document.getElementById('err');
-document.getElementById('togglePw').onclick = () => { const i = form.password; i.type = i.type === 'password' ? 'text' : 'password'; };
-form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    err.style.display = 'none';
-    const btn = document.getElementById('submitBtn'); btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>';
-    try {
-        const res = await fetch('/api/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: form.username.value.trim(), password: form.password.value }) });
-        const data = await res.json().catch(() => ({}));
-        if (!res.ok || !data.success || !data.token) throw new Error(data.message || 'Login failed');
-        Shell.storeSession(data.token, data.user);
-        location.replace(Shell.landing(data.user));
-    } catch (ex) {
-        err.textContent = ex.message === 'Failed to fetch' ? 'Could not reach the server. Check your connection and try again.' : ex.message;
-        err.style.display = 'block';
-        btn.disabled = false; btn.innerHTML = '<i class="fas fa-right-to-bracket"></i> Sign in';
-    }
-});
-</script>
-</body>
+<body><p>Taking you to the volunteer portal… <a href="/portal">Continue</a></p></body>
 </html>
