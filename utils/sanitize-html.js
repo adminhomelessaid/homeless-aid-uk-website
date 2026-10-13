@@ -6,7 +6,11 @@ function sanitizeHtml(html) {
         .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, '')
         .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, '')
         .replace(/<!--[\s\S]*?-->/g, '');
-    out = out.replace(/<\/?([a-zA-Z][a-zA-Z0-9]*)\b([^>]*)>/g, (match, rawTag, attrs) => {
+    // Match every token a browser would treat as a tag (any name starting with a letter, including
+    // names with _ or : in them), and escape any other < or > so nothing tag-like survives as markup.
+    out = out.replace(/<\/?([a-zA-Z][^\s\/>]*)([^>]*)>|<|>/g, (match, rawTag, attrs) => {
+        if (match === '<') return '&lt;';
+        if (match === '>') return '&gt;';
         const tag = rawTag.toLowerCase();
         const closing = match.startsWith('</');
         if (!ALLOWED.has(tag)) return '';

@@ -86,7 +86,7 @@ async function renderRecord(id) {
       <div class="card" style="display:flex;gap:16px;align-items:center;flex-wrap:wrap">
         <span class="avatar lg" id="recAvatar">${Shell.escape(Shell.initials(u.full_name))}</span>
         <div style="flex:1;min-width:200px">${Shell.statusChip(s)} ${s.registration_complete ? '<span class="st ok">Registration complete</span>' : '<span class="st warn">Registration incomplete</span>'}<br>
-          <span class="small muted">${u.email}${u.mobile_phone ? ' · ' + Shell.escape(u.mobile_phone) : ''}</span></div>
+          <span class="small muted">${Shell.escape(u.email)}${u.mobile_phone ? ' · ' + Shell.escape(u.mobile_phone) : ''}</span></div>
         <div class="actions">
           ${u.has_photo ? `<button class="btn ghost sm" id="dlPhoto"><i class="fas fa-download"></i> Download photo</button>` : '<span class="st mute">No photo yet</span>'}
           ${isAdmin ? `<button class="btn ghost sm" id="upPhoto"><i class="fas fa-camera"></i> ${u.has_photo ? 'Replace' : 'Upload'} photo</button><input type="file" id="upInput" accept="image/*" class="hidden">` : ''}

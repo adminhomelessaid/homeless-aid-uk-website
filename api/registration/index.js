@@ -1,7 +1,7 @@
 const AuthUtils = require('../../utils/auth');
 const { createSupabaseClient } = require('../../utils/supabase');
 const { createRegistrationDb } = require('../../utils/registration-db');
-const { handlers, dispatch } = require('../../utils/registration-handlers');
+const { handlers, dispatch, resolveAction } = require('../../utils/registration-handlers');
 
 module.exports = async (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -12,7 +12,7 @@ module.exports = async (req, res) => {
     const url = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
     const query = Object.fromEntries(url.searchParams.entries());
     const body = (req.body && typeof req.body === 'object') ? req.body : {};
-    const action = query.action || body.action;
+    const action = resolveAction(req, query, body);
 
     const handler = Object.prototype.hasOwnProperty.call(handlers, action) ? handlers[action] : null;
     if (!handler) return res.status(404).json({ success: false, message: `Unknown action: ${action}` });

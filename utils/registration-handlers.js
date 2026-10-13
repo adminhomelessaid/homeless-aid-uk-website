@@ -164,9 +164,13 @@ async function listWithState(db, now) {
     return users.map(u => ({ ...u, state: computeRegistrationState(u, latest.get(u.id) || null, active, now) }));
 }
 
-function csvCell(v) {
-    const s = v === null || v === undefined ? '' : String(v);
-    return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+function csvCell(v, { phone = false } = {}) {
+    let s = v === null || v === undefined ? '' : String(v);
+    // Phone numbers as a constant formula so spreadsheets keep the leading 0.
+    if (phone && s) return `"=""${s.replace(/"/g, '')}"""`;
+    // Neutralise anything a spreadsheet would run as a formula.
+    if (/^[=+\-@\t\r]/.test(s)) s = `'${s}`;
+    return /[",\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
 }
 
 function validatePartialDetails(body) {
@@ -225,7 +229,11 @@ Object.assign(handlers, {
         const errors = [];
         if ('full_name' in body) { const n = String(body.full_name || '').trim(); if (n.length < 2 || n.length > 100) errors.push('Full name must be 2 to 100 characters'); else fields.full_name = n; }
         if ('email' in body) { const e = String(body.email || '').trim().toLowerCase(); if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)) errors.push('Email is not valid'); else fields.email = e; }
-        if ('role' in body) { if (!ROLES.includes(body.role)) errors.push('Invalid role'); else fields.role = body.role; }
+        if ('role' in body) {
+            if (!ROLES.includes(body.role)) errors.push('Invalid role');
+            else if (target.id === ctx.user.id && body.role !== target.role) return fail(400, 'You cannot change your own role');
+            else fields.role = body.role;
+        }
         const d = validatePartialDetails(body);
         errors.push(...d.errors);
         Object.assign(fields, d.fields);
@@ -257,9 +265,9 @@ Object.assign(handlers, {
         const r = requireRole(ctx, ['admin']); if (r) return r;
         const all = await listWithState(ctx.db, ctx.now);
         const header = ['volunteer_number','full_name','email','role','team','mobile_phone','date_of_birth','next_of_kin_name','next_of_kin_phone','is_active','details_complete','photo_complete','signature_status','signed_at','expires_at'];
-        const rows = all.map(v => [v.volunteer_number, v.full_name, v.email, v.role, v.team, v.mobile_phone, v.date_of_birth, v.next_of_kin_name, v.next_of_kin_phone, v.is_active, v.state.details_complete, v.state.photo_complete, v.state.signature_status, v.state.signature?.signed_at || '', v.state.signature?.expires_at || ''].map(csvCell).join(','));
+        const rows = all.map(v => [csvCell(v.volunteer_number), csvCell(v.full_name), csvCell(v.email), csvCell(v.role), csvCell(v.team), csvCell(v.mobile_phone, { phone: true }), csvCell(v.date_of_birth), csvCell(v.next_of_kin_name), csvCell(v.next_of_kin_phone, { phone: true }), csvCell(v.is_active), csvCell(v.state.details_complete), csvCell(v.state.photo_complete), csvCell(v.state.signature_status), csvCell(v.state.signature?.signed_at || ''), csvCell(v.state.signature?.expires_at || '')].join(','));
         const date = ctx.now.toISOString().slice(0, 10);
-        return { status: 200, raw: [header.join(','), ...rows].join('\n'), headers: { 'Content-Type': 'text/csv; charset=utf-8', 'Content-Disposition': `attachment; filename="volunteers-${date}.csv"` } };
+        return { status: 200, raw: '\uFEFF' + [header.join(','), ...rows].join('\n'), headers: { 'Content-Type': 'text/csv; charset=utf-8', 'Content-Disposition': `attachment; filename="volunteers-${date}.csv"` } };
     }
 });
 
@@ -342,6 +350,14 @@ Object.assign(handlers, {
 
 // Single entry point used by the API function: unknown actions 404, blocked or deleted users are refused
 // on every action except ping, then the handler runs.
+// Vercel merges rewrite query params into req.query but may leave req.url as the original path,
+// so look there first; the dev server and direct calls carry the action in the URL or body.
+function resolveAction(req, query, body) {
+    const fromReq = req && req.query && typeof req.query === 'object' ? req.query.action : undefined;
+    const pathOnly = String((req && req.url) || '').split('?')[0];
+    return fromReq || (query && query.action) || (body && body.action) || (/\/ping\/?$/.test(pathOnly) ? 'ping' : undefined);
+}
+
 async function dispatch(action, ctx) {
     const handler = Object.prototype.hasOwnProperty.call(handlers, action) ? handlers[action] : null;
     if (!handler) return fail(404, `Unknown action: ${action}`);
@@ -349,8 +365,10 @@ async function dispatch(action, ctx) {
         const row = await ctx.db.getUserById(ctx.user.id);
         if (!row) return fail(401, "This account no longer exists. Please log in again.");
         if (!row.is_active) return fail(403, "This account is blocked. Please contact an administrator.");
+        // Use the stored role and name, so a demotion or rename takes effect without waiting for the token to expire.
+        ctx = { ...ctx, user: { ...ctx.user, role: row.role, name: row.full_name, username: row.username, email: row.email } };
     }
     return handler(ctx);
 }
 
-module.exports = { handlers, dispatch, TEAMS, ROLES, ok, fail, requirePost, requireRole, policySummary, stateFor, validateDetails, normaliseName, addMonths, sanitizeHtml, validatePhoto };
+module.exports = { handlers, dispatch, resolveAction, TEAMS, ROLES, ok, fail, requirePost, requireRole, policySummary, stateFor, validateDetails, normaliseName, addMonths, sanitizeHtml, validatePhoto };

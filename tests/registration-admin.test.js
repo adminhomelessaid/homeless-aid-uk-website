@@ -92,7 +92,7 @@ test('export returns csv without photos; team lead refused', async () => {
     assert.equal(r.status, 200);
     assert.match(r.headers['Content-Disposition'], /volunteers-2026-10-13\.csv/);
     const lines = r.raw.split('\n');
-    assert.equal(lines[0], 'volunteer_number,full_name,email,role,team,mobile_phone,date_of_birth,next_of_kin_name,next_of_kin_phone,is_active,details_complete,photo_complete,signature_status,signed_at,expires_at');
+    assert.equal(lines[0].replace(/^﻿/, ''), 'volunteer_number,full_name,email,role,team,mobile_phone,date_of_birth,next_of_kin_name,next_of_kin_phone,is_active,details_complete,photo_complete,signature_status,signed_at,expires_at');
     assert.ok(lines.some(l => l.includes('Sarah Mitchell') && l.includes('signed')));
     assert.ok(!r.raw.includes('photo_data'));
     assert.equal((await handlers.export({ ...ctxFor(lead), db })).status, 403);
