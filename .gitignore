@@ -22,3 +22,6 @@ __pycache__/
 *.temp
 # Brainstorming companion sessions
 .superpowers/
+
+# Local Claude Code settings
+.claude/settings.local.json
