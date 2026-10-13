@@ -70,4 +70,53 @@ const handlers = {
     }
 };
 
+function targetUserId(ctx) {
+    // Volunteers and team leads act on themselves; admins may name another user.
+    const requested = ctx.body?.user_id || ctx.query?.user_id;
+    if (!requested || requested === ctx.user.id) return { id: ctx.user.id };
+    if (ctx.user.role !== 'admin') return { error: fail(403, 'You can only change your own record') };
+    return { id: requested };
+}
+
+function photoFilename(user) {
+    const num = String(user.volunteer_number || 0).padStart(4, '0');
+    const name = normaliseName(user.full_name).replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'volunteer';
+    return `HAUK-${num}-${name}.jpg`;
+}
+
+Object.assign(handlers, {
+    async 'upload-photo'(ctx) {
+        const m = requirePost(ctx); if (m) return m;
+        const t = targetUserId(ctx); if (t.error) return t.error;
+        const v = validatePhoto(ctx.body.photo);
+        if (!v.ok) return fail(400, v.message);
+        const existing = await ctx.db.getUserById(t.id);
+        if (!existing) return fail(404, 'User not found');
+        const user = await ctx.db.updateUser(t.id, { photo_data: v.buffer.toString('base64'), photo_updated_at: ctx.now.toISOString() });
+        const { state } = await stateFor(ctx.db, user, ctx.now);
+        return ok({ user, state });
+    },
+
+    async 'delete-photo'(ctx) {
+        const m = requirePost(ctx); if (m) return m;
+        const t = targetUserId(ctx); if (t.error) return t.error;
+        const user = await ctx.db.updateUser(t.id, { photo_data: null, photo_updated_at: null });
+        const { state } = await stateFor(ctx.db, user, ctx.now);
+        return ok({ user, state });
+    },
+
+    async photo(ctx) {
+        const id = ctx.query.id;
+        if (!id) return fail(400, 'id is required');
+        if (id !== ctx.user.id) { const r = requireRole(ctx, ['admin', 'team_lead']); if (r) return r; }
+        const user = await ctx.db.getUserById(id, { withPhoto: true });
+        if (!user || !user.photo_data) return fail(404, 'No photo for this user');
+        return {
+            status: 200,
+            raw: Buffer.from(user.photo_data, 'base64'),
+            headers: { 'Content-Type': 'image/jpeg', 'Content-Disposition': `attachment; filename="${photoFilename(user)}"`, 'Cache-Control': 'private, no-store' }
+        };
+    }
+});
+
 module.exports = { handlers, TEAMS, ROLES, ok, fail, requirePost, requireRole, policySummary, stateFor, validateDetails, normaliseName, addMonths, sanitizeHtml, validatePhoto };
