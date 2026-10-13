@@ -54,7 +54,7 @@
       <label class="field"><span>Email address</span><input class="input" type="email" name="email" autocomplete="email" required></label>
       <div class="field"><span>Which team(s) will you help with?</span><div class="chips" id="teamChips" style="flex-wrap:wrap"></div></div>
       <label class="field"><span>Choose a password</span><div class="pw"><input class="input" name="password" type="password" autocomplete="new-password" required><button type="button" data-eye aria-label="Show password"><i class="fas fa-eye"></i></button></div></label>
-      <ul class="rules"><li data-rule="len">6+ characters</li><li data-rule="upper">Uppercase</li><li data-rule="lower">Lowercase</li><li data-rule="num">Number</li><li data-rule="sym">Symbol</li></ul>
+      <ul class="rules"><li data-rule="len">6+ characters</li><li data-rule="letter">A letter</li><li data-rule="num">A number</li></ul>
       <label class="hp" aria-hidden="true">Website<input name="website" tabindex="-1" autocomplete="off"></label>
       <button class="btn block" type="submit"><i class="fas fa-user-plus"></i> Sign up</button>
       <p class="small muted" style="text-align:center;margin:12px 0 0">Your team lead will approve your sign-up and let you know when your account is ready.</p>
@@ -91,7 +91,7 @@ document.querySelectorAll('[data-eye]').forEach(b => b.onclick = () => { const i
 $('#teamChips').innerHTML = TEAMS.map(t => `<label class="chip" style="user-select:none"><input type="checkbox" name="team" value="${t}" style="display:none">${t}</label>`).join('');
 $('#teamChips').querySelectorAll('input').forEach(cb => cb.addEventListener('change', () => cb.parentElement.classList.toggle('on', cb.checked)));
 
-const checks = { len: p => p.length >= 6, upper: p => /[A-Z]/.test(p), lower: p => /[a-z]/.test(p), num: p => /[0-9]/.test(p), sym: p => /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(p) };
+const checks = { len: p => p.length >= 6, letter: p => /[A-Za-z]/.test(p), num: p => /[0-9]/.test(p) };
 signupForm.password.addEventListener('input', () => { for (const [k, fn] of Object.entries(checks)) signupForm.querySelector(`[data-rule="${k}"]`).classList.toggle('ok', fn(signupForm.password.value)); });
 
 loginForm.addEventListener('submit', async (e) => {
@@ -115,7 +115,7 @@ signupForm.addEventListener('submit', async (e) => {
     if (!signupForm.full_name.value.trim()) return show($('#signupErr'), 'Please enter your full name');
     if (!signupForm.email.value.trim()) return show($('#signupErr'), 'Please enter your email address');
     if (teams.length === 0) return show($('#signupErr'), 'Pick at least one team');
-    if (!Object.values(checks).every(fn => fn(signupForm.password.value))) return show($('#signupErr'), 'Your password needs 6+ characters with uppercase, lowercase, a number and a symbol');
+    if (!Object.values(checks).every(fn => fn(signupForm.password.value))) return show($('#signupErr'), 'Your password needs 6+ characters with a letter and a number');
     const btn = signupForm.querySelector('button[type=submit]'); btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>';
     try {
         const res = await fetch('/api/registration?action=signup', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ full_name: signupForm.full_name.value.trim(), email: signupForm.email.value.trim(), team: teams, password: signupForm.password.value, website: signupForm.website.value }) });

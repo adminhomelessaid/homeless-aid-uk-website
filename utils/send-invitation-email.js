@@ -64,7 +64,7 @@ async function sendInvitationEmail({ to, name, username, role, invitationUrl, in
             <ul style="margin-bottom: 0;">
                 <li>This invitation link will expire in 7 days</li>
                 <li>Use a strong password with at least 6 characters</li>
-                <li>Include uppercase, lowercase, numbers, and special characters</li>
+                <li>Use letters and numbers</li>
                 <li>Never share your login credentials with anyone</li>
             </ul>
         </div>
@@ -128,7 +128,7 @@ ${invitationUrl}
 IMPORTANT SECURITY INFORMATION:
 - This invitation link will expire in 7 days
 - Use a strong password with at least 6 characters
-- Include uppercase, lowercase, numbers, and special characters
+- Use letters and numbers
 - Never share your login credentials with anyone
 
 What you can do as a ${displayRole}:
