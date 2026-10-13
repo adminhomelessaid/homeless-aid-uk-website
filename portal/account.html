@@ -42,7 +42,7 @@
           <h2>Change password</h2>
           <label class="field"><span>Current password</span><input class="input" type="password" name="currentPassword" autocomplete="current-password" required></label>
           <label class="field"><span>New password</span><input class="input" type="password" name="newPassword" autocomplete="new-password" required></label>
-          <ul class="rules"><li data-rule="len">8+ characters</li><li data-rule="upper">Uppercase</li><li data-rule="lower">Lowercase</li><li data-rule="num">Number</li><li data-rule="sym">Symbol</li></ul>
+          <ul class="rules"><li data-rule="len">6+ characters</li><li data-rule="upper">Uppercase</li><li data-rule="lower">Lowercase</li><li data-rule="num">Number</li><li data-rule="sym">Symbol</li></ul>
           <label class="field"><span>Confirm new password</span><input class="input" type="password" name="confirm" autocomplete="new-password" required></label>
           <button class="btn block" type="submit">Update password</button>
         </form>
@@ -81,7 +81,7 @@ profile.addEventListener('submit', async (e) => {
     } catch (ex) { Shell.toast(ex.message, 'error'); } finally { btn.disabled = false; }
 });
 
-const checks = { len: p => p.length >= 8, upper: p => /[A-Z]/.test(p), lower: p => /[a-z]/.test(p), num: p => /[0-9]/.test(p), sym: p => /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(p) };
+const checks = { len: p => p.length >= 6, upper: p => /[A-Z]/.test(p), lower: p => /[a-z]/.test(p), num: p => /[0-9]/.test(p), sym: p => /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(p) };
 pw.newPassword.addEventListener('input', () => { for (const [k, fn] of Object.entries(checks)) pw.querySelector(`[data-rule="${k}"]`).classList.toggle('ok', fn(pw.newPassword.value)); });
 pw.addEventListener('submit', async (e) => {
     e.preventDefault();

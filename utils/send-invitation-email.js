@@ -63,7 +63,7 @@ async function sendInvitationEmail({ to, name, username, role, invitationUrl, in
             <h4 style="margin-top: 0;">⚠️ Important Security Information</h4>
             <ul style="margin-bottom: 0;">
                 <li>This invitation link will expire in 7 days</li>
-                <li>Use a strong password with at least 8 characters</li>
+                <li>Use a strong password with at least 6 characters</li>
                 <li>Include uppercase, lowercase, numbers, and special characters</li>
                 <li>Never share your login credentials with anyone</li>
             </ul>
@@ -127,7 +127,7 @@ ${invitationUrl}
 
 IMPORTANT SECURITY INFORMATION:
 - This invitation link will expire in 7 days
-- Use a strong password with at least 8 characters
+- Use a strong password with at least 6 characters
 - Include uppercase, lowercase, numbers, and special characters
 - Never share your login credentials with anyone
 

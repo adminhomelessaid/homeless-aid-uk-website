@@ -48,8 +48,8 @@ class AuthUtils {
   static validatePassword(password) {
     const errors = [];
     
-    if (!password || password.length < 8) {
-      errors.push('Password must be at least 8 characters long');
+    if (!password || password.length < 6) {
+      errors.push('Password must be at least 6 characters long');
     }
     
     if (!/[A-Z]/.test(password)) {
