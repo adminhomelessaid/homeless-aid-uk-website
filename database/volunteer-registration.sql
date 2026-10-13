@@ -70,3 +70,8 @@ ALTER TABLE attendance_logs DROP CONSTRAINT IF EXISTS attendance_logs_user_id_fk
 ALTER TABLE attendance_logs
   ADD CONSTRAINT attendance_logs_user_id_fkey
   FOREIGN KEY (user_id) REFERENCES outreach_users(id) ON DELETE SET NULL;
+
+-- 5. Match the existing outreach_users setup: the API uses the anon key server-side, so RLS stays off
+ALTER TABLE policies DISABLE ROW LEVEL SECURITY;
+ALTER TABLE policy_versions DISABLE ROW LEVEL SECURITY;
+ALTER TABLE policy_signatures DISABLE ROW LEVEL SECURITY;
