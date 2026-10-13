@@ -1,0 +1,8 @@
+# Not needed on the deployed site
+_archive
+.superpowers
+tests
+scripts
+docs/superpowers
+node_modules
+*.csv.bak
