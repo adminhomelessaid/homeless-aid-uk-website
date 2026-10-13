@@ -28,12 +28,13 @@
 <script>
 const me = Shell.requireAuth();
 if (!['admin', 'team_lead'].includes(me.role)) location.href = '/portal/registration';
-Shell.renderNav({ active: 'volunteers', user: me });
+const teamScope = new URLSearchParams(location.search).get('scope') === 'team';
+Shell.renderNav({ active: teamScope ? 'my-team' : 'volunteers', user: me });
 const isAdmin = me.role === 'admin';
 const $ = (s) => document.querySelector(s);
 const view = $('#view');
 const setHead = (t, s = '', actions = '') => { $('#title').textContent = t; $('#subtitle').textContent = s; $('#headActions').innerHTML = actions; };
-const filters = { q: '', status: '' };
+const filters = { q: '', status: '', ...(teamScope ? { scope: 'team' } : {}) };
 let listCache = null;
 
 function route() {
@@ -44,13 +45,13 @@ function route() {
 window.addEventListener('hashchange', route);
 
 async function renderList() {
-    setHead('Volunteers', '', isAdmin ? `<button class="btn ghost sm" id="exportBtn"><i class="fas fa-download"></i> Export CSV</button><a class="btn sm" href="/portal/admin.html"><i class="fas fa-plus"></i> Invite</a>` : '');
+    setHead(teamScope ? 'My team' : 'Volunteers', '', isAdmin ? `<button class="btn ghost sm" id="exportBtn"><i class="fas fa-download"></i> Export CSV</button><a class="btn sm" href="/portal/admin.html"><i class="fas fa-plus"></i> Invite</a>` : '');
     if (!listCache) view.innerHTML = '<div class="empty">Loading…</div>';
     let r;
     try { r = await Shell.api('volunteers', { query: filters }); } catch (err) { view.innerHTML = `<div class="empty">${Shell.escape(err.message)}</div>`; return; }
     listCache = r;
     const c = r.counts;
-    $('#subtitle').textContent = `${c.total} volunteers · ${c.incomplete} need attention`;
+    $('#subtitle').textContent = `${r.my_teams ? (r.my_teams.length ? r.my_teams.join(', ') + ' · ' : 'No teams set on your profile · ') : ''}${c.total} volunteers · ${c.incomplete} need attention`;
     const chip = (key, label) => `<span class="chip ${filters.status === key ? 'on' : ''}" data-status="${key}">${label}</span>`;
     const rowDesc = (v) => `${Shell.roleLabel(v.role)}${v.team ? ' · ' + Shell.escape(v.team) : ''}`;
     const progBar = (s) => { const n = [s.details_complete, s.photo_complete, s.signature_status === 'signed'].filter(Boolean).length; return `<span title="${n}/3 steps" style="display:inline-flex;gap:3px">${[0, 1, 2].map(i => `<i style="width:16px;height:6px;border-radius:3px;background:${i < n ? '#48BB78' : '#E2E8F0'};display:inline-block"></i>`).join('')}</span>`; };

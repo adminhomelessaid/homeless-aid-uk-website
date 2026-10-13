@@ -203,9 +203,16 @@ Object.assign(handlers, {
     async volunteers(ctx) {
         const r = requireRole(ctx, ['admin', 'team_lead']); if (r) return r;
         const everyone = await listWithState(ctx.db, ctx.now);
-        const all = everyone.filter(v => v.approval_status !== 'pending');
+        let all = everyone.filter(v => v.approval_status !== 'pending');
+        // "My team": only people who share at least one team with the signed-in user.
+        let my_teams;
+        if (ctx.query.scope === 'team') {
+            const me = await ctx.db.getUserById(ctx.user.id);
+            my_teams = parseTeams(me && me.team) || [];
+            all = all.filter(v => teamsOverlap(my_teams, v.team));
+        }
         const counts = {
-            pending: everyone.length - all.length,
+            pending: everyone.filter(v => v.approval_status === 'pending').length,
             total: all.length,
             complete: all.filter(v => v.state.registration_complete).length,
             needs_signing: all.filter(v => v.state.signature_status !== 'signed').length,
@@ -224,7 +231,7 @@ Object.assign(handlers, {
             if (status === 'needs_signing') return v.state.signature_status !== 'signed';
             return true;
         });
-        return ok({ volunteers, counts });
+        return ok({ volunteers, counts, ...(my_teams ? { my_teams } : {}) });
     },
 
     async volunteer(ctx) {

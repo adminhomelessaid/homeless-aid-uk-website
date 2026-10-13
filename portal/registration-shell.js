@@ -57,8 +57,9 @@
     function logout() { clearAuth(); location.href = LOGIN; }
     function renderNav({ active, user }) {
         const items = navItems(user);
-        // Phone tab bar: the first three role-appropriate items plus Account, which links to the rest.
-        const tabs = [...items.filter(i => i.key !== 'account').slice(0, 3), items.find(i => i.key === 'account')];
+        // Phone tab bar: the onboarding essentials for each role. Everything else is under Account.
+        const TAB_KEYS = { admin: ['volunteers', 'users', 'policies', 'account'], team_lead: ['my-team', 'registration', 'policies', 'account'] };
+        const tabs = (TAB_KEYS[user.role] || ['registration', 'policies', 'account']).map(k => items.find(i => i.key === k)).filter(Boolean);
         const link = (i, cls) => `<a class="${cls}${i.key === active ? ' on' : ''}" href="${i.href}"><i class="fas ${i.icon}"></i><span>${i.label}</span></a>`;
         const host = document.getElementById('shellNav'); if (!host) return;
         host.innerHTML = `
@@ -74,8 +75,9 @@
     function isStaff(user) { return ['admin', 'team_lead'].includes(user && user.role); }
     function navItems(user) {
         return [
+            ...(user.role === 'team_lead' ? [{ key: 'my-team', href: '/portal/volunteers?scope=team', icon: 'fa-people-group', label: 'My team' }] : []),
             ...(isStaff(user) ? [
-                { key: 'volunteers', href: '/portal/volunteers', icon: 'fa-users', label: 'Volunteers' },
+                { key: 'volunteers', href: '/portal/volunteers', icon: 'fa-users', label: user.role === 'team_lead' ? 'All volunteers' : 'Volunteers' },
                 { key: 'log', href: '/portal/dashboard.html', icon: 'fa-clipboard-check', label: 'Log attendance' },
                 { key: 'attendances', href: '/portal/events-overview.html', icon: 'fa-list-check', label: 'Attendances' }
             ] : []),
@@ -87,7 +89,7 @@
         ];
     }
     // Where a user goes after login: staff to Volunteers, everyone else to My Registration.
-    function landing(user) { return isStaff(user) ? '/portal/volunteers' : '/portal/registration'; }
+    function landing(user) { return user && user.role === 'team_lead' ? '/portal/volunteers?scope=team' : isStaff(user) ? '/portal/volunteers' : '/portal/registration'; }
     // Generic call for the older endpoints (auth, admin, attendance): same token handling as api().
     async function call(path, { method = 'GET', body } = {}) {
         const res = await fetch(path, {
