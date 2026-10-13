@@ -1,0 +1,73 @@
+const { computeRegistrationState, normaliseName, addMonths } = require('./registration-state');
+const { sanitizeHtml } = require('./sanitize-html');
+const { validatePhoto } = require('./jpeg');
+
+const TEAMS = ['Bolton', 'Manchester', 'Bury', 'Liverpool', 'Wigan', 'Oldham', 'Glasgow', 'Leigh', 'Other'];
+const ROLES = ['admin', 'team_lead', 'volunteer'];
+
+const ok = (body) => ({ status: 200, body: { success: true, ...body } });
+const fail = (status, message, extra = {}) => ({ status, body: { success: false, message, ...extra } });
+const requirePost = (ctx) => ctx.method === 'POST' ? null : fail(405, 'Method not allowed');
+const requireRole = (ctx, roles) => roles.includes(ctx.user.role) ? null : fail(403, 'You do not have permission to do that');
+
+function policySummary(p) {
+    return {
+        id: p.id, slug: p.slug, title: p.title, sort_order: p.sort_order, is_active: p.is_active,
+        current_version: p.current_version ? { id: p.current_version.id, version: p.current_version.version, change_note: p.current_version.change_note, created_at: p.current_version.created_at } : null
+    };
+}
+
+async function stateFor(db, user, now) {
+    const [policies, sig] = await Promise.all([db.listActivePolicies(), db.getLatestSignature(user.id)]);
+    const active = policies.filter(p => p.current_version);
+    return { policies: active, state: computeRegistrationState(user, sig, active, now) };
+}
+
+function validateDetails(body) {
+    const out = {};
+    const errors = [];
+    const dob = String(body.date_of_birth || '').trim();
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(dob) || Number.isNaN(Date.parse(dob))) errors.push('Date of birth must be a valid date');
+    else if (new Date(dob) > new Date()) errors.push('Date of birth cannot be in the future');
+    else out.date_of_birth = dob;
+
+    const phone = (v) => String(v || '').trim();
+    const phoneOk = (v) => /^\+?[0-9 ()-]{7,20}$/.test(v);
+    const mob = phone(body.mobile_phone);
+    if (!phoneOk(mob)) errors.push('Mobile number must be a valid phone number'); else out.mobile_phone = mob;
+    const nokPhone = phone(body.next_of_kin_phone);
+    if (!phoneOk(nokPhone)) errors.push('Next of kin phone must be a valid phone number'); else out.next_of_kin_phone = nokPhone;
+
+    const team = String(body.team || '').trim();
+    if (!TEAMS.includes(team)) errors.push('Please choose a team'); else out.team = team;
+
+    const nok = String(body.next_of_kin_name || '').trim();
+    if (nok.length < 2 || nok.length > 100) errors.push('Next of kin name is required'); else out.next_of_kin_name = nok;
+
+    return { fields: out, errors };
+}
+
+const handlers = {
+    async ping({ db }) {
+        await db.ping();
+        return ok({ ok: true });
+    },
+
+    async me(ctx) {
+        const user = await ctx.db.getUserById(ctx.user.id);
+        if (!user) return fail(404, 'User not found');
+        const { policies, state } = await stateFor(ctx.db, user, ctx.now);
+        return ok({ user, state, policies: policies.map(policySummary), teams: TEAMS });
+    },
+
+    async 'update-me'(ctx) {
+        const m = requirePost(ctx); if (m) return m;
+        const { fields, errors } = validateDetails(ctx.body || {});
+        if (errors.length) return fail(400, errors.join('. '));
+        const user = await ctx.db.updateUser(ctx.user.id, fields);
+        const { state } = await stateFor(ctx.db, user, ctx.now);
+        return ok({ user, state });
+    }
+};
+
+module.exports = { handlers, TEAMS, ROLES, ok, fail, requirePost, requireRole, policySummary, stateFor, validateDetails, normaliseName, addMonths, sanitizeHtml, validatePhoto };
