@@ -20,40 +20,7 @@ module.exports = async (req, res) => {
             return res.status(400).json({ success: false, message: 'Missing credentials' });
         }
         
-        // Hardcoded for BenAdmin to bypass ALL database issues
-        if (username === 'BenAdmin' && password === 'TestPassword123') {
-            // Generate simple JWT
-            const jwtSecret = process.env.JWT_SECRET || 'temporary-secret-key';
-            const token = jwt.sign(
-                { 
-                    id: '550e8400-e29b-41d4-a716-446655440000',
-                    username: 'BenAdmin',
-                    name: 'Ben Admin',
-                    role: 'admin'
-                },
-                jwtSecret,
-                { 
-                    expiresIn: '4h',
-                    issuer: 'homelessaid.co.uk'
-                }
-            );
-            
-            return res.status(200).json({
-                success: true,
-                message: 'Login successful',
-                token: token,
-                user: {
-                    id: '550e8400-e29b-41d4-a716-446655440000',
-                    username: 'BenAdmin',
-                    name: 'Ben Admin',
-                    email: 'benadmin@example.com',
-                    role: 'admin',
-                    status: 'active'
-                }
-            });
-        }
-        
-        // Database authentication for other users
+        // Database authentication
         try {
             const supabase = createSupabaseClient();
             
@@ -61,7 +28,7 @@ module.exports = async (req, res) => {
             const { data: user, error } = await supabase
                 .from('outreach_users')
                 .select('id, username, email, full_name, password_hash, role, is_active')
-                .eq('username', username.toLowerCase())
+                .ilike('username', String(username).trim().replace(/[%_\\]/g, '\\$&')) // case-insensitive exact match, wildcards escaped
                 .eq('is_active', true)
                 .single();
             
