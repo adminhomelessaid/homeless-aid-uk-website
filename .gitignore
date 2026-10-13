@@ -20,3 +20,5 @@ __pycache__/
 # Temporary files
 *.tmp
 *.temp
+# Brainstorming companion sessions
+.superpowers/
