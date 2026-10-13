@@ -4,6 +4,8 @@ function createFakeDb(seed = {}) {
     const policies = new Map((seed.policies || []).map(p => [p.id, { ...p }]));
     const versions = (seed.versions || []).map(v => ({ ...v }));
     const signatures = (seed.signatures || []).map(s => ({ ...s }));
+    const teams = new Map((seed.teams || []).map(t => [t.id, { ...t }]));
+    let teamLeads = (seed.teamLeads || []).map(l => ({ ...l }));
     let idCounter = 1000;
     const nextId = () => `id-${idCounter++}`;
 
@@ -29,6 +31,11 @@ function createFakeDb(seed = {}) {
         },
         async listUsers() { return [...users.values()].map(u => publicUser(u, false)); },
         async deleteUser(id) { this.calls.push(['deleteUser', id]); users.delete(id); },
+        async listTeams() { return [...teams.values()].sort((a, b) => a.sort_order - b.sort_order).map(t => ({ ...t })); },
+        async insertTeam(fields) { const t = { id: nextId(), is_active: true, sort_order: teams.size + 1, ...fields }; teams.set(t.id, t); return { ...t }; },
+        async updateTeam(id, fields) { const t = teams.get(id); if (!t) throw new Error('not found'); Object.assign(t, fields); return { ...t }; },
+        async listTeamLeads() { return teamLeads.map(l => ({ ...l })); },
+        async setTeamLeads(teamId, userIds) { teamLeads = teamLeads.filter(l => l.team_id !== teamId).concat(userIds.map(u => ({ team_id: teamId, user_id: u }))); },
         async findUserByEmail(email) { const e = String(email).toLowerCase(); return publicUser([...users.values()].find(u => String(u.email).toLowerCase() === e), false); },
         async findUserByUsername(username) { const n = String(username).toLowerCase(); return publicUser([...users.values()].find(u => String(u.username).toLowerCase() === n), false); },
         async insertUser(fields) {

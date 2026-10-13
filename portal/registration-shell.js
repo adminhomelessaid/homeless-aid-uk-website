@@ -72,6 +72,13 @@
           <nav class="tabbar">${tabs.map(i => link(i, '')).join('')}</nav>`;
         host.querySelector('[data-logout]').addEventListener('click', (e) => { e.preventDefault(); logout(); });
     }
+    // Team picker: chips grouped by town. options = [{ name, town, day }], selected = array of names.
+    function teamChips(options, selected = []) {
+        const towns = [];
+        for (const o of options || []) { let g = towns.find(t => t.town === o.town); if (!g) towns.push(g = { town: o.town, items: [] }); g.items.push(o); }
+        return towns.map(g => `<div style="margin-bottom:8px">${g.items.some(o => o.day) ? `<div class="small muted" style="font-weight:600;margin:0 0 4px">${escape(g.town)}</div>` : ''}<div class="chips" style="flex-wrap:wrap">${g.items.map(o => { const on = selected.includes(o.name); const label = o.day || o.name; return `<label class="chip ${on ? 'on' : ''}" style="user-select:none"><input type="checkbox" name="team" value="${escape(o.name)}" ${on ? 'checked' : ''} style="display:none">${escape(label)}</label>`; }).join('')}</div></div>`).join('');
+    }
+    function wireChips(root) { root.querySelectorAll('input[name="team"]').forEach(cb => cb.addEventListener('change', () => cb.parentElement.classList.toggle('on', cb.checked))); }
     function isStaff(user) { return ['admin', 'team_lead'].includes(user && user.role); }
     function navItems(user) {
         return [
@@ -84,6 +91,7 @@
             { key: 'registration', href: '/portal/registration', icon: 'fa-user-check', label: 'My registration' },
             { key: 'policies', href: '/portal/registration#policies', icon: 'fa-file-signature', label: 'Policies' },
             ...(user.role === 'admin' ? [{ key: 'users', href: '/portal/admin.html', icon: 'fa-user-gear', label: 'Users' }] : []),
+            ...(user.role === 'admin' ? [{ key: 'teams', href: '/portal/teams', icon: 'fa-people-roof', label: 'Teams' }] : []),
             ...(user.role === 'admin' ? [{ key: 'policies-admin', href: '/portal/policies', icon: 'fa-pen-to-square', label: 'Edit policies' }] : []),
             { key: 'account', href: '/portal/account.html', icon: 'fa-circle-user', label: 'Account' }
         ];
@@ -108,5 +116,5 @@
         localStorage.setItem('outreach_user', JSON.stringify(user || {}));
     }
     function currentUser() { const t = getToken(); const p = t && decode(t); return p && p.id && (!p.exp || p.exp * 1000 > Date.now()) ? { id: p.id, role: p.role, name: p.name, username: p.username, email: p.email } : null; }
-    window.Shell = { requireAuth, api, apiUrl, download, renderNav, toast, logout, fmtDate, statusChip, escape, initials, roleLabel, getToken, isStaff, navItems, landing, call, storeSession, currentUser, clearAuth };
+    window.Shell = { teamChips, wireChips, requireAuth, api, apiUrl, download, renderNav, toast, logout, fmtDate, statusChip, escape, initials, roleLabel, getToken, isStaff, navItems, landing, call, storeSession, currentUser, clearAuth };
 })();

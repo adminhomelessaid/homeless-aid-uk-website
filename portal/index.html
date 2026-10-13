@@ -52,7 +52,7 @@
       <div class="msg err" id="signupErr" role="alert"></div>
       <label class="field"><span>Full name</span><input class="input" name="full_name" autocomplete="name" required maxlength="100"></label>
       <label class="field"><span>Email address</span><input class="input" type="email" name="email" autocomplete="email" required></label>
-      <div class="field"><span>Which team(s) will you help with?</span><div class="chips" id="teamChips" style="flex-wrap:wrap"></div></div>
+      <div class="field"><span>Which team(s) will you help with?</span><div id="teamChips"><p class="small muted">Loading teams…</p></div></div>
       <label class="field"><span>Choose a password</span><div class="pw"><input class="input" name="password" type="password" autocomplete="new-password" required><button type="button" data-eye aria-label="Show password"><i class="fas fa-eye"></i></button></div></label>
       <ul class="rules"><li data-rule="len">6+ characters</li><li data-rule="letter">A letter</li><li data-rule="num">A number</li></ul>
       <label class="hp" aria-hidden="true">Website<input name="website" tabindex="-1" autocomplete="off"></label>
@@ -71,7 +71,6 @@
 </main>
 <script src="/portal/registration-shell.js"></script>
 <script>
-const TEAMS = ['Bolton', 'Manchester', 'Bury', 'Liverpool', 'Wigan', 'Oldham', 'Glasgow', 'Other'];
 const existing = Shell.currentUser();
 if (existing) location.replace(Shell.landing(existing));
 const $ = (s) => document.querySelector(s);
@@ -88,8 +87,7 @@ function switchTab(tab) {
 if (location.hash === '#signup') switchTab('up');
 document.querySelectorAll('[data-eye]').forEach(b => b.onclick = () => { const i = b.parentElement.querySelector('input'); i.type = i.type === 'password' ? 'text' : 'password'; });
 
-$('#teamChips').innerHTML = TEAMS.map(t => `<label class="chip" style="user-select:none"><input type="checkbox" name="team" value="${t}" style="display:none">${t}</label>`).join('');
-$('#teamChips').querySelectorAll('input').forEach(cb => cb.addEventListener('change', () => cb.parentElement.classList.toggle('on', cb.checked)));
+fetch('/api/registration?action=team-list').then(r => r.json()).then(d => { $('#teamChips').innerHTML = Shell.teamChips(d.teams || []); Shell.wireChips($('#teamChips')); }).catch(() => { $('#teamChips').innerHTML = '<p class="small muted">Could not load the team list. Refresh to try again.</p>'; });
 
 const checks = { len: p => p.length >= 6, letter: p => /[A-Za-z]/.test(p), num: p => /[0-9]/.test(p) };
 signupForm.password.addEventListener('input', () => { for (const [k, fn] of Object.entries(checks)) signupForm.querySelector(`[data-rule="${k}"]`).classList.toggle('ok', fn(signupForm.password.value)); });

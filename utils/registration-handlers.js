@@ -2,7 +2,11 @@ const { computeRegistrationState, normaliseName, addMonths } = require('./regist
 const { sanitizeHtml } = require('./sanitize-html');
 const { validatePhoto } = require('./jpeg');
 
-const TEAMS = ['Bolton', 'Manchester', 'Bury', 'Liverpool', 'Wigan', 'Oldham', 'Glasgow', 'Other'];
+// Fallback team list, used only when the managed `teams` table is empty (and in unit tests).
+// dispatch() replaces it with the active team names from the database on every request.
+const DEFAULT_TEAMS = ['Bolton', 'Manchester', 'Bury', 'Liverpool', 'Wigan', 'Oldham', 'Glasgow', 'Other'];
+let TEAMS = DEFAULT_TEAMS;
+let TEAM_ROWS = [];
 
 // A volunteer can belong to several teams. Stored as a comma list in outreach_users.team; exposed as `teams`.
 function parseTeams(input) {
@@ -71,7 +75,7 @@ const handlers = {
         const user = await ctx.db.getUserById(ctx.user.id);
         if (!user) return fail(404, 'User not found');
         const { policies, signable, state } = await stateFor(ctx.db, user, ctx.now);
-        return ok({ user: withTeams(user), state, policies: policies.map(policySummary), to_sign: signable.map(policySummary), teams: TEAMS });
+        return ok({ user: withTeams(user), state, policies: policies.map(policySummary), to_sign: signable.map(policySummary), teams: TEAMS, team_options: teamOptions() });
     },
 
     async 'update-me'(ctx) {
@@ -207,8 +211,7 @@ Object.assign(handlers, {
         // "My team": only people who share at least one team with the signed-in user.
         let my_teams;
         if (ctx.query.scope === 'team') {
-            const me = await ctx.db.getUserById(ctx.user.id);
-            my_teams = parseTeams(me && me.team) || [];
+            my_teams = await ledTeams(ctx);
             all = all.filter(v => teamsOverlap(my_teams, v.team));
         }
         const counts = {
@@ -377,7 +380,89 @@ Object.assign(handlers, {
 });
 
 // Actions that need no login.
-const PUBLIC_ACTIONS = new Set(['ping', 'signup']);
+const PUBLIC_ACTIONS = new Set(['ping', 'signup', 'team-list']);
+
+// --- Managed teams -------------------------------------------------------------------------
+// A team is a regular session, e.g. "Bolton Friday", with any number of team leads.
+// Volunteers store team names in outreach_users.team; leads live in the team_leads table.
+function teamOptions() {
+    return TEAM_ROWS.length ? TEAM_ROWS.map(t => ({ name: t.name, town: t.town, day: t.day || null })) : TEAMS.map(n => ({ name: n, town: n, day: null }));
+}
+
+// Teams the signed-in person leads. Before teams are managed in the database, fall back to their own teams.
+async function ledTeams(ctx) {
+    if (TEAM_ROWS.length && ctx.db.listTeamLeads) {
+        const leads = await ctx.db.listTeamLeads();
+        const ids = new Set(leads.filter(l => l.user_id === ctx.user.id).map(l => l.team_id));
+        return TEAM_ROWS.filter(t => ids.has(t.id)).map(t => t.name);
+    }
+    const me = await ctx.db.getUserById(ctx.user.id);
+    return parseTeams(me && me.team) || [];
+}
+
+async function teamsWithLeads(db, { includeInactive }) {
+    const [rows, leads, users] = await Promise.all([db.listTeams(), db.listTeamLeads(), db.listUsers()]);
+    const byId = new Map(users.map(u => [u.id, u]));
+    return rows.filter(t => includeInactive || t.is_active).map(t => ({
+        id: t.id, name: t.name, town: t.town, day: t.day || null, sort_order: t.sort_order, is_active: t.is_active,
+        leads: leads.filter(l => l.team_id === t.id).map(l => byId.get(l.user_id)).filter(Boolean).map(u => ({ id: u.id, full_name: u.full_name, role: u.role })),
+        member_count: users.filter(u => u.approval_status !== 'pending' && String(u.team || '').split(',').map(s => s.trim()).includes(t.name)).length
+    }));
+}
+
+Object.assign(handlers, {
+    async 'team-list'(ctx) {
+        const rows = (await ctx.db.listTeams()).filter(t => t.is_active);
+        return ok({ teams: rows.map(t => ({ name: t.name, town: t.town, day: t.day || null })) });
+    },
+
+    async teams(ctx) {
+        const r = requireRole(ctx, ['admin', 'team_lead']); if (r) return r;
+        const all = await teamsWithLeads(ctx.db, { includeInactive: ctx.user.role === 'admin' });
+        const staff = ctx.user.role === 'admin' ? (await ctx.db.listUsers()).filter(u => ['admin', 'team_lead'].includes(u.role) && u.is_active).map(u => ({ id: u.id, full_name: u.full_name, role: u.role })) : undefined;
+        return ok({ teams: all, ...(staff ? { staff } : {}) });
+    },
+
+    async 'team-save'(ctx) {
+        const m = requirePost(ctx); if (m) return m;
+        const r = requireRole(ctx, ['admin']); if (r) return r;
+        const body = ctx.body || {};
+        const name = String(body.name || '').trim().replace(/\s+/g, ' ');
+        const town = String(body.town || '').trim();
+        const day = String(body.day || '').trim() || null;
+        if (name.length < 2 || name.length > 60) return fail(400, 'Team name must be 2 to 60 characters');
+        if (name.includes(',')) return fail(400, 'Team names cannot contain commas');
+        if (!town) return fail(400, 'Town is required');
+        const existing = await ctx.db.listTeams();
+        if (existing.some(t => t.id !== body.team_id && t.name.toLowerCase() === name.toLowerCase())) return fail(409, `A team called "${name}" already exists`);
+        const fields = { name, town, day, ...('is_active' in body ? { is_active: Boolean(body.is_active) } : {}) };
+        let team;
+        if (body.team_id) {
+            const before = existing.find(t => t.id === body.team_id);
+            if (!before) return fail(404, 'Team not found');
+            team = await ctx.db.updateTeam(before.id, fields);
+            if (before.name !== name) {
+                // Move every member's stored team name across to the new name.
+                for (const u of await ctx.db.listUsers()) {
+                    const list = String(u.team || '').split(',').map(s => s.trim()).filter(Boolean);
+                    if (list.includes(before.name)) await ctx.db.updateUser(u.id, { team: list.map(n => n === before.name ? name : n).join(', ') });
+                }
+            }
+        } else {
+            team = await ctx.db.insertTeam({ ...fields, sort_order: existing.reduce((mx, t) => Math.max(mx, t.sort_order || 0), 0) + 1 });
+        }
+        if (Array.isArray(body.lead_ids)) {
+            const users = await ctx.db.listUsers();
+            const valid = new Set(users.filter(u => ['admin', 'team_lead'].includes(u.role)).map(u => u.id));
+            const ids = [...new Set(body.lead_ids.map(String))];
+            const bad = ids.filter(id => !valid.has(id));
+            if (bad.length) return fail(400, 'Team leads must have the Team Lead or Admin role');
+            await ctx.db.setTeamLeads(team.id, ids);
+        }
+        const out = (await teamsWithLeads(ctx.db, { includeInactive: true })).find(t => t.id === team.id);
+        return ok({ team: out });
+    }
+});
 
 function usernameFromEmail(email, isTaken) {
     const base = String(email || '').split('@')[0].toLowerCase().replace(/\s+/g, '').replace(/[^a-z0-9._-]+/g, '-').replace(/^[-.]+|[-.]+$/g, '').slice(0, 40) || 'volunteer';
@@ -415,9 +500,9 @@ async function signup(ctx) {
 
 async function pendingFor(ctx) {
     const r = requireRole(ctx, ['admin', 'team_lead']); if (r) return { error: r };
-    const me = ctx.user.role === 'admin' ? null : await ctx.db.getUserById(ctx.user.id);
+    const mine = ctx.user.role === 'admin' ? null : await ledTeams(ctx);
     const all = (await ctx.db.listUsers()).filter(u => u.approval_status === 'pending');
-    const visible = me ? all.filter(u => teamsOverlap(me.team, u.team)) : all;
+    const visible = mine ? all.filter(u => teamsOverlap(mine, u.team)) : all;
     return { pending: visible.sort((a, b) => String(a.created_at).localeCompare(String(b.created_at))).map(withTeams) };
 }
 
@@ -465,6 +550,12 @@ function resolveAction(req, query, body) {
 async function dispatch(action, ctx) {
     const handler = Object.prototype.hasOwnProperty.call(handlers, action) ? handlers[action] : null;
     if (!handler) return fail(404, `Unknown action: ${action}`);
+    // Load the managed team list; with no teams in the database the built-in town list is used.
+    if (action !== 'ping' && ctx.db && ctx.db.listTeams) {
+        const rows = (await ctx.db.listTeams()).filter(t => t.is_active);
+        TEAM_ROWS = rows;
+        TEAMS = rows.length ? rows.map(t => t.name) : DEFAULT_TEAMS;
+    }
     if (!PUBLIC_ACTIONS.has(action)) {
         const row = await ctx.db.getUserById(ctx.user.id);
         if (!row) return fail(401, "This account no longer exists. Please log in again.");

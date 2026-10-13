@@ -83,6 +83,24 @@ function createRegistrationDb(supabase) {
             const data = must(await supabase.from('outreach_users').insert([fields]).select(USER_PUBLIC_FIELDS).single());
             return shapeUser(data, false);
         },
+
+        // Managed teams. Tolerates the tables not existing yet, so the site keeps working before the migration.
+        async listTeams() {
+            const { data, error } = await supabase.from('teams').select('id, name, town, day, sort_order, is_active').order('sort_order');
+            if (error) { if (/does not exist|schema cache/i.test(error.message)) return []; throw new Error(error.message); }
+            return data;
+        },
+        async insertTeam(fields) { return must(await supabase.from('teams').insert([fields]).select('id, name, town, day, sort_order, is_active').single()); },
+        async updateTeam(id, fields) { return must(await supabase.from('teams').update(fields).eq('id', id).select('id, name, town, day, sort_order, is_active').single()); },
+        async listTeamLeads() {
+            const { data, error } = await supabase.from('team_leads').select('team_id, user_id');
+            if (error) { if (/does not exist|schema cache/i.test(error.message)) return []; throw new Error(error.message); }
+            return data;
+        },
+        async setTeamLeads(teamId, userIds) {
+            must(await supabase.from('team_leads').delete().eq('team_id', teamId));
+            if (userIds.length) must(await supabase.from('team_leads').insert(userIds.map(u => ({ team_id: teamId, user_id: u }))));
+        },
         async listLatestSignaturesByUser() {
             const rows = must(await supabase.from('policy_signatures').select('user_id, signed_at, expires_at, version_ids').order('signed_at', { ascending: false }));
             const m = new Map();

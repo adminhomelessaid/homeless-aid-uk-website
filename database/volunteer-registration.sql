@@ -95,3 +95,34 @@ CREATE INDEX IF NOT EXISTS idx_outreach_users_approval ON outreach_users(approva
 
 -- 8. Only some documents need a signature; the rest are reference reading
 ALTER TABLE policies ADD COLUMN IF NOT EXISTS requires_signature boolean NOT NULL DEFAULT true;
+
+-- 9. Managed teams: a team is a regular session (town + day) with any number of team leads
+CREATE TABLE IF NOT EXISTS teams (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  name varchar(60) UNIQUE NOT NULL,
+  town varchar(60) NOT NULL,
+  day varchar(12),
+  sort_order integer NOT NULL DEFAULT 0,
+  is_active boolean NOT NULL DEFAULT true,
+  created_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE TABLE IF NOT EXISTS team_leads (
+  team_id uuid NOT NULL REFERENCES teams(id) ON DELETE CASCADE,
+  user_id uuid NOT NULL REFERENCES outreach_users(id) ON DELETE CASCADE,
+  PRIMARY KEY (team_id, user_id)
+);
+ALTER TABLE teams DISABLE ROW LEVEL SECURITY;
+ALTER TABLE team_leads DISABLE ROW LEVEL SECURITY;
+
+INSERT INTO teams (name, town, day, sort_order) VALUES
+  ('Bolton Monday', 'Bolton', 'Monday', 1), ('Bolton Tuesday', 'Bolton', 'Tuesday', 2), ('Bolton Wednesday', 'Bolton', 'Wednesday', 3),
+  ('Bolton Thursday', 'Bolton', 'Thursday', 4), ('Bolton Friday', 'Bolton', 'Friday', 5), ('Bolton Saturday', 'Bolton', 'Saturday', 6),
+  ('Bolton Sunday', 'Bolton', 'Sunday', 7), ('Bury Monday', 'Bury', 'Monday', 8), ('Bury Tuesday', 'Bury', 'Tuesday', 9),
+  ('Glasgow Saturday', 'Glasgow', 'Saturday', 10), ('Liverpool Tuesday', 'Liverpool', 'Tuesday', 11),
+  ('Manchester Thursday', 'Manchester', 'Thursday', 12), ('Manchester Friday', 'Manchester', 'Friday', 13), ('Manchester Saturday', 'Manchester', 'Saturday', 14),
+  ('Oldham Thursday', 'Oldham', 'Thursday', 15), ('Wigan Wednesday', 'Wigan', 'Wednesday', 16), ('Other', 'Other', NULL, 17)
+ON CONFLICT (name) DO NOTHING;
+
+-- Old town-only choices no longer match a team; clear them so people pick their sessions.
+UPDATE outreach_users SET team = NULL
+WHERE team IS NOT NULL AND NOT EXISTS (SELECT 1 FROM teams t WHERE t.name = ANY (string_to_array(replace(outreach_users.team, ', ', ','), ',')));

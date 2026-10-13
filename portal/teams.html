@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Teams - Homeless Aid UK</title>
+<link rel="manifest" href="/portal/manifest.json">
+<meta name="theme-color" content="#1A2332">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="/portal/registration.css">
+<style>
+  .town h3 { margin: 18px 0 8px; } .town:first-child h3 { margin-top: 0; }
+  .team { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  .team .leads { display: flex; gap: 6px; flex-wrap: wrap; }
+</style>
+</head>
+<body>
+<div class="app">
+  <div id="shellNav"></div>
+  <div style="flex:1;min-width:0;display:flex;flex-direction:column">
+    <header class="topbar" style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
+      <div><h1>Teams</h1><p>Each team is a regular session. Give each one its team leads.</p></div>
+      <button class="btn sm" id="newBtn"><i class="fas fa-plus"></i> New team</button>
+    </header>
+    <main class="main" id="view"><div class="empty">Loading…</div></main>
+  </div>
+</div>
+<div class="modal-bg" id="modal"><div class="modal" id="modalBody"></div></div>
+<script src="/portal/registration-shell.js"></script>
+<script>
+const me = Shell.requireAuth();
+if (me.role !== 'admin') { location.replace(Shell.landing(me)); throw new Error('redirecting'); }
+Shell.renderNav({ active: 'teams', user: me });
+const $ = (s) => document.querySelector(s);
+const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+let teams = [], staff = [];
+
+async function load() {
+    try { const r = await Shell.api('teams'); teams = r.teams; staff = r.staff || []; }
+    catch (e) { $('#view').innerHTML = `<div class="empty">${Shell.escape(e.message)}</div>`; return; }
+    const towns = [];
+    for (const t of teams) { let g = towns.find(x => x.town === t.town); if (!g) towns.push(g = { town: t.town, items: [] }); g.items.push(t); }
+    const noLead = teams.filter(t => t.is_active && t.leads.length === 0 && t.name !== 'Other').length;
+    $('#view').innerHTML = (noLead ? `<div class="banner"><i class="fas fa-triangle-exclamation"></i><div>${noLead} team${noLead === 1 ? ' has' : 's have'} no team lead yet, so sign-ups for ${noLead === 1 ? 'it' : 'them'} only reach admins.</div></div>` : '') +
+        towns.map(g => `<div class="town"><h3>${Shell.escape(g.town)}</h3>${g.items.map(t => `
+          <div class="card team" style="${t.is_active ? '' : 'opacity:.55'}">
+            <div style="flex:1;min-width:180px"><b>${Shell.escape(t.name)}</b> ${t.is_active ? '' : '<span class="st mute">Retired</span>'}<br>
+              <span class="small muted">${t.member_count} volunteer${t.member_count === 1 ? '' : 's'}</span></div>
+            <div class="leads">${t.leads.length ? t.leads.map(l => `<span class="st ok">${Shell.escape(l.full_name)}</span>`).join('') : '<span class="st warn">No team lead</span>'}</div>
+            <button class="btn ghost sm" data-edit="${Shell.escape(t.id)}"><i class="fas fa-pen"></i> Edit</button>
+          </div>`).join('')}</div>`).join('');
+    document.querySelectorAll('[data-edit]').forEach(b => b.onclick = () => openEditor(teams.find(t => t.id === b.dataset.edit)));
+}
+
+function openEditor(t) {
+    const leadIds = new Set((t ? t.leads : []).map(l => l.id));
+    $('#modalBody').innerHTML = `<form id="teamForm"><h2>${t ? 'Edit team' : 'New team'}</h2>
+      <label class="field"><span>Team name</span><input class="input" name="name" required maxlength="60" value="${Shell.escape(t ? t.name : '')}" placeholder="e.g. Bolton Friday"></label>
+      <label class="field"><span>Town</span><input class="input" name="town" required maxlength="60" value="${Shell.escape(t ? t.town : '')}" placeholder="e.g. Bolton"></label>
+      <label class="field"><span>Day</span><select class="select" name="day"><option value="">No fixed day</option>${DAYS.map(d => `<option ${t && t.day === d ? 'selected' : ''}>${d}</option>`).join('')}</select></label>
+      <div class="field"><span>Team leads</span>
+        ${staff.length ? `<div class="chips" style="flex-wrap:wrap">${staff.map(s => `<label class="chip ${leadIds.has(s.id) ? 'on' : ''}" style="user-select:none"><input type="checkbox" name="lead" value="${Shell.escape(s.id)}" ${leadIds.has(s.id) ? 'checked' : ''} style="display:none">${Shell.escape(s.full_name)}</label>`).join('')}</div>
+        <span class="small muted" style="font-weight:400">Only people with the Team Lead or Admin role are listed. Change roles on the Users page.</span>` : '<p class="small muted">Nobody has the Team Lead role yet. Set roles on the Users page first.</p>'}
+      </div>
+      ${t ? `<label class="small" style="display:flex;gap:10px;align-items:center;margin-bottom:14px"><input type="checkbox" name="is_active" ${t.is_active ? 'checked' : ''} style="width:20px;height:20px;margin:0"> Active. Untick to retire the team; members keep their history.</label>` : ''}
+      ${t && t.member_count ? `<p class="small muted">Renaming moves all ${t.member_count} members across to the new name.</p>` : ''}
+      <div class="actions"><button class="btn" type="submit">${t ? 'Save' : 'Create team'}</button><button class="btn ghost" type="button" id="cancelTeam">Cancel</button></div></form>`;
+    $('#modal').classList.add('open');
+    $('#modalBody').querySelectorAll('input[name="lead"]').forEach(cb => cb.addEventListener('change', () => cb.parentElement.classList.toggle('on', cb.checked)));
+    $('#cancelTeam').onclick = () => $('#modal').classList.remove('open');
+    $('#teamForm').onsubmit = async (e) => {
+        e.preventDefault(); const f = e.target; const btn = f.querySelector('button[type=submit]'); btn.disabled = true;
+        const body = { name: f.name.value, town: f.town.value, day: f.day.value, lead_ids: [...f.querySelectorAll('input[name=lead]:checked')].map(i => i.value) };
+        if (t) { body.team_id = t.id; body.is_active = f.is_active.checked; }
+        try { await Shell.api('team-save', { method: 'POST', body }); $('#modal').classList.remove('open'); Shell.toast(t ? 'Team saved' : 'Team created'); load(); }
+        catch (ex) { Shell.toast(ex.message, 'error'); btn.disabled = false; }
+    };
+}
+$('#newBtn').onclick = () => openEditor(null);
+$('#modal').addEventListener('click', (e) => { if (e.target.id === 'modal') $('#modal').classList.remove('open'); });
+load();
+</script>
+</body>
+</html>

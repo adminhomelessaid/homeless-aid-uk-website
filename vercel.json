@@ -125,6 +125,10 @@
     {
       "source": "/portal/",
       "destination": "/portal/index.html"
+    },
+    {
+      "source": "/portal/teams",
+      "destination": "/portal/teams.html"
     }
   ],
   "redirects": [
