@@ -52,7 +52,7 @@ class AuthUtils {
     if (p.length < 6) errors.push("Password must be at least 6 characters long");
     if (!/[A-Za-z]/.test(p)) errors.push("Password must contain at least one letter");
     if (!/[0-9]/.test(p)) errors.push("Password must contain at least one number");
-    if (/s/.test(p)) errors.push("Password cannot contain spaces");
+    if (p.includes(" ")) errors.push("Password cannot contain spaces");
     return { valid: errors.length === 0, errors };
   }
 
