@@ -36,7 +36,7 @@ http.createServer(async (req, res) => {
         req.body = raw ? (() => { try { return JSON.parse(raw); } catch { return {}; } })() : {};
         req.query = Object.fromEntries(url.searchParams.entries());
         req.url = url.pathname + url.search;
-        delete require.cache[file];
+        for (const k of Object.keys(require.cache)) if (k.startsWith(ROOT) && !k.includes('node_modules')) delete require.cache[k];
         try { await require(file)(req, shim(res)); } catch (e) { console.error(e); res.statusCode = 500; res.end('Function error'); }
         return;
     }
