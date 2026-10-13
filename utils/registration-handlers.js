@@ -492,4 +492,24 @@ async function sendResetLink(ctx) {
 }
 handlers['send-reset-link'] = sendResetLink;
 
+// Admin: set someone's password directly, for volunteers who will not manage a reset link.
+// Never used on your own account (use the Account page); every use is logged with the acting admin.
+async function setPassword(ctx) {
+    const m = requirePost(ctx); if (m) return m;
+    const r = requireRole(ctx, ['admin']); if (r) return r;
+    const { user_id, password } = ctx.body || {};
+    if (!user_id) return fail(400, 'user_id is required');
+    if (user_id === ctx.user.id) return fail(400, 'Use the Account page to change your own password');
+    const AuthUtils = require('./auth');
+    const pw = AuthUtils.validatePassword(String(password || ''));
+    if (!pw.valid) return fail(400, pw.errors.join('. '));
+    const target = await ctx.db.getUserById(user_id);
+    if (!target) return fail(404, 'User not found');
+    const hashPassword = ctx.hashPassword || AuthUtils.hashPassword;
+    await ctx.db.updateUser(user_id, { password_hash: await hashPassword(String(password)), password_set_at: ctx.now.toISOString(), invitation_token: null });
+    console.log(`Password set for ${target.username} (${target.id}) by ${ctx.user.username} (${ctx.user.id})`);
+    return ok({});
+}
+handlers['set-password'] = setPassword;
+
 module.exports = { handlers, dispatch, resolveAction, parseTeams, withTeams, usernameFromEmail, PUBLIC_ACTIONS, TEAMS, ROLES, ok, fail, requirePost, requireRole, policySummary, stateFor, validateDetails, normaliseName, addMonths, sanitizeHtml, validatePhoto };

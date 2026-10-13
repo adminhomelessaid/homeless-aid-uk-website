@@ -105,7 +105,7 @@ function openEdit(u) {
       <label class="field"><span>Full name</span><input class="input" name="full_name" value="${Shell.escape(u.full_name)}" required></label>
       <label class="field"><span>Email</span><input class="input" type="email" name="email" value="${Shell.escape(u.email)}" required></label>
       <label class="field"><span>Role</span><select class="select" name="role" ${self ? 'disabled' : ''}>${roleOptions(u.role)}</select>${self ? '<span class="small muted" style="font-weight:400">You cannot change your own role.</span>' : ''}</label>
-      <div class="actions"><button class="btn" type="submit">Save</button><button class="btn ghost" type="button" id="cancelBtn">Cancel</button>${self ? '' : `<button class="btn ghost" type="button" id="resetBtn" title="Clears their password and emails a link to set a new one"><i class="fas fa-key"></i> Reset password</button><button class="btn ${u.is_active ? 'danger' : ''}" type="button" id="toggleBtn" style="margin-left:auto">${u.is_active ? 'Block login' : 'Unblock'}</button>`}</div>
+      <div class="actions"><button class="btn" type="submit">Save</button><button class="btn ghost" type="button" id="cancelBtn">Cancel</button>${self ? '' : `<button class="btn ghost" type="button" id="setPwBtn" title="Type a new password for them"><i class="fas fa-key"></i> Set password</button><button class="btn ghost" type="button" id="resetBtn" title="Clears their password and emails a link to set a new one"><i class="fas fa-envelope"></i> Email reset link</button><button class="btn ${u.is_active ? 'danger' : ''}" type="button" id="toggleBtn" style="margin-left:auto">${u.is_active ? 'Block login' : 'Unblock'}</button>`}</div>
       <p class="small muted" style="margin:12px 0 0">Registration details, photo and signatures are on the <a href="/portal/volunteers#volunteer/${u.id}">volunteer record</a>.</p></form>`);
     $('#cancelBtn').onclick = closeModal;
     $('#editForm').onsubmit = async (e) => {
@@ -114,6 +114,18 @@ function openEdit(u) {
             await Shell.call('/api/admin/update-user', { method: 'PUT', body: { userId: u.id, full_name: f.full_name.value.trim(), email: f.email.value.trim(), role: self ? u.role : f.role.value } });
             closeModal(); Shell.toast('Saved'); load();
         } catch (ex) { Shell.toast(ex.message, 'error'); btn.disabled = false; }
+    };
+    const sp = $('#setPwBtn'); if (sp) sp.onclick = () => {
+        openModal(`<form id="setPwForm"><h2>Set a password for ${Shell.escape(u.full_name)}</h2>
+          <p class="small muted">Their current password stops working straight away. Tell them the new one in person or by phone, and suggest they change it on their Account page.</p>
+          <label class="field"><span>New password</span><input class="input" name="password" autocomplete="off" autocapitalize="none" required placeholder="6+ characters with a letter and a number"></label>
+          <div class="actions"><button class="btn" type="submit">Set password</button><button class="btn ghost" type="button" id="cancelSetPw">Cancel</button></div></form>`);
+        $('#cancelSetPw').onclick = () => openEdit(u);
+        $('#setPwForm').onsubmit = async (e) => {
+            e.preventDefault(); const btn = e.target.querySelector('button[type=submit]'); btn.disabled = true;
+            try { await Shell.api('set-password', { method: 'POST', body: { user_id: u.id, password: e.target.password.value } }); closeModal(); Shell.toast(`Password set for ${u.full_name}`); load(); }
+            catch (ex) { Shell.toast(ex.message, 'error'); btn.disabled = false; }
+        };
     };
     const rb = $('#resetBtn'); if (rb) rb.onclick = async () => {
         if (!window.confirm(`Send ${u.full_name} a password reset link? Their current password stops working immediately.`)) return;
