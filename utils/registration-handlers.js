@@ -119,4 +119,43 @@ Object.assign(handlers, {
     }
 });
 
+Object.assign(handlers, {
+    async policies(ctx) {
+        const user = await ctx.db.getUserById(ctx.user.id);
+        if (!user) return fail(404, 'User not found');
+        const { policies, state } = await stateFor(ctx.db, user, ctx.now);
+        const full = policies.map(p => ({ ...policySummary(p), current_version: { ...policySummary(p).current_version, body_html: p.current_version.body_html } }));
+        return ok({ policies: full, state });
+    },
+
+    async sign(ctx) {
+        const m = requirePost(ctx); if (m) return m;
+        const user = await ctx.db.getUserById(ctx.user.id);
+        if (!user) return fail(404, 'User not found');
+        if (!user.is_active) return fail(403, 'This account is blocked');
+
+        const typed = String(ctx.body.typed_name || '').trim();
+        if (normaliseName(typed) !== normaliseName(user.full_name)) {
+            return fail(400, `Please type your name exactly as it appears on your account: ${user.full_name}`);
+        }
+
+        const { policies } = await stateFor(ctx.db, user, ctx.now);
+        if (policies.length === 0) return fail(400, 'There are no policies to sign yet');
+
+        const sent = new Set(Array.isArray(ctx.body.version_ids) ? ctx.body.version_ids.map(String) : []);
+        const current = new Set(policies.map(p => p.current_version.id));
+        const outdated = policies.filter(p => !sent.has(p.current_version.id)).map(p => p.title);
+        const unknown = [...sent].filter(id => !current.has(id));
+        if (outdated.length || unknown.length) {
+            return fail(409, 'The policies have changed since you opened this page. Please refresh, read the updated policies, and sign again.', { outdated_policies: outdated });
+        }
+
+        const signed_at = ctx.now.toISOString();
+        const expires_at = addMonths(ctx.now, 12).toISOString();
+        await ctx.db.insertSignature({ user_id: user.id, typed_name: typed, signed_at, expires_at, version_ids: [...current], ip_address: ctx.ip, user_agent: ctx.userAgent });
+        const { state } = await stateFor(ctx.db, user, ctx.now);
+        return ok({ signature: { signed_at, expires_at }, state });
+    }
+});
+
 module.exports = { handlers, TEAMS, ROLES, ok, fail, requirePost, requireRole, policySummary, stateFor, validateDetails, normaliseName, addMonths, sanitizeHtml, validatePhoto };
