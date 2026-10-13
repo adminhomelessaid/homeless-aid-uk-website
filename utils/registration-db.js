@@ -1,5 +1,5 @@
 const USER_PUBLIC_FIELDS = 'id, username, email, full_name, role, is_active, email_verified, created_at, last_login, date_of_birth, mobile_phone, team, next_of_kin_name, next_of_kin_phone, photo_updated_at, volunteer_number, approval_status, approved_at';
-const POLICY_FIELDS = 'id, slug, title, sort_order, is_active, created_at';
+const POLICY_FIELDS = 'id, slug, title, sort_order, is_active, requires_signature, created_at';
 const VERSION_FIELDS = 'id, policy_id, version, body_html, change_note, created_at, created_by';
 const SIGNATURE_FIELDS = 'id, user_id, typed_name, signed_at, expires_at, version_ids, ip_address, user_agent';
 

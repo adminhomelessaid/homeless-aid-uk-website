@@ -47,7 +47,7 @@ async function load() {
           <button class="btn ghost sm" data-move="${p.id}" data-dir="-1" ${i === 0 ? 'disabled' : ''}><i class="fas fa-chevron-up"></i></button>
           <button class="btn ghost sm" data-move="${p.id}" data-dir="1" ${i === policies.length - 1 ? 'disabled' : ''}><i class="fas fa-chevron-down"></i></button>
         </div>
-        <div style="flex:1;min-width:0"><b>${Shell.escape(p.title)}</b> ${p.is_active ? '' : '<span class="st mute">Retired</span>'}<br>
+        <div style="flex:1;min-width:0"><b>${Shell.escape(p.title)}</b> ${p.requires_signature !== false ? '<span class="st ok">Signed by volunteers</span>' : '<span class="st mute">Reference only</span>'} ${p.is_active ? '' : '<span class="st mute">Retired</span>'}<br>
           <span class="small muted">${p.current_version ? `Version ${p.current_version.version} · ${Shell.fmtDate(p.current_version.created_at)}${p.current_version.change_note ? ' · ' + Shell.escape(p.current_version.change_note) : ''}` : 'No text yet'}</span></div>
         <div class="actions">
           <button class="btn ghost sm" data-edit="${p.id}"><i class="fas fa-pen"></i> Edit</button>
@@ -83,8 +83,9 @@ function openEditor(p) {
           </div>
           <div class="editor policy-body" id="editor" contenteditable="true">${p?.current_version?.body_html || '<p></p>'}</div>
         </div>
+        <label class="small" style="display:flex;gap:10px;align-items:flex-start;margin:0 0 14px"><input type="checkbox" name="requires_signature" ${!p || p.requires_signature !== false ? 'checked' : ''} style="width:20px;height:20px;margin:0"> Volunteers must sign this document. Untick for reference policies that are read but not signed.</label>
         ${p ? `<label class="field"><span>What changed? (shown to volunteers when they re-sign)</span><input class="input" name="change_note" maxlength="300" placeholder="e.g. Updated safeguarding lead contact details"></label>
-        <div class="banner"><i class="fas fa-triangle-exclamation"></i><div>Saving creates version ${(p.current_version?.version || 0) + 1}. Every volunteer will need to read and sign again.</div></div>` : ''}
+        <div class="banner"><i class="fas fa-triangle-exclamation"></i><div>Saving creates version ${(p.current_version?.version || 0) + 1}.${p.requires_signature !== false ? ' Every volunteer will need to read and sign again.' : ' Reference documents do not trigger re-signing.'}</div></div>` : ''}
         <div class="actions"><button class="btn" type="submit">${p ? 'Save new version' : 'Create policy'}</button><button class="btn ghost" type="button" id="cancelPol">Cancel</button></div>
       </form>`;
     $('#modal').classList.add('open');
@@ -92,7 +93,7 @@ function openEditor(p) {
     document.querySelectorAll('.toolbar button').forEach(b => b.onclick = () => { $('#editor').focus(); document.execCommand(b.dataset.cmd, false, b.dataset.val || null); });
     $('#polForm').onsubmit = async (e) => {
         e.preventDefault();
-        const body = { title: e.target.title.value, body_html: $('#editor').innerHTML };
+        const body = { title: e.target.title.value, body_html: $('#editor').innerHTML, requires_signature: e.target.requires_signature.checked };
         if (p) { body.policy_id = p.id; body.change_note = e.target.change_note.value; }
         try { await Shell.api('policy-save', { method: 'POST', body }); $('#modal').classList.remove('open'); Shell.toast(p ? 'New version saved' : 'Policy created'); load(); } catch (err) { Shell.toast(err.message, 'error'); }
     };

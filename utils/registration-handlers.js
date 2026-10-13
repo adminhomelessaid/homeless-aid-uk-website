@@ -22,14 +22,19 @@ const requireRole = (ctx, roles) => roles.includes(ctx.user.role) ? null : fail(
 function policySummary(p) {
     return {
         id: p.id, slug: p.slug, title: p.title, sort_order: p.sort_order, is_active: p.is_active,
+        requires_signature: p.requires_signature !== false,
         current_version: p.current_version ? { id: p.current_version.id, version: p.current_version.version, change_note: p.current_version.change_note, created_at: p.current_version.created_at } : null
     };
 }
 
+// Only documents flagged requires_signature form the declaration; the rest are reference reading.
+const needsSignature = (p) => p.requires_signature !== false;
+
 async function stateFor(db, user, now) {
     const [policies, sig] = await Promise.all([db.listActivePolicies(), db.getLatestSignature(user.id)]);
     const active = policies.filter(p => p.current_version);
-    return { policies: active, state: computeRegistrationState(user, sig, active, now) };
+    const signable = active.filter(needsSignature);
+    return { policies: active, signable, state: computeRegistrationState(user, sig, signable, now) };
 }
 
 function validateDetails(body) {
@@ -65,8 +70,8 @@ const handlers = {
     async me(ctx) {
         const user = await ctx.db.getUserById(ctx.user.id);
         if (!user) return fail(404, 'User not found');
-        const { policies, state } = await stateFor(ctx.db, user, ctx.now);
-        return ok({ user: withTeams(user), state, policies: policies.map(policySummary), teams: TEAMS });
+        const { policies, signable, state } = await stateFor(ctx.db, user, ctx.now);
+        return ok({ user: withTeams(user), state, policies: policies.map(policySummary), to_sign: signable.map(policySummary), teams: TEAMS });
     },
 
     async 'update-me'(ctx) {
@@ -148,8 +153,8 @@ Object.assign(handlers, {
             return fail(400, `Please type your name exactly as it appears on your account: ${user.full_name}`);
         }
 
-        const { policies } = await stateFor(ctx.db, user, ctx.now);
-        if (policies.length === 0) return fail(400, 'There are no policies to sign yet');
+        const { signable: policies } = await stateFor(ctx.db, user, ctx.now);
+        if (policies.length === 0) return fail(400, 'There is nothing to sign yet');
 
         const sent = new Set(Array.isArray(ctx.body.version_ids) ? ctx.body.version_ids.map(String) : []);
         const current = new Set(policies.map(p => p.current_version.id));
@@ -169,8 +174,8 @@ Object.assign(handlers, {
 
 async function listWithState(db, now) {
     const [users, policies, latest] = await Promise.all([db.listUsers(), db.listActivePolicies(), db.listLatestSignaturesByUser()]);
-    const active = policies.filter(p => p.current_version);
-    return users.map(u => ({ ...withTeams(u), state: computeRegistrationState(u, latest.get(u.id) || null, active, now) }));
+    const signable = policies.filter(p => p.current_version && needsSignature(p));
+    return users.map(u => ({ ...withTeams(u), state: computeRegistrationState(u, latest.get(u.id) || null, signable, now) }));
 }
 
 function csvCell(v, { phone = false } = {}) {
@@ -326,14 +331,17 @@ Object.assign(handlers, {
             policy = await ctx.db.getPolicyById(body.policy_id);
             if (!policy) return fail(404, 'Policy not found');
             nextVersion = (policy.current_version?.version || 0) + 1;
-            if (policy.title !== title) policy = { ...policy, ...(await ctx.db.updatePolicy(policy.id, { title })) };
+            const changes = {};
+            if (policy.title !== title) changes.title = title;
+            if ('requires_signature' in body) changes.requires_signature = body.requires_signature !== false && body.requires_signature !== 'false';
+            if (Object.keys(changes).length) policy = { ...policy, ...(await ctx.db.updatePolicy(policy.id, changes)) };
         } else {
             const slug = slugify(body.slug || title);
             if (!slug) return fail(400, 'Could not make a slug from the title');
             const all = await ctx.db.listAllPolicies();
             if (all.some(p => p.slug === slug)) return fail(409, `A policy with the slug "${slug}" already exists`);
             const sort_order = all.reduce((m, p) => Math.max(m, p.sort_order), 0) + 1;
-            policy = await ctx.db.insertPolicy({ slug, title, sort_order });
+            policy = await ctx.db.insertPolicy({ slug, title, sort_order, requires_signature: body.requires_signature !== false && body.requires_signature !== 'false' });
         }
         const version = await ctx.db.insertPolicyVersion({ policy_id: policy.id, version: nextVersion, body_html: html, change_note, created_by: ctx.user.id });
         return ok({ policy: policyFull({ ...policy, current_version: version }) });
@@ -354,7 +362,9 @@ Object.assign(handlers, {
         const { policy_id, is_active } = ctx.body || {};
         const existing = await ctx.db.getPolicyById(policy_id);
         if (!existing) return fail(404, 'Policy not found');
-        const row = await ctx.db.updatePolicy(policy_id, { is_active: Boolean(is_active) });
+        const changes = { is_active: Boolean(is_active) };
+        if ('requires_signature' in (ctx.body || {})) changes.requires_signature = Boolean(ctx.body.requires_signature);
+        const row = await ctx.db.updatePolicy(policy_id, changes);
         return ok({ policy: policyFull({ ...existing, ...row }) });
     }
 });

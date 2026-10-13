@@ -38,8 +38,8 @@ function createFakeDb(seed = {}) {
         async listActivePolicies() { return sortPolicies([...policies.values()].filter(p => p.is_active).map(withVersion)); },
         async listAllPolicies() { return sortPolicies([...policies.values()].map(withVersion)); },
         async getPolicyById(id) { const p = policies.get(id); return p ? withVersion(p) : null; },
-        async insertPolicy({ slug, title, sort_order }) {
-            const p = { id: nextId(), slug, title, sort_order, is_active: true, created_at: new Date().toISOString() };
+        async insertPolicy({ slug, title, sort_order, requires_signature = true }) {
+            const p = { id: nextId(), slug, title, sort_order, is_active: true, requires_signature, created_at: new Date().toISOString() };
             policies.set(p.id, p); return { ...p };
         },
         async updatePolicy(id, fields) { const p = policies.get(id); Object.assign(p, fields); return { ...p }; },

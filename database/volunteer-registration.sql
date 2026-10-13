@@ -92,3 +92,6 @@ ALTER TABLE outreach_users
   ADD COLUMN IF NOT EXISTS approved_by uuid REFERENCES outreach_users(id) ON DELETE SET NULL,
   ADD COLUMN IF NOT EXISTS approved_at timestamptz;
 CREATE INDEX IF NOT EXISTS idx_outreach_users_approval ON outreach_users(approval_status);
+
+-- 8. Only some documents need a signature; the rest are reference reading
+ALTER TABLE policies ADD COLUMN IF NOT EXISTS requires_signature boolean NOT NULL DEFAULT true;

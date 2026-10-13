@@ -168,21 +168,27 @@ async function renderPolicies() {
     const banner = s.signature_status === 'signed' ? `<div class="card" style="background:var(--ok-bg);border-color:#9AE6B4"><b>Signed on ${Shell.fmtDate(s.signature.signed_at)}</b><br><span class="small">Valid until ${Shell.fmtDate(s.signature.expires_at)}. You can still read the policies any time.</span></div>`
         : s.signature_status === 'expired' ? `<div class="banner"><i class="fas fa-clock"></i><div><b>Your signature expired on ${Shell.fmtDate(s.signature.expires_at)}.</b> Please read and sign again.</div></div>`
         : s.signature_status === 'outdated' ? `<div class="banner"><i class="fas fa-rotate"></i><div><b>Updated since you signed:</b> ${Shell.escape(s.outdated_policies.join(', '))}. Please read and sign again.</div></div>` : '';
+    const toSign = policyBodies.filter(p => p.requires_signature !== false);
+    const reference = policyBodies.filter(p => p.requires_signature === false);
+    const item = (p, icon) => `<a class="step" href="#policy/${p.id}"><span class="ic" style="background:var(--mute-bg)"><i class="fas ${icon}"></i></span><div><b>${Shell.escape(p.title)}</b><small>Updated ${Shell.fmtDate(p.current_version.created_at)} · ${readMins(p.current_version.body_html)} min read${p.current_version.change_note ? ' · ' + Shell.escape(p.current_version.change_note) : ''}</small></div><i class="fas fa-chevron-right chev"></i></a>`;
+    const signNoun = toSign.length === 1 ? toSign[0].title : `${toSign.length} documents`;
     view.innerHTML = `${banner}
-      <div id="policyList">${policyBodies.map(p => `<a class="step" href="#policy/${p.id}"><span class="ic" style="background:var(--mute-bg)"><i class="fas fa-file-lines"></i></span><div><b>${Shell.escape(p.title)}</b><small>Updated ${Shell.fmtDate(p.current_version.created_at)} · ${readMins(p.current_version.body_html)} min read${p.current_version.change_note ? ' · ' + Shell.escape(p.current_version.change_note) : ''}</small></div><i class="fas fa-chevron-right chev"></i></a>`).join('') || '<div class="empty">No policies have been published yet.</div>'}</div>
-      ${policyBodies.length && s.signature_status !== 'signed' ? `
+      ${toSign.length ? `<h3 style="margin:4px 0 8px">To read and sign</h3><div id="policyList">${toSign.map(p => item(p, 'fa-file-signature')).join('')}</div>` : ''}
+      ${reference.length ? `<h3 style="margin:16px 0 8px">Our policies <span class="muted small" style="font-weight:400">· for reference, read any time</span></h3><div>${reference.map(p => item(p, 'fa-file-lines')).join('')}</div>` : ''}
+      ${!policyBodies.length ? '<div class="empty">Nothing has been published yet.</div>' : ''}
+      ${toSign.length && s.signature_status !== 'signed' ? `
       <form class="card" id="signForm" style="margin-top:16px">
         <h3>Declaration</h3>
-        <p class="small">I confirm that I have read and understood the ${policyBodies.length} policies listed above, and I agree to follow them while volunteering with Homeless Aid UK.</p>
+        <p class="small">I confirm that I have read and understood the ${Shell.escape(signNoun)} above, that I have had the chance to read Homeless Aid UK's policies, and that I agree to follow them while volunteering.</p>
         <label class="field"><span>Type your full name to sign</span><input class="input" name="typed_name" placeholder="${Shell.escape(data.user.full_name)}" autocomplete="name" required></label>
-        <label class="small" style="display:flex;gap:10px;align-items:flex-start;margin-bottom:14px"><input type="checkbox" name="ack" required style="width:20px;height:20px;margin:0"> I understand this signature is valid for 12 months, or until a policy changes, and that it is recorded with the date and time.</label>
-        <button class="btn block" type="submit"><i class="fas fa-pen-nib"></i> Sign policies</button>
+        <label class="small" style="display:flex;gap:10px;align-items:flex-start;margin-bottom:14px"><input type="checkbox" name="ack" required style="width:20px;height:20px;margin:0"> I understand this signature is valid for 12 months, or until the ${Shell.escape(signNoun)} changes, and that it is recorded with the date and time.</label>
+        <button class="btn block" type="submit"><i class="fas fa-pen-nib"></i> Sign</button>
       </form>` : ''}
       <a class="btn ghost block" href="#home" style="margin-top:8px">Back</a>`;
     const form = $('#signForm'); if (form) form.addEventListener('submit', async (e) => {
         e.preventDefault(); const btn = form.querySelector('button'); btn.disabled = true;
         try {
-            const r = await Shell.api('sign', { method: 'POST', body: { typed_name: form.typed_name.value, version_ids: policyBodies.map(p => p.current_version.id) } });
+            const r = await Shell.api('sign', { method: 'POST', body: { typed_name: form.typed_name.value, version_ids: policyBodies.filter(p => p.requires_signature !== false).map(p => p.current_version.id) } });
             data.state = r.state; Shell.toast('Thank you, policies signed'); renderPolicies();
         } catch (err) { Shell.toast(err.message, 'error'); if (err.status === 409) renderPolicies(); btn.disabled = false; }
     });
